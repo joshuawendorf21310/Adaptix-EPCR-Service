@@ -1,0 +1,34 @@
+﻿# Environment — never commit secrets
+.env
+.env.*
+!.env.example
+
+# SQLite databases — never commit runtime artifacts
+*.db
+*.sqlite
+*.sqlite3
+
+# Python build artifacts
+build/
+dist/
+*.egg-info/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.so
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Local test outputs
+htmlcov/
+.coverage
+coverage.xml
