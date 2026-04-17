@@ -66,6 +66,16 @@ app.include_router(nemsis_scenarios_router)
 logger.info("Care service configured")
 
 
+@app.get("/healthz")
+async def healthz() -> dict:
+    """Health check endpoint for the care (ePCR) service.
+
+    Returns:
+        dict: Service health status.
+    """
+    return {"status": "healthy", "service": "epcr"}
+
+
 if __name__ == "__main__":
     import uvicorn
     logging.basicConfig(level=logging.INFO)
