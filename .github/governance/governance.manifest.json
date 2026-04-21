@@ -1,0 +1,72 @@
+{
+  "governanceVersion": "2026.04.21",
+  "repoName": "Adaptix-EPCR-Service",
+  "repoRole": "service",
+  "rootAgentsPath": "AGENTS.md",
+  "requiredRootFiles": [
+    "AGENTS.md",
+    "SYSTEM_RULES.md",
+    "DOMAIN_BOUNDARIES.md",
+    "MODULE_ENTITLEMENTS.md",
+    "ARCHITECTURE_TRUTH.md",
+    "BILLING_AND_PACKAGING_RULES.md"
+  ],
+  "auditLogPath": ".github/governance/audit/agent_runtime_audit.jsonl",
+  "contradictionMarkers": [
+    "OVERRIDES_ROOT_GOVERNANCE",
+    "ROOT_GOVERNANCE_OPTIONAL",
+    "MAY_DUPLICATE_SHARED_FOUNDATIONS",
+    "HARDCODE_PRICING_LOGIC"
+  ],
+  "blockedTerminalPatterns": [
+    "git\\s+push\\s+--force",
+    "(?:^|\\s)(?:rm|del|Remove-Item)\\s+.*(?:-r|-rf|/s)",
+    "DROP\\s+TABLE",
+    "TRUNCATE\\s+TABLE",
+    "echo\\s+.+>\\s*[^\\n]+"
+  ],
+  "sharedFoundationPatterns": [
+    "class\\s+\\w*(?:Auth|Tenant|RBAC|Entitlement)\\w*",
+    "def\\s+(?:issue_jwt|create_access_token|resolve_entitlements)",
+    "jwt\\.(?:encode|decode)"
+  ],
+  "pricingLogicPatterns": [
+    "PLAN_(?:BASIC|PRO|ENTERPRISE)",
+    "pricing[_-]?tier",
+    "subscription[_-]?plan",
+    "monthly[_-]?price",
+    "annual[_-]?price",
+    "price[_-]?cents"
+  ],
+  "localAgents": [
+    {
+      "path": "backend/AGENTS.md",
+      "displayName": "ePCR",
+      "subsystemKey": "epcr",
+      "truthOwner": "patient care, charting, narrative, and NEMSIS export truth",
+      "governanceVersion": "2026.04.21",
+      "default": true,
+      "forbiddenImportRoots": [
+        "core_app",
+        "app",
+        "billing_app",
+        "fire_app",
+        "field_app",
+        "workforce_app",
+        "communications_app",
+        "telnyx_app",
+        "voice_app",
+        "transportlink_app",
+        "air_app",
+        "air_pilot_app",
+        "labor_app",
+        "crewlink_app",
+        "graph_app",
+        "medications",
+        "cad_app",
+        "adaptix_contracts",
+        "ai_app"
+      ]
+    }
+  ]
+}
