@@ -13,6 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError
 from epcr_app.models import (
     Chart,
+    ChartStatus,
     Vitals,
     Assessment,
     PatientProfile,
@@ -995,6 +996,37 @@ class ChartService:
         except Exception as e:
             logger.error(f"Unexpected error updating chart: {str(e)}", exc_info=True)
             raise
+
+    _VALID_TRANSITIONS: dict = {
+        ChartStatus.NEW: {ChartStatus.IN_PROGRESS},
+        ChartStatus.IN_PROGRESS: {ChartStatus.UNDER_REVIEW, ChartStatus.FINALIZED},
+        ChartStatus.UNDER_REVIEW: {ChartStatus.IN_PROGRESS, ChartStatus.FINALIZED},
+        ChartStatus.FINALIZED: {ChartStatus.LOCKED},
+        ChartStatus.LOCKED: set(),
+    }
+
+    @staticmethod
+    async def transition_chart_status(
+        session: AsyncSession,
+        tenant_id: str,
+        chart_id: str,
+        to_status: ChartStatus,
+        user_id: str,
+    ) -> Chart:
+        chart = await ChartService.get_chart(session, tenant_id, chart_id)
+        if not chart:
+            raise ValueError(f"Chart {chart_id} not found")
+        allowed = ChartService._VALID_TRANSITIONS.get(chart.status, set())
+        if to_status not in allowed:
+            raise ValueError(
+                f"Invalid status transition from {chart.status!r} to {to_status!r}. "
+                f"Allowed: {[s.value for s in allowed]}"
+            )
+        chart.status = to_status
+        chart.updated_at = datetime.now(UTC)
+        await session.commit()
+        logger.info(f"Chart {chart_id} transitioned to {to_status!r} by user {user_id}")
+        return chart
 
     @staticmethod
     async def record_assessment_finding(

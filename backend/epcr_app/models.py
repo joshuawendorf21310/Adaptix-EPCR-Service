@@ -6,7 +6,7 @@ compliance tracking for emergency patient care records.
 """
 from datetime import datetime, UTC
 from enum import Enum
-from sqlalchemy import Column, String, DateTime, Integer, Text, ForeignKey, Boolean, Float, Enum as SQLEnum, text
+from sqlalchemy import Column, String, DateTime, Integer, Text, ForeignKey, Boolean, Float, Enum as SQLEnum, text, event
 from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
@@ -165,6 +165,7 @@ class Chart(Base):
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False)
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False)
     finalized_at = Column(DateTime(timezone=True), nullable=True)
+    narrative = Column(Text, nullable=True)
     version = Column(Integer, nullable=False, server_default=text("1"))
     deleted_at = Column(DateTime(timezone=True), nullable=True, index=True)
     
@@ -183,6 +184,11 @@ class Chart(Base):
     derived_outputs = relationship("DerivedChartOutput", back_populates="chart", cascade="all, delete-orphan")
     nemsis_mappings = relationship("NemsisMappingRecord", back_populates="chart", cascade="all, delete-orphan")
     nemsis_compliance = relationship("NemsisCompliance", back_populates="chart", uselist=False, cascade="all, delete-orphan")
+
+
+@event.listens_for(Chart, "before_update")
+def _increment_chart_version(mapper, connection, target):
+    target.version = (target.version or 1) + 1
 
 
 class Vitals(Base):

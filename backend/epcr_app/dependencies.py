@@ -166,3 +166,5 @@ async def get_current_user(
         email=str(email),
         roles=[str(r) for r in roles],
     )
+
+
