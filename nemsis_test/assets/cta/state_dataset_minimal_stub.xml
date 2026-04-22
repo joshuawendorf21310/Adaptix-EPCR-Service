@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StateDataSet xmlns="http://www.nemsis.org"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://www.nemsis.org https://nemsis.org/media/nemsis_v3/3.5.1.250403CP1/XSDs/NEMSIS_XSDs/StateDataSet_v3.xsd"
+              timestamp="2026-04-21T12:00:00-05:00"
+              effectiveDate="2026-04-21T12:00:00-05:00">
+  <sState>
+    <sState.01>12</sState.01>
+  </sState>
+  <sSoftware>
+    <sSoftware.SoftwareGroup>
+      <sSoftware.01>Adaptix</sSoftware.01>
+      <sSoftware.02>Receive and Process</sSoftware.02>
+      <sSoftware.03>REPLACE_WITH_BUILD_VERSION</sSoftware.03>
+    </sSoftware.SoftwareGroup>
+  </sSoftware>
+  <sElement>
+    <sElement.01>dAgency.01</sElement.01>
+  </sElement>
+</StateDataSet>

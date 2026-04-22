@@ -6,17 +6,20 @@ SQLite (local development) and PostgreSQL (production). On PostgreSQL,
 JSONB behaviour is preserved at the driver level via asyncpg.
 """
 from datetime import datetime
-from sqlalchemy import BigInteger, Boolean, DateTime, ForeignKey, Index, Integer, JSON, Numeric, Text, func
+from sqlalchemy import BigInteger, Boolean, DateTime, ForeignKey, Index, Integer, JSON, Numeric, Text, func, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from epcr_app.models import Base
+
+
+_BIGINT_IDENTITY = BigInteger().with_variant(Integer, "sqlite")
 
 
 class NemsisExportAttempt(Base):
     """Export attempt lifecycle tracking."""
     __tablename__ = "epcr_nemsis_export_attempts"
 
-    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(_BIGINT_IDENTITY, primary_key=True, autoincrement=True)
     tenant_id: Mapped[str] = mapped_column(Text, nullable=False, index=True)
     chart_id: Mapped[str] = mapped_column(Text, nullable=False, index=True)
 
@@ -29,12 +32,12 @@ class NemsisExportAttempt(Base):
     retry_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
 
     supersedes_export_id: Mapped[int | None] = mapped_column(
-        BigInteger,
+        _BIGINT_IDENTITY,
         ForeignKey("epcr_nemsis_export_attempts.id", ondelete="SET NULL"),
         nullable=True,
     )
     superseded_by_export_id: Mapped[int | None] = mapped_column(
-        BigInteger,
+        _BIGINT_IDENTITY,
         ForeignKey("epcr_nemsis_export_attempts.id", ondelete="SET NULL"),
         nullable=True,
     )
@@ -50,6 +53,11 @@ class NemsisExportAttempt(Base):
     artifact_size_bytes: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
     artifact_storage_key: Mapped[str | None] = mapped_column(Text, nullable=True)
     artifact_checksum_sha256: Mapped[str | None] = mapped_column(Text, nullable=True)
+    xsd_valid: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    schematron_valid: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    validator_errors: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
+    validator_warnings: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
+    validator_asset_version: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     requested_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
@@ -63,6 +71,8 @@ class NemsisExportAttempt(Base):
         server_default=func.now(),
         onupdate=func.now(),
     )
+    version: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("1"))
+    deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, index=True)
 
     events: Mapped[list["NemsisExportEvent"]] = relationship(
         "NemsisExportEvent",
@@ -83,9 +93,9 @@ class NemsisExportEvent(Base):
     """Audit-grade event log for export lifecycle transitions."""
     __tablename__ = "epcr_nemsis_export_events"
 
-    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(_BIGINT_IDENTITY, primary_key=True, autoincrement=True)
     export_attempt_id: Mapped[int] = mapped_column(
-        BigInteger,
+        _BIGINT_IDENTITY,
         ForeignKey("epcr_nemsis_export_attempts.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
@@ -102,6 +112,8 @@ class NemsisExportEvent(Base):
 
     created_by_user_id: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    version: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("1"))
+    deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, index=True)
 
     attempt: Mapped["NemsisExportAttempt"] = relationship(
         "NemsisExportAttempt",

@@ -1,0 +1,13 @@
+{
+  "uploaded_cta_package": "v3.5.1 C&S for vendors.zip",
+  "reference_xml": "cta_uploaded_package/v3.5.1 C&S for vendors/2025-STATE-1_v351.xml",
+  "official_asset_urls": {
+    "cta_wsdl": "https://cta.nemsis.org/ComplianceTestingWs/endpoints/compliancetestingws.wsdl",
+    "compliance_pretest_wsdl": "https://compliance.nemsis.org/nemsisWs.wsdl",
+    "xsd_zip_latest_public_351": "https://nemsis.org/media/nemsis_v3/release-3.5.1/XSDs/NEMSIS_XSDs.zip",
+    "schematron_devkit_zip_351": "https://nemsis.org/media/nemsis_v3/release-3.5.1/Schematron/DevelopmentKit/Schematron.zip",
+    "state_schematron_file_250403cp1": "https://nemsis.org/media/nemsis_v3/release-3.5.1/Schematron/rules/StateDataSet.sch",
+    "receive_process_guide_pdf": "https://nemsis.org/media/nemsis_v3/release-3.5.1/Compliance/NEMSIS%20V3%20Compliance%20Process%20-%20Receive%20and%20Process.pdf"
+  },
+  "critical_note": "The uploaded CTA reference XML points at the 3.5.1.250403CP1 StateDataSet schema URL. Use the exact asset version that matches the active CTA run and keep XSD and Schematron versions aligned."
+}

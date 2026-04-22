@@ -6,7 +6,7 @@ All models align to the PostgreSQL schema in migration 004_add_nemsis_submission
 """
 from datetime import datetime, UTC
 
-from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, String, Text, text
 from sqlalchemy.orm import relationship
 
 from epcr_app.models import Base
@@ -25,7 +25,8 @@ class NemsisPack(Base):
         tenant_id: Tenant identifier for multi-tenant isolation.
         name: Human-readable name for the pack.
         pack_type: Category of pack content (national_xsd, national_schematron,
-            wi_state_dataset, wi_schematron, cs_scenarios, bundle).
+            official_source_bundle, wi_state_dataset, wi_schematron,
+            cs_scenarios, bundle).
         nemsis_version: NEMSIS specification version targeted by this pack.
         status: Lifecycle status (pending, staged, active, archived).
         s3_bucket: S3 bucket holding pack assets.
@@ -53,6 +54,8 @@ class NemsisPack(Base):
     activated_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(UTC))
     created_by_user_id = Column(String(255), nullable=False)
+    version = Column(Integer, nullable=False, server_default=text("1"))
+    deleted_at = Column(DateTime(timezone=True), nullable=True, index=True)
 
     files = relationship("NemsisPackFile", backref="pack", cascade="all, delete-orphan")
 
@@ -86,6 +89,8 @@ class NemsisPackFile(Base):
     size_bytes = Column(BigInteger, default=0, nullable=False)
     sha256 = Column(String(64), nullable=True)
     uploaded_at = Column(DateTime(timezone=True), nullable=False)
+    version = Column(Integer, nullable=False, server_default=text("1"))
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
 
 
 class NemsisSubmissionResult(Base):
@@ -149,6 +154,8 @@ class NemsisSubmissionResult(Base):
     resolved_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(UTC))
     created_by_user_id = Column(String(255), nullable=False)
+    version = Column(Integer, nullable=False, server_default=text("1"))
+    deleted_at = Column(DateTime(timezone=True), nullable=True, index=True)
 
     history = relationship(
         "NemsisSubmissionStatusHistory",
@@ -193,6 +200,8 @@ class NemsisSubmissionStatusHistory(Base):
     note = Column(Text, nullable=True)
     payload_snapshot_json = Column(Text, nullable=True)
     transitioned_at = Column(DateTime(timezone=True), nullable=False)
+    version = Column(Integer, nullable=False, server_default=text("1"))
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
 
 
 class NemsisScenario(Base):
@@ -237,3 +246,5 @@ class NemsisScenario(Base):
     last_run_at = Column(DateTime(timezone=True), nullable=True)
     last_submission_id = Column(String(36), nullable=True)
     created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(UTC))
+    version = Column(Integer, nullable=False, server_default=text("1"))
+    deleted_at = Column(DateTime(timezone=True), nullable=True, index=True)

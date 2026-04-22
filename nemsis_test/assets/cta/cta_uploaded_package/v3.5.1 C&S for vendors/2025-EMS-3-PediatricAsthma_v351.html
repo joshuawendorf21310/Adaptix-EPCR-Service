@@ -1,0 +1,5543 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns:nem="http://www.nemsis.org"
+      xmlns:xs="http://www.w3.org/2001/XMLSchema"
+      xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <head>
+      <title>
+          NEMSIS v3.5.1 EMSDataSet Test Case
+        </title>
+      <style type="text/css">
+
+          body
+          {
+          padding: 5ex;
+          }
+
+          table
+          {
+          border-collapse: collapse;
+          }
+
+          table, th, td
+          {
+          border: 1px solid #cccccc;
+          padding: 0.5ex;
+          vertical-align: top;
+          }
+
+          td.element
+          {
+          color: #666666;
+          text-indent: -1em;
+          width:40%;
+          }
+
+          td.comment
+          {
+          color: #666666;
+          font-style: italic;
+          text-indent: -1em;
+          }
+
+          span.group
+          {
+          font-size: larger;
+          }
+
+          img
+          {
+          border: 1px solid #eeeeee;
+          }
+
+        </style>
+   </head>
+   <body>
+      <h1>
+          NEMSIS v3.5.1 EMSDataSet Test Case
+        </h1>
+      <pre> 
+
+NEMSIS V3 Test Case for Active Testing
+ID:               2025-EMS-3-PediatricAsthma_v351
+Description:      Test case for pediatric asthma transport
+Expected Result:  PASS
+
+ </pre>
+      <table>
+         <thead>
+            <tr>
+               <th>Element</th>
+               <th>Value</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td class="element" style="padding-left: 1em" rowspan="1">
+                  <span class="group">EMSDataSet
+            -
+          </span>Root Tag For Patient Care Report Dataset</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 2em" rowspan="1">
+                  <span class="group">Header
+            -
+          </span>Header for file</td>
+               <td>
+      
+      </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 3em" rowspan="1">
+                  <span class="group">DemographicGroup
+            -
+          </span>Demographic information related to this agency</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 4em" rowspan="1">
+                  <span>dAgency.01
+            -
+          </span>
+													                          
+												                        
+						            
+					          EMS Agency Unique State ID EMS Agency Unique State ID</td>
+               <td>120495</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 4em" rowspan="1">
+                  <span>dAgency.02
+            -
+          </span>
+													                          
+												                        
+						            
+					          EMS Agency Number EMS Agency Number</td>
+               <td>351-T0495</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 4em" rowspan="1">
+                  <span>dAgency.04
+            -
+          </span>
+													                          
+												                        
+						            
+					          EMS Agency State EMS Agency State</td>
+               <td>Florida</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 3em" rowspan="1">
+                  <span class="group">PatientCareReport
+            -
+          </span>Container Tag to hold each instance of a patient care report (PCR)</td>
+               <td>[UUID
+    =
+    <em>[Your UUID]</em>] 
+         
+         </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 4em" rowspan="1">
+                  <span class="group">eRecord
+            -
+          </span>Patient Record Information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eRecord.01
+            -
+          </span>
+						            
+					          Patient Care Report Number</td>
+               <td>
+                  <em>[Your Patient Care Report Number]</em>
+               </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eRecord.SoftwareApplicationGroup
+            -
+          </span>Group Tag to hold information about the software used to generate this patient care report</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eRecord.02
+            -
+          </span>
+									                  
+								                Software Creator</td>
+               <td>
+                  <em>[Your Software Creator]</em>
+               </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eRecord.03
+            -
+          </span>
+									                  
+								                Software Name</td>
+               <td>
+                  <em>[Your Software Name]</em>
+               </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eRecord.04
+            -
+          </span>
+									                  
+								                Software Version</td>
+               <td>
+                  <em>[Your Software Version]</em>
+               </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 4em" rowspan="1">
+                  <span class="group">eResponse
+            -
+          </span>Unit Agency Information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eResponse.AgencyGroup
+            -
+          </span>Group Tag to hold EMS agency number and name</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eResponse.01
+            -
+          </span>
+									                  
+								                EMS Agency Number</td>
+               <td>351-T0495</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eResponse.02
+            -
+          </span>
+									                  
+								                EMS Agency Name</td>
+               <td>
+                  <em>[Value from DEMDataSet]</em>
+               </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eResponse.03
+            -
+          </span>
+						            
+					          Incident Number</td>
+               <td>351-241140-004</td>
+            </tr>
+            <tr>
+               <td class="comment" style="padding-left: 5em" colspan="2">
+                  <em>eResponse.04 is used as the test case key and must be correct for the NEMSIS TAC Compliance Testing Automation Web Service to identify which test case is being submitted.
+          </em>
+               </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eResponse.04
+            -
+          </span>
+						            
+					          EMS Response Number</td>
+               <td>351-241140-004-1</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eResponse.ServiceGroup
+            -
+          </span>Group Tag to hold details about EMS category of service and the stand by reason</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eResponse.05
+            -
+          </span>
+									                  
+								                Type of Service Requested</td>
+               <td>Emergency Response (Primary Response Area)</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eResponse.07
+            -
+          </span>
+						            
+					          Unit Transport and Equipment Capability</td>
+               <td>Ground Transport (ALS Equipped)</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eResponse.08
+            -
+          </span>
+						            
+					          Type of Dispatch Delay</td>
+               <td>None/No Delay</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eResponse.09
+            -
+          </span>
+						            
+					          Type of Response Delay</td>
+               <td>None/No Delay</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eResponse.10
+            -
+          </span>
+						            
+					          Type of Scene Delay</td>
+               <td>None/No Delay</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eResponse.11
+            -
+          </span>
+						            
+					          Type of Transport Delay</td>
+               <td>Distance</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eResponse.12
+            -
+          </span>
+						            
+					          Type of Turn-Around Delay</td>
+               <td>Distance</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eResponse.13
+            -
+          </span>
+						            
+					          EMS Vehicle (Unit) Number</td>
+               <td>7D317</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eResponse.14
+            -
+          </span>
+						            
+					          EMS Unit Call Sign</td>
+               <td>Medic 50</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eResponse.16
+            -
+          </span>
+						            
+					          Vehicle Dispatch Location</td>
+               <td>Crestview Station</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eResponse.17
+            -
+          </span>
+						            
+					          Vehicle Dispatch GPS Location</td>
+               <td>30.786,-86.532</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eResponse.18
+            -
+          </span>
+						            
+					          Vehicle Dispatch Location US National Grid Coordinates</td>
+               <td>16REV44750606</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eResponse.19
+            -
+          </span>
+						            
+					          Beginning Odometer Reading of Responding Vehicle</td>
+               <td>108450.2</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eResponse.20
+            -
+          </span>
+						            
+					          On-Scene Odometer Reading of Responding Vehicle</td>
+               <td>108454.3</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eResponse.21
+            -
+          </span>
+						            
+					          Patient Destination Odometer Reading of Responding Vehicle</td>
+               <td>108504.1</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eResponse.22
+            -
+          </span>
+						            
+					          Ending Odometer Reading of Responding Vehicle</td>
+               <td>108558.5</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eResponse.23
+            -
+          </span>
+						            
+					          Response Mode to Scene</td>
+               <td>Emergent (Immediate Response)</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eResponse.24
+            -
+          </span>
+						            
+					          Additional Response Mode Descriptors</td>
+               <td>Lights and Sirens</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 4em" rowspan="1">
+                  <span class="group">eDispatch
+            -
+          </span>Dispatch Information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eDispatch.01
+            -
+          </span>
+						            
+					          Dispatch Reason</td>
+               <td>Breathing Problem</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eDispatch.02
+            -
+          </span>
+						            
+					          EMD Performed</td>
+               <td>Yes, Without Pre-Arrival Instructions</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eDispatch.03
+            -
+          </span>
+						            
+					          EMD Determinant Code</td>
+               <td>06D03</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eDispatch.04
+            -
+          </span>
+						            
+					          Dispatch Center Name or ID</td>
+               <td>Okaloosa 911</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eDispatch.05
+            -
+          </span>
+						            
+					          Dispatch Priority (Patient Acuity)</td>
+               <td>Emergent</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 4em" rowspan="1">
+                  <span class="group">eCrew
+            -
+          </span>Crew Member Information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eCrew.CrewGroup
+            -
+          </span>Group Tag to hold crew information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eCrew.01
+            -
+          </span>
+									                  
+								                Crew Member ID</td>
+               <td>EMT470248 - Demetrius Muñoz</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eCrew.02
+            -
+          </span>
+									                  
+								                Crew Member Level</td>
+               <td>Emergency Medical Technician (EMT)</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="3">
+                  <span>eCrew.03
+            -
+          </span>
+									                  
+								                Crew Member Response Role</td>
+               <td>Driver/Pilot-Response</td>
+            </tr>
+            <tr>
+               <td>Driver/Pilot-Transport</td>
+            </tr>
+            <tr>
+               <td>Other Patient Caregiver-At Scene</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eCrew.CrewGroup
+            -
+          </span>Group Tag to hold crew information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eCrew.01
+            -
+          </span>
+									                  
+								                Crew Member ID</td>
+               <td>OC729341 - Madelynn Wolff</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eCrew.02
+            -
+          </span>
+									                  
+								                Crew Member Level</td>
+               <td>Student</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eCrew.03
+            -
+          </span>
+									                  
+								                Crew Member Response Role</td>
+               <td>Other</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eCrew.CrewGroup
+            -
+          </span>Group Tag to hold crew information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eCrew.01
+            -
+          </span>
+									                  
+								                Crew Member ID</td>
+               <td>PMD584736 - Willie Noe Mante</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eCrew.02
+            -
+          </span>
+									                  
+								                Crew Member Level</td>
+               <td>Paramedic</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="2">
+                  <span>eCrew.03
+            -
+          </span>
+									                  
+								                Crew Member Response Role</td>
+               <td>Primary Patient Caregiver-At Scene</td>
+            </tr>
+            <tr>
+               <td>Primary Patient Caregiver-Transport</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 4em" rowspan="1">
+                  <span class="group">eTimes
+            -
+          </span>Call Event Times Information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eTimes.01
+            -
+          </span>
+						            
+					          PSAP Call Date/Time</td>
+               <td>November 4, 2024, 10:18:03 GMT-05:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eTimes.02
+            -
+          </span>
+						            
+					          Dispatch Notified Date/Time</td>
+               <td>November 4, 2024, 10:18:47 GMT-05:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eTimes.03
+            -
+          </span>
+						            
+					          Unit Notified by Dispatch Date/Time</td>
+               <td>November 4, 2024, 10:19:11 GMT-05:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eTimes.04
+            -
+          </span>
+						            
+					          Dispatch Acknowledged Date/Time</td>
+               <td>November 4, 2024, 10:19:54 GMT-05:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eTimes.05
+            -
+          </span>
+						            
+					          Unit En Route Date/Time</td>
+               <td>November 4, 2024, 10:21:01 GMT-05:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eTimes.06
+            -
+          </span>
+						            
+					          Unit Arrived on Scene Date/Time</td>
+               <td>November 4, 2024, 10:29:39 GMT-05:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eTimes.07
+            -
+          </span>
+						            
+					          Arrived at Patient Date/Time</td>
+               <td>November 4, 2024, 10:30:09 GMT-05:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eTimes.09
+            -
+          </span>
+						            
+					          Unit Left Scene Date/Time</td>
+               <td>November 4, 2024, 10:42:33 GMT-05:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eTimes.11
+            -
+          </span>
+						            
+					          Patient Arrived at Destination Date/Time</td>
+               <td>November 4, 2024, 11:35:20 GMT-05:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eTimes.12
+            -
+          </span>
+						            
+					          Destination Patient Transfer of Care Date/Time</td>
+               <td>November 4, 2024, 11:40:08 GMT-05:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eTimes.13
+            -
+          </span>
+						            
+					          Unit Back in Service Date/Time</td>
+               <td>November 4, 2024, 12:29:00 GMT-05:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eTimes.15
+            -
+          </span>
+						            
+					          Unit Back at Home Location Date/Time</td>
+               <td>November 4, 2024, 12:39:41 GMT-05:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eTimes.16
+            -
+          </span>
+						            
+					          EMS Call Completed Date/Time</td>
+               <td>November 4, 2024, 12:50:00 GMT-05:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 4em" rowspan="1">
+                  <span class="group">ePatient
+            -
+          </span>Patient Information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>ePatient.01
+            -
+          </span>
+						            
+					          EMS Patient ID</td>
+               <td>46JK6Y</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">ePatient.PatientNameGroup
+            -
+          </span>Group Tag to hold patient's name</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePatient.02
+            -
+          </span>
+									                  
+								                Last Name</td>
+               <td>Augustin</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePatient.03
+            -
+          </span>
+									                  
+								                First Name</td>
+               <td>Liliane</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePatient.04
+            -
+          </span>
+									                  
+								                Middle Initial/Name</td>
+               <td>Jo</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>ePatient.05
+            -
+          </span>
+						            
+					          Patient's Home Address</td>
+               <td>515 Springtime Avenue</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>ePatient.06
+            -
+          </span>
+						            
+					          Patient's Home City</td>
+               <td>Holt</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>ePatient.07
+            -
+          </span>
+						            
+					          Patient's Home County</td>
+               <td>Okaloosa County</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>ePatient.08
+            -
+          </span>
+						            
+					          Patient's Home State</td>
+               <td>Florida</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>ePatient.09
+            -
+          </span>
+						            
+					          Patient's Home ZIP Code</td>
+               <td>32564</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>ePatient.10
+            -
+          </span>
+						            
+					          Patient's Country of Residence</td>
+               <td>US</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>ePatient.11
+            -
+          </span>
+						            
+					          Patient Home Census Tract</td>
+               <td>12091020100</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>ePatient.12
+            -
+          </span>
+						            
+					          Social Security Number</td>
+               <td>476417910</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>ePatient.13
+            -
+          </span>
+						            
+					          Gender (DEPRECATED)</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>ePatient.14
+            -
+          </span>
+						            
+					          Race</td>
+               <td>Black or African American</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">ePatient.AgeGroup
+            -
+          </span>Group Tag to hold patient's age information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePatient.15
+            -
+          </span>
+									                  
+								                Age</td>
+               <td>7</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePatient.16
+            -
+          </span>
+									                  
+								                Age Units</td>
+               <td>Years</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>ePatient.17
+            -
+          </span>
+						            
+					          Date of Birth</td>
+               <td>December 7, 2016</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="3">
+                  <span>ePatient.24
+            -
+          </span>
+						            
+					          Patient's Preferred Language(s)</td>
+               <td>French Creole</td>
+            </tr>
+            <tr>
+               <td>English</td>
+            </tr>
+            <tr>
+               <td>French</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>ePatient.25
+            -
+          </span>
+						            
+					          Sex</td>
+               <td>Female</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 4em" rowspan="1">
+                  <span class="group">ePayment
+            -
+          </span>Insurance/Payment Information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>ePayment.01
+            -
+          </span>
+						            
+					          Primary Method of Payment</td>
+               <td>Insurance</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>ePayment.08
+            -
+          </span>
+						            
+					          Patient Resides in Service Area</td>
+               <td>Resident Within EMS Service Area</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">ePayment.InsuranceGroup
+            -
+          </span>Group Tag to hold information about the insurance company</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePayment.09
+            -
+          </span>
+									                  
+								                Insurance Company ID</td>
+               <td>FKC</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePayment.10
+            -
+          </span>
+									                  
+								                Insurance Company Name</td>
+               <td>Florida KidCare</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePayment.11
+            -
+          </span>
+									                  
+								                Insurance Company Billing Priority</td>
+               <td>Primary</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePayment.12
+            -
+          </span>
+									                  
+								                Insurance Company Address</td>
+               <td>[StreetAddress2
+    =
+    
+            "PO Box 31105"
+          ] 1203 Governors Square Boulevard</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePayment.13
+            -
+          </span>
+									                  
+								                Insurance Company City</td>
+               <td>Tallahassee</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePayment.14
+            -
+          </span>
+									                  
+								                Insurance Company State</td>
+               <td>Florida</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePayment.15
+            -
+          </span>
+									                  
+								                Insurance Company ZIP Code</td>
+               <td>32301</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePayment.16
+            -
+          </span>
+									                  
+								                Insurance Company Country</td>
+               <td>US</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePayment.17
+            -
+          </span>
+									                  
+								                Insurance Group ID</td>
+               <td>HK</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePayment.18
+            -
+          </span>
+									                  
+								                Insurance Policy ID Number</td>
+               <td>WE52708</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePayment.19
+            -
+          </span>
+									                  
+								                Last Name of the Insured</td>
+               <td>Augustin</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePayment.20
+            -
+          </span>
+									                  
+								                First Name of the Insured</td>
+               <td>Nadège</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePayment.21
+            -
+          </span>
+									                  
+								                Middle Initial/Name of the Insured</td>
+               <td>Marie</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePayment.22
+            -
+          </span>
+									                  
+								                Relationship to the Insured</td>
+               <td>Child/Dependent</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePayment.58
+            -
+          </span>
+									                  
+								                Insurance Group Name</td>
+               <td>Healthy Kids</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePayment.59
+            -
+          </span>
+									                  
+								                Insurance Company Phone Number</td>
+               <td>[PhoneNumberType
+    =
+    Work] 888-540-5437</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePayment.60
+            -
+          </span>
+									                  
+								                Date of Birth of the Insured</td>
+               <td>September 28, 1994</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">ePayment.ClosestRelativeGroup
+            -
+          </span>Group Tag to hold information about patient's relative or guardian</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePayment.23
+            -
+          </span>
+									                  
+								                Closest Relative/Guardian Last Name</td>
+               <td>Augustin</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePayment.24
+            -
+          </span>
+									                  
+								                Closest Relative/ Guardian First Name</td>
+               <td>Nadège</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePayment.25
+            -
+          </span>
+									                  
+								                Closest Relative/ Guardian Middle Initial/Name</td>
+               <td>Marie</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePayment.26
+            -
+          </span>
+									                  
+								                Closest Relative/ Guardian Street Address</td>
+               <td>515 Springtime Avenue</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePayment.27
+            -
+          </span>
+									                  
+								                Closest Relative/ Guardian City</td>
+               <td>Holt</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePayment.28
+            -
+          </span>
+									                  
+								                Closest Relative/ Guardian State</td>
+               <td>Florida</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePayment.29
+            -
+          </span>
+									                  
+								                Closest Relative/ Guardian ZIP Code</td>
+               <td>32564</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePayment.30
+            -
+          </span>
+									                  
+								                Closest Relative/ Guardian Country</td>
+               <td>US</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>ePayment.31
+            -
+          </span>
+									                  
+								                Closest Relative/ Guardian Phone Number</td>
+               <td>[PhoneNumberType
+    =
+    Mobile] 850-538-2164</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>ePayment.40
+            -
+          </span>
+						            
+					          Response Urgency</td>
+               <td>Immediate</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>ePayment.44
+            -
+          </span>
+						            
+					          Ambulance Transport Reason Code</td>
+               <td>Patient was transported for the care of a specialist or for availability of equipment</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="2">
+                  <span>ePayment.47
+            -
+          </span>
+						            
+					          Ambulance Conditions Indicator</td>
+               <td>Patient was admitted to a hospital</td>
+            </tr>
+            <tr>
+               <td>Patient was transported in an emergency situation</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>ePayment.48
+            -
+          </span>
+						            
+					          Mileage to Closest Hospital Facility</td>
+               <td>30.9</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>ePayment.49
+            -
+          </span>
+						            
+					          ALS Assessment Performed and Warranted</td>
+               <td>Yes</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>ePayment.50
+            -
+          </span>
+						            
+					          CMS Service Level</td>
+               <td>ALS, Level 1 Emergency</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>ePayment.51
+            -
+          </span>
+						            
+					          EMS Condition Code</td>
+               <td>J45 - Asthma</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>ePayment.53
+            -
+          </span>
+						            
+					          Transport Authorization Code</td>
+               <td>2411-319</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>ePayment.54
+            -
+          </span>
+						            
+					          Prior Authorization Code Payer</td>
+               <td>Florida KidCare</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>ePayment.57
+            -
+          </span>
+						            
+					          Payer Type</td>
+               <td>Other Non-Federal Programs</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 4em" rowspan="1">
+                  <span class="group">eScene
+            -
+          </span>Incident Scene Information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eScene.01
+            -
+          </span>
+						            
+					          First EMS Unit on Scene</td>
+               <td>Yes</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eScene.06
+            -
+          </span>
+						            
+					          Number of Patients at Scene</td>
+               <td>Single</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eScene.07
+            -
+          </span>
+						            
+					          Mass Casualty Incident</td>
+               <td>No</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eScene.08
+            -
+          </span>
+						            
+					          Triage Classification for MCI Patient</td>
+               <td>[NV
+    =
+    Not Applicable] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eScene.09
+            -
+          </span>
+						            
+					          Incident Location Type</td>
+               <td>Y92.21 - School (private) (public) (state) as the place of occurrence of the external cause</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eScene.11
+            -
+          </span>
+						            
+					          Scene GPS Location</td>
+               <td>30.782,-86.576</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eScene.12
+            -
+          </span>
+						            
+					          Scene US National Grid Coordinates</td>
+               <td>16REV40560551</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eScene.13
+            -
+          </span>
+						            
+					          Incident Facility or Location Name</td>
+               <td>Bob Sykes Elementary School</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eScene.15
+            -
+          </span>
+						            
+					          Incident Street Address</td>
+               <td>425 Adam Drive</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eScene.16
+            -
+          </span>
+						            
+					          Incident Apartment, Suite, or Room</td>
+               <td>Gym</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eScene.17
+            -
+          </span>
+						            
+					          Incident City</td>
+               <td>City of Crestview</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eScene.18
+            -
+          </span>
+						            
+					          Incident State</td>
+               <td>Florida</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eScene.19
+            -
+          </span>
+						            
+					          Incident ZIP Code</td>
+               <td>32536</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eScene.21
+            -
+          </span>
+						            
+					          Incident County</td>
+               <td>Okaloosa County</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eScene.22
+            -
+          </span>
+						            
+					          Incident Country</td>
+               <td>US</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eScene.23
+            -
+          </span>
+						            
+					          Incident Census Tract</td>
+               <td>12091020500</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 4em" rowspan="1">
+                  <span class="group">eSituation
+            -
+          </span>Situation Information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eSituation.01
+            -
+          </span>
+						            
+					          Date/Time of Symptom Onset</td>
+               <td>November 4, 2024, 10:16:00 GMT-05:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eSituation.02
+            -
+          </span>
+						            
+					          Possible Injury</td>
+               <td>Unknown</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eSituation.PatientComplaintGroup
+            -
+          </span>Group Tag to hold information about patient's complaint</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eSituation.03
+            -
+          </span>
+									                  
+								                Complaint Type</td>
+               <td>Chief (Primary)</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eSituation.04
+            -
+          </span>
+									                  
+								                Complaint</td>
+               <td>Asthma attack</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eSituation.05
+            -
+          </span>
+									                  
+								                Duration of Complaint</td>
+               <td>13</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eSituation.06
+            -
+          </span>
+									                  
+								                Time Units of Duration of Complaint</td>
+               <td>Minutes</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eSituation.07
+            -
+          </span>
+						            
+					          Chief Complaint Anatomic Location</td>
+               <td>General/Global</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eSituation.08
+            -
+          </span>
+						            
+					          Chief Complaint Organ System</td>
+               <td>Cardiovascular</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eSituation.09
+            -
+          </span>
+						            
+					          Primary Symptom</td>
+               <td>R06.00 - Dyspnea, unspecified</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eSituation.10
+            -
+          </span>
+						            
+					          Other Associated Symptoms</td>
+               <td>R06.2 - Wheezing</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eSituation.11
+            -
+          </span>
+						            
+					          Provider's Primary Impression</td>
+               <td>J45 - Asthma</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eSituation.12
+            -
+          </span>
+						            
+					          Provider's Secondary Impressions</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eSituation.13
+            -
+          </span>
+						            
+					          Initial Patient Acuity</td>
+               <td>Emergent (Yellow)</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eSituation.WorkRelatedGroup
+            -
+          </span>Group Tag to hold patient details if the illness or injury is work related</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eSituation.14
+            -
+          </span>
+									                  
+								                Work-Related Illness/Injury</td>
+               <td>[NV
+    =
+    Not Applicable] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="3">
+                  <span>eSituation.17
+            -
+          </span>
+						            
+					          Patient Activity</td>
+               <td>Y93.43 - Activity, gymnastics</td>
+            </tr>
+            <tr>
+               <td>Y93.56 - Activity, jumping rope</td>
+            </tr>
+            <tr>
+               <td>Y93.B2 - Activity, push-ups, pull-ups, sit-ups</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eSituation.18
+            -
+          </span>
+						            
+					          Date/Time Last Known Well</td>
+               <td>November 4, 2024, 10:15:00 GMT-05:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eSituation.20
+            -
+          </span>
+						            
+					          Reason for Interfacility Transfer/Medical Transport</td>
+               <td>[NV
+    =
+    Not Applicable] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 4em" rowspan="1">
+                  <span class="group">eInjury
+            -
+          </span>Injury Information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eInjury.01
+            -
+          </span>
+						            
+					          Cause of Injury</td>
+               <td>[NV
+    =
+    Not Applicable] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eInjury.02
+            -
+          </span>
+						            
+					          Mechanism of Injury</td>
+               <td>[NV
+    =
+    Not Applicable] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eInjury.03
+            -
+          </span>
+						            
+					          Trauma Triage Criteria (High Risk for Serious Injury)</td>
+               <td>[NV
+    =
+    Not Applicable] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eInjury.04
+            -
+          </span>
+						            
+					          Trauma Triage Criteria (Moderate Risk for Serious Injury)</td>
+               <td>[NV
+    =
+    Not Applicable] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 4em" rowspan="1">
+                  <span class="group">eArrest
+            -
+          </span>Cardiac Arrest Information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eArrest.01
+            -
+          </span>
+						            
+					          Cardiac Arrest</td>
+               <td>No</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eArrest.02
+            -
+          </span>
+						            
+					          Cardiac Arrest Etiology</td>
+               <td>[NV
+    =
+    Not Applicable] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eArrest.03
+            -
+          </span>
+						            
+					          Resuscitation Attempted By EMS</td>
+               <td>[NV
+    =
+    Not Applicable] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eArrest.04
+            -
+          </span>
+						            
+					          Arrest Witnessed By</td>
+               <td>[NV
+    =
+    Not Applicable] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eArrest.07
+            -
+          </span>
+						            
+					          AED Use Prior to EMS Arrival</td>
+               <td>[NV
+    =
+    Not Applicable] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eArrest.09
+            -
+          </span>
+						            
+					          Type of CPR Provided</td>
+               <td>[NV
+    =
+    Not Applicable] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eArrest.11
+            -
+          </span>
+						            
+					          First Monitored Arrest Rhythm of the Patient</td>
+               <td>[NV
+    =
+    Not Applicable] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eArrest.12
+            -
+          </span>
+						            
+					          Any Return of Spontaneous Circulation</td>
+               <td>[NV
+    =
+    Not Applicable] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eArrest.14
+            -
+          </span>
+						            
+					          Date/Time of Cardiac Arrest</td>
+               <td>[NV
+    =
+    Not Applicable] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eArrest.16
+            -
+          </span>
+						            
+					          Reason CPR/Resuscitation Discontinued</td>
+               <td>[NV
+    =
+    Not Applicable] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eArrest.17
+            -
+          </span>
+						            
+					          Cardiac Rhythm on Arrival at Destination</td>
+               <td>[NV
+    =
+    Not Applicable] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eArrest.18
+            -
+          </span>
+						            
+					          End of EMS Cardiac Arrest Event</td>
+               <td>[NV
+    =
+    Not Applicable] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eArrest.20
+            -
+          </span>
+						            
+					          Who First Initiated CPR</td>
+               <td>[NV
+    =
+    Not Applicable] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eArrest.21
+            -
+          </span>
+						            
+					          Who First Applied the AED</td>
+               <td>[NV
+    =
+    Not Applicable] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eArrest.22
+            -
+          </span>
+						            
+					          Who First Defibrillated the Patient</td>
+               <td>[NV
+    =
+    Not Applicable] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 4em" rowspan="1">
+                  <span class="group">eHistory
+            -
+          </span>Patient History Information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eHistory.01
+            -
+          </span>
+						            
+					          Barriers to Patient Care</td>
+               <td>None Noted</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eHistory.PractitionerGroup
+            -
+          </span>Group Tag to hold info about practitioner</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eHistory.02
+            -
+          </span>
+									                  
+								                Last Name of Patient's Practitioner</td>
+               <td>Gorczany</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eHistory.03
+            -
+          </span>
+									                  
+								                First Name of Patient's Practitioner</td>
+               <td>Maxie</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eHistory.06
+            -
+          </span>
+						            
+					          Medication Allergies</td>
+               <td>[PN
+    =
+    No Known Drug Allergy] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eHistory.07
+            -
+          </span>
+						            
+					          Environmental/Food Allergies</td>
+               <td>160244002 - NKA - No known allergies</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="2">
+                  <span>eHistory.08
+            -
+          </span>
+						            
+					          Medical/Surgical History</td>
+               <td>J00 - Acute nasopharyngitis [common cold]</td>
+            </tr>
+            <tr>
+               <td>J45.41 - Moderate persistent asthma with (acute) exacerbation</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="2">
+                  <span>eHistory.09
+            -
+          </span>
+						            
+					          Medical History Obtained From</td>
+               <td>Bystander/Other</td>
+            </tr>
+            <tr>
+               <td>Health Care Personnel</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eHistory.CurrentMedsGroup
+            -
+          </span>Group Tag to hold info about patient's medication</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eHistory.12
+            -
+          </span>
+									                  
+								                Current Medications</td>
+               <td>435 - albuterol</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eHistory.13
+            -
+          </span>
+									                  
+								                Current Medication Dose</td>
+               <td>2</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eHistory.14
+            -
+          </span>
+									                  
+								                Current Medication Dosage Unit</td>
+               <td>Puffs</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eHistory.15
+            -
+          </span>
+									                  
+								                Current Medication Administration Route</td>
+               <td>Inhalation</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eHistory.20
+            -
+          </span>
+									                  
+								                Current Medication Frequency</td>
+               <td>prn (as needed)</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eHistory.16
+            -
+          </span>
+						            
+					          Presence of Emergency Information Form</td>
+               <td>Yes</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eHistory.17
+            -
+          </span>
+						            
+					          Alcohol/Drug Use Indicators</td>
+               <td>[PN
+    =
+    None Reported] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eHistory.19
+            -
+          </span>
+						            
+					          Last Oral Intake</td>
+               <td>November 4, 2024, 08:00:00 GMT-05:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 4em" rowspan="1">
+                  <span class="group">eNarrative
+            -
+          </span>Call Event Narrative</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eNarrative.01
+            -
+          </span>
+						            
+					          Patient Care Report Narrative</td>
+               <td>Patient experiencing asthma attack during gym class. Teacher called 911. Patient had a cold last week. Transported to Sacred Heart for pediatric care.</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 4em" rowspan="1">
+                  <span class="group">eVitals
+            -
+          </span>Patient Vital Sign Information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eVitals.VitalGroup
+            -
+          </span>Group Tag to hold eVitals information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.01
+            -
+          </span>
+									                  
+								                Date/Time Vital Signs Taken</td>
+               <td>November 4, 2024, 10:31:05 GMT-05:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.02
+            -
+          </span>
+									                  
+								                Obtained Prior to this Unit's EMS Care</td>
+               <td>No</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.CardiacRhythmGroup
+            -
+          </span>Group Tag to hold information of the type and method used for ECG interpretation associated with the cardiac rhythm.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.03
+            -
+          </span>
+												                        
+											                      Cardiac Rhythm / Electrocardiography (ECG)</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.04
+            -
+          </span>
+												                        
+											                      ECG Type</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.05
+            -
+          </span>
+												                        
+											                      Method of ECG Interpretation</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.BloodPressureGroup
+            -
+          </span>Group Tag to hold the details of patient's blood pressure.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.06
+            -
+          </span>
+												                        
+											                      SBP (Systolic Blood Pressure)</td>
+               <td>122</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.07
+            -
+          </span>
+												                        
+											                      DBP (Diastolic Blood Pressure)</td>
+               <td>78</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.08
+            -
+          </span>
+												                        
+											                      Method of Blood Pressure Measurement</td>
+               <td>Cuff-Automated</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.HeartRateGroup
+            -
+          </span>Group Tag to hold the details of patient's heart rate.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.10
+            -
+          </span>
+												                        
+											                      Heart Rate</td>
+               <td>138</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.11
+            -
+          </span>
+												                        
+											                      Method of Heart Rate Measurement</td>
+               <td>Palpated</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.12
+            -
+          </span>
+									                  
+								                Pulse Oximetry</td>
+               <td>82</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.13
+            -
+          </span>
+									                  
+								                Pulse Rhythm</td>
+               <td>Regular</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.14
+            -
+          </span>
+									                  
+								                Respiratory Rate</td>
+               <td>38</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.15
+            -
+          </span>
+									                  
+								                Respiratory Effort</td>
+               <td>Normal</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.16
+            -
+          </span>
+									                  
+								                End Tidal Carbon Dioxide (ETCO2)</td>
+               <td>[ETCO2Type
+    =
+    mmHg] 40</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.18
+            -
+          </span>
+									                  
+								                Blood Glucose Level</td>
+               <td>[PN
+    =
+    Unable to Complete] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.GlasgowScoreGroup
+            -
+          </span>Group Tag to hold the details of patient's glasgow scale</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.19
+            -
+          </span>
+												                        
+											                      Glasgow Coma Score-Eye</td>
+               <td>4 -
+        Opens Eyes spontaneously (All Age Groups)</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.20
+            -
+          </span>
+												                        
+											                      Glasgow Coma Score-Verbal</td>
+               <td>5 -
+        Oriented (&gt;2 Years); Smiles, oriented to sounds, follows objects, interacts</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.21
+            -
+          </span>
+												                        
+											                      Glasgow Coma Score-Motor</td>
+               <td>6 -
+        Obeys commands (&gt;2Years); Appropriate response to stimulation</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.22
+            -
+          </span>
+												                        
+											                      Glasgow Coma Score-Qualifier</td>
+               <td>Initial GCS has legitimate values without interventions such as intubation and sedation</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.23
+            -
+          </span>
+												                        
+											                      Total Glasgow Coma Score</td>
+               <td>15</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.TemperatureGroup
+            -
+          </span>Group Tag to hold information about patient's body temperature.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.24
+            -
+          </span>
+												                        
+											                      Temperature</td>
+               <td>[PN
+    =
+    Unable to Complete] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.26
+            -
+          </span>
+									                  
+								                Level of Responsiveness (AVPU)</td>
+               <td>Alert</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.PainScaleGroup
+            -
+          </span>Group Tag to hold the scale of patient's pain and the type of pain scale used.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.27
+            -
+          </span>
+												                        
+											                      Pain Scale Score</td>
+               <td>3</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.28
+            -
+          </span>
+												                        
+											                      Pain Scale Type</td>
+               <td>Wong-Baker (FACES)</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.StrokeScaleGroup
+            -
+          </span>Group Tag to hold the results of patient's stroke scale and the type of stroke pain scale used.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.29
+            -
+          </span>
+												                        
+											                      Stroke Scale Result</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.30
+            -
+          </span>
+												                        
+											                      Stroke Scale Type</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.31
+            -
+          </span>
+									                  
+								                Reperfusion Checklist</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eVitals.VitalGroup
+            -
+          </span>Group Tag to hold eVitals information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.01
+            -
+          </span>
+									                  
+								                Date/Time Vital Signs Taken</td>
+               <td>November 4, 2024, 10:39:16 GMT-05:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.02
+            -
+          </span>
+									                  
+								                Obtained Prior to this Unit's EMS Care</td>
+               <td>No</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.CardiacRhythmGroup
+            -
+          </span>Group Tag to hold information of the type and method used for ECG interpretation associated with the cardiac rhythm.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.03
+            -
+          </span>
+												                        
+											                      Cardiac Rhythm / Electrocardiography (ECG)</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.04
+            -
+          </span>
+												                        
+											                      ECG Type</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.05
+            -
+          </span>
+												                        
+											                      Method of ECG Interpretation</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.BloodPressureGroup
+            -
+          </span>Group Tag to hold the details of patient's blood pressure.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.06
+            -
+          </span>
+												                        
+											                      SBP (Systolic Blood Pressure)</td>
+               <td>110</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.07
+            -
+          </span>
+												                        
+											                      DBP (Diastolic Blood Pressure)</td>
+               <td>67</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.08
+            -
+          </span>
+												                        
+											                      Method of Blood Pressure Measurement</td>
+               <td>Cuff-Automated</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.HeartRateGroup
+            -
+          </span>Group Tag to hold the details of patient's heart rate.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.10
+            -
+          </span>
+												                        
+											                      Heart Rate</td>
+               <td>108</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.11
+            -
+          </span>
+												                        
+											                      Method of Heart Rate Measurement</td>
+               <td>Palpated</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.12
+            -
+          </span>
+									                  
+								                Pulse Oximetry</td>
+               <td>93</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.13
+            -
+          </span>
+									                  
+								                Pulse Rhythm</td>
+               <td>Regular</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.14
+            -
+          </span>
+									                  
+								                Respiratory Rate</td>
+               <td>29</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.15
+            -
+          </span>
+									                  
+								                Respiratory Effort</td>
+               <td>Labored</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.16
+            -
+          </span>
+									                  
+								                End Tidal Carbon Dioxide (ETCO2)</td>
+               <td>[ETCO2Type
+    =
+    mmHg] 40</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.18
+            -
+          </span>
+									                  
+								                Blood Glucose Level</td>
+               <td>102</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.GlasgowScoreGroup
+            -
+          </span>Group Tag to hold the details of patient's glasgow scale</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.19
+            -
+          </span>
+												                        
+											                      Glasgow Coma Score-Eye</td>
+               <td>4 -
+        Opens Eyes spontaneously (All Age Groups)</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.20
+            -
+          </span>
+												                        
+											                      Glasgow Coma Score-Verbal</td>
+               <td>5 -
+        Oriented (&gt;2 Years); Smiles, oriented to sounds, follows objects, interacts</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.21
+            -
+          </span>
+												                        
+											                      Glasgow Coma Score-Motor</td>
+               <td>6 -
+        Obeys commands (&gt;2Years); Appropriate response to stimulation</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.22
+            -
+          </span>
+												                        
+											                      Glasgow Coma Score-Qualifier</td>
+               <td>Initial GCS has legitimate values without interventions such as intubation and sedation</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.23
+            -
+          </span>
+												                        
+											                      Total Glasgow Coma Score</td>
+               <td>15</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.TemperatureGroup
+            -
+          </span>Group Tag to hold information about patient's body temperature.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.24
+            -
+          </span>
+												                        
+											                      Temperature</td>
+               <td>37.1</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.26
+            -
+          </span>
+									                  
+								                Level of Responsiveness (AVPU)</td>
+               <td>Alert</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.PainScaleGroup
+            -
+          </span>Group Tag to hold the scale of patient's pain and the type of pain scale used.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.27
+            -
+          </span>
+												                        
+											                      Pain Scale Score</td>
+               <td>2</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.28
+            -
+          </span>
+												                        
+											                      Pain Scale Type</td>
+               <td>Wong-Baker (FACES)</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.StrokeScaleGroup
+            -
+          </span>Group Tag to hold the results of patient's stroke scale and the type of stroke pain scale used.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.29
+            -
+          </span>
+												                        
+											                      Stroke Scale Result</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.30
+            -
+          </span>
+												                        
+											                      Stroke Scale Type</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.31
+            -
+          </span>
+									                  
+								                Reperfusion Checklist</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eVitals.VitalGroup
+            -
+          </span>Group Tag to hold eVitals information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.01
+            -
+          </span>
+									                  
+								                Date/Time Vital Signs Taken</td>
+               <td>November 4, 2024, 11:02:19 GMT-05:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.02
+            -
+          </span>
+									                  
+								                Obtained Prior to this Unit's EMS Care</td>
+               <td>No</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.CardiacRhythmGroup
+            -
+          </span>Group Tag to hold information of the type and method used for ECG interpretation associated with the cardiac rhythm.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.03
+            -
+          </span>
+												                        
+											                      Cardiac Rhythm / Electrocardiography (ECG)</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.04
+            -
+          </span>
+												                        
+											                      ECG Type</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.05
+            -
+          </span>
+												                        
+											                      Method of ECG Interpretation</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.BloodPressureGroup
+            -
+          </span>Group Tag to hold the details of patient's blood pressure.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.06
+            -
+          </span>
+												                        
+											                      SBP (Systolic Blood Pressure)</td>
+               <td>108</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.07
+            -
+          </span>
+												                        
+											                      DBP (Diastolic Blood Pressure)</td>
+               <td>66</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.08
+            -
+          </span>
+												                        
+											                      Method of Blood Pressure Measurement</td>
+               <td>Cuff-Automated</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.HeartRateGroup
+            -
+          </span>Group Tag to hold the details of patient's heart rate.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.10
+            -
+          </span>
+												                        
+											                      Heart Rate</td>
+               <td>116</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.11
+            -
+          </span>
+												                        
+											                      Method of Heart Rate Measurement</td>
+               <td>Palpated</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.12
+            -
+          </span>
+									                  
+								                Pulse Oximetry</td>
+               <td>95</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.13
+            -
+          </span>
+									                  
+								                Pulse Rhythm</td>
+               <td>Regular</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.14
+            -
+          </span>
+									                  
+								                Respiratory Rate</td>
+               <td>30</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.15
+            -
+          </span>
+									                  
+								                Respiratory Effort</td>
+               <td>Labored</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.16
+            -
+          </span>
+									                  
+								                End Tidal Carbon Dioxide (ETCO2)</td>
+               <td>[ETCO2Type
+    =
+    mmHg] 40</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.18
+            -
+          </span>
+									                  
+								                Blood Glucose Level</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.GlasgowScoreGroup
+            -
+          </span>Group Tag to hold the details of patient's glasgow scale</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.19
+            -
+          </span>
+												                        
+											                      Glasgow Coma Score-Eye</td>
+               <td>4 -
+        Opens Eyes spontaneously (All Age Groups)</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.20
+            -
+          </span>
+												                        
+											                      Glasgow Coma Score-Verbal</td>
+               <td>5 -
+        Oriented (&gt;2 Years); Smiles, oriented to sounds, follows objects, interacts</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.21
+            -
+          </span>
+												                        
+											                      Glasgow Coma Score-Motor</td>
+               <td>6 -
+        Obeys commands (&gt;2Years); Appropriate response to stimulation</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.22
+            -
+          </span>
+												                        
+											                      Glasgow Coma Score-Qualifier</td>
+               <td>Initial GCS has legitimate values without interventions such as intubation and sedation</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.23
+            -
+          </span>
+												                        
+											                      Total Glasgow Coma Score</td>
+               <td>15</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.TemperatureGroup
+            -
+          </span>Group Tag to hold information about patient's body temperature.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.24
+            -
+          </span>
+												                        
+											                      Temperature</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.26
+            -
+          </span>
+									                  
+								                Level of Responsiveness (AVPU)</td>
+               <td>Alert</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.PainScaleGroup
+            -
+          </span>Group Tag to hold the scale of patient's pain and the type of pain scale used.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.27
+            -
+          </span>
+												                        
+											                      Pain Scale Score</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.StrokeScaleGroup
+            -
+          </span>Group Tag to hold the results of patient's stroke scale and the type of stroke pain scale used.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.29
+            -
+          </span>
+												                        
+											                      Stroke Scale Result</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.30
+            -
+          </span>
+												                        
+											                      Stroke Scale Type</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.31
+            -
+          </span>
+									                  
+								                Reperfusion Checklist</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eVitals.VitalGroup
+            -
+          </span>Group Tag to hold eVitals information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.01
+            -
+          </span>
+									                  
+								                Date/Time Vital Signs Taken</td>
+               <td>November 4, 2024, 11:23:38 GMT-05:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.02
+            -
+          </span>
+									                  
+								                Obtained Prior to this Unit's EMS Care</td>
+               <td>No</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.CardiacRhythmGroup
+            -
+          </span>Group Tag to hold information of the type and method used for ECG interpretation associated with the cardiac rhythm.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.03
+            -
+          </span>
+												                        
+											                      Cardiac Rhythm / Electrocardiography (ECG)</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.04
+            -
+          </span>
+												                        
+											                      ECG Type</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.05
+            -
+          </span>
+												                        
+											                      Method of ECG Interpretation</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.BloodPressureGroup
+            -
+          </span>Group Tag to hold the details of patient's blood pressure.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.06
+            -
+          </span>
+												                        
+											                      SBP (Systolic Blood Pressure)</td>
+               <td>106</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.07
+            -
+          </span>
+												                        
+											                      DBP (Diastolic Blood Pressure)</td>
+               <td>65</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.08
+            -
+          </span>
+												                        
+											                      Method of Blood Pressure Measurement</td>
+               <td>Cuff-Automated</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.HeartRateGroup
+            -
+          </span>Group Tag to hold the details of patient's heart rate.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.10
+            -
+          </span>
+												                        
+											                      Heart Rate</td>
+               <td>112</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.11
+            -
+          </span>
+												                        
+											                      Method of Heart Rate Measurement</td>
+               <td>Palpated</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.12
+            -
+          </span>
+									                  
+								                Pulse Oximetry</td>
+               <td>96</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.13
+            -
+          </span>
+									                  
+								                Pulse Rhythm</td>
+               <td>Regular</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.14
+            -
+          </span>
+									                  
+								                Respiratory Rate</td>
+               <td>32</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.15
+            -
+          </span>
+									                  
+								                Respiratory Effort</td>
+               <td>Labored</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.16
+            -
+          </span>
+									                  
+								                End Tidal Carbon Dioxide (ETCO2)</td>
+               <td>[ETCO2Type
+    =
+    mmHg] 38</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.18
+            -
+          </span>
+									                  
+								                Blood Glucose Level</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.GlasgowScoreGroup
+            -
+          </span>Group Tag to hold the details of patient's glasgow scale</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.19
+            -
+          </span>
+												                        
+											                      Glasgow Coma Score-Eye</td>
+               <td>4 -
+        Opens Eyes spontaneously (All Age Groups)</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.20
+            -
+          </span>
+												                        
+											                      Glasgow Coma Score-Verbal</td>
+               <td>5 -
+        Oriented (&gt;2 Years); Smiles, oriented to sounds, follows objects, interacts</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.21
+            -
+          </span>
+												                        
+											                      Glasgow Coma Score-Motor</td>
+               <td>6 -
+        Obeys commands (&gt;2Years); Appropriate response to stimulation</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.22
+            -
+          </span>
+												                        
+											                      Glasgow Coma Score-Qualifier</td>
+               <td>Initial GCS has legitimate values without interventions such as intubation and sedation</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.23
+            -
+          </span>
+												                        
+											                      Total Glasgow Coma Score</td>
+               <td>15</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.TemperatureGroup
+            -
+          </span>Group Tag to hold information about patient's body temperature.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.24
+            -
+          </span>
+												                        
+											                      Temperature</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.26
+            -
+          </span>
+									                  
+								                Level of Responsiveness (AVPU)</td>
+               <td>Alert</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.PainScaleGroup
+            -
+          </span>Group Tag to hold the scale of patient's pain and the type of pain scale used.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.27
+            -
+          </span>
+												                        
+											                      Pain Scale Score</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.StrokeScaleGroup
+            -
+          </span>Group Tag to hold the results of patient's stroke scale and the type of stroke pain scale used.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.29
+            -
+          </span>
+												                        
+											                      Stroke Scale Result</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.30
+            -
+          </span>
+												                        
+											                      Stroke Scale Type</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.31
+            -
+          </span>
+									                  
+								                Reperfusion Checklist</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eVitals.VitalGroup
+            -
+          </span>Group Tag to hold eVitals information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.01
+            -
+          </span>
+									                  
+								                Date/Time Vital Signs Taken</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.02
+            -
+          </span>
+									                  
+								                Obtained Prior to this Unit's EMS Care</td>
+               <td>Yes</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.CardiacRhythmGroup
+            -
+          </span>Group Tag to hold information of the type and method used for ECG interpretation associated with the cardiac rhythm.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.03
+            -
+          </span>
+												                        
+											                      Cardiac Rhythm / Electrocardiography (ECG)</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.04
+            -
+          </span>
+												                        
+											                      ECG Type</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.05
+            -
+          </span>
+												                        
+											                      Method of ECG Interpretation</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.BloodPressureGroup
+            -
+          </span>Group Tag to hold the details of patient's blood pressure.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.06
+            -
+          </span>
+												                        
+											                      SBP (Systolic Blood Pressure)</td>
+               <td>[PN
+    =
+    Exam Finding Not Present] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.07
+            -
+          </span>
+												                        
+											                      DBP (Diastolic Blood Pressure)</td>
+               <td>[PN
+    =
+    Exam Finding Not Present] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.HeartRateGroup
+            -
+          </span>Group Tag to hold the details of patient's heart rate.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.10
+            -
+          </span>
+												                        
+											                      Heart Rate</td>
+               <td>128</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.12
+            -
+          </span>
+									                  
+								                Pulse Oximetry</td>
+               <td>87</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.14
+            -
+          </span>
+									                  
+								                Respiratory Rate</td>
+               <td>40</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.16
+            -
+          </span>
+									                  
+								                End Tidal Carbon Dioxide (ETCO2)</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.18
+            -
+          </span>
+									                  
+								                Blood Glucose Level</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.GlasgowScoreGroup
+            -
+          </span>Group Tag to hold the details of patient's glasgow scale</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.19
+            -
+          </span>
+												                        
+											                      Glasgow Coma Score-Eye</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.20
+            -
+          </span>
+												                        
+											                      Glasgow Coma Score-Verbal</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.21
+            -
+          </span>
+												                        
+											                      Glasgow Coma Score-Motor</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.22
+            -
+          </span>
+												                        
+											                      Glasgow Coma Score-Qualifier</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.23
+            -
+          </span>
+												                        
+											                      Total Glasgow Coma Score</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.26
+            -
+          </span>
+									                  
+								                Level of Responsiveness (AVPU)</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.PainScaleGroup
+            -
+          </span>Group Tag to hold the scale of patient's pain and the type of pain scale used.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.27
+            -
+          </span>
+												                        
+											                      Pain Scale Score</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eVitals.StrokeScaleGroup
+            -
+          </span>Group Tag to hold the results of patient's stroke scale and the type of stroke pain scale used.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.29
+            -
+          </span>
+												                        
+											                      Stroke Scale Result</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eVitals.30
+            -
+          </span>
+												                        
+											                      Stroke Scale Type</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eVitals.31
+            -
+          </span>
+									                  
+								                Reperfusion Checklist</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 4em" rowspan="1">
+                  <span class="group">eLabs
+            -
+          </span>Lab Results Information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eLabs.LabGroup
+            -
+          </span>Group Tag to hold Lab information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eLabs.01
+            -
+          </span>
+									                  
+								                Date/Time of Laboratory or Imaging Result</td>
+               <td>October 2, 2024, 15:38:29 GMT-04:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eLabs.02
+            -
+          </span>
+									                  
+								                Study/Result Prior to this Unit's EMS Care</td>
+               <td>Yes</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eLabs.LabResultGroup
+            -
+          </span>Group Tag to hold the type of laboratory value and its result.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eLabs.03
+            -
+          </span>
+												                        
+											                      Laboratory Result Type</td>
+               <td>White Blood Cells</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eLabs.04
+            -
+          </span>
+												                        
+											                      Laboratory Result</td>
+               <td>13,890 cells/microliter</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eLabs.LabGroup
+            -
+          </span>Group Tag to hold Lab information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eLabs.01
+            -
+          </span>
+									                  
+								                Date/Time of Laboratory or Imaging Result</td>
+               <td>October 2, 2024, 16:04:26 GMT-04:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eLabs.02
+            -
+          </span>
+									                  
+								                Study/Result Prior to this Unit's EMS Care</td>
+               <td>Yes</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eLabs.LabImageGroup
+            -
+          </span>Group Tag to hold info about imaging study or x-ray.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eLabs.05
+            -
+          </span>
+												                        
+											                      Imaging Study Type</td>
+               <td>Computed Tomography (CT) Scan</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eLabs.06
+            -
+          </span>
+												                        
+											                      Imaging Study Results</td>
+               <td>Bronchial wall thickening and bronchiectasis</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span class="group">eLabs.WaveformGraphicGroup
+            -
+          </span>Tag to hold information about the imaging study to allow for the upload of the imaging results.</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 8em" rowspan="1">
+                  <span>eLabs.07
+            -
+          </span>
+															                              
+														                            Imaging Study File or Waveform Graphic Type</td>
+               <td>image/jpeg</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 8em" rowspan="1">
+                  <span>eLabs.08
+            -
+          </span>
+															                              
+														                            Imaging Study File or Waveform Graphic</td>
+               <td>
+                  <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDADUlKC8oITUvKy88OTU/UIVXUElJUKN1e2GFwarLyL6qurfV8P//1eL/5re6////////////zv//////////////wgALCADIATABAREA/8QAGAABAQEBAQAAAAAAAAAAAAAAAAECAwT/2gAIAQEAAAAB479BosmMSy9NnPlLjW9b1Ky4ctem2py5ZCweueUAvTtpl5uvS1w4gA69nLiAL6OkkrU82ANZqd+yTjyAD1bkW+bmNMqs79RJwxGs2DfrmWs+QC25a9NDOeGd65wHq3G/HmAmk107gk8s1kBv2Y1jyAsKa9QJPNnWQK9W3l5rABv0lJPPgAa36ceSywFduHfrnUo8+LELC+zhxWB0vLTPr82O1nXV8/PUibkldsc1ljfXPL0ZznmsdPS4c7eknOVc9ZzsG7z69c8VxOvI9Tny745ruZR11wUkvXfPEW9NXnO3nzevPeJNzJ27eSF6Z05SrDt3qeXCtZldM5nq6+bipJqWVK9dV5eZUWWN+q8/KKiwXr2oefkAU9PSZ8lgLLLr2EjPmkAGvYjzYJUFnX1DPHiIAd+8MeeIFHr2J5uS75WwHp6C8fOUsOnpocvKJ0wDXqorzcgsuvVblqPLzAD1apZZ5+Qrr6JblpHkwaiL6N1YqTnwl6d9KCGfNgHT03NJRCa1maRWW4eflGu3eIP/xAAjEAACAgEFAAMBAQEAAAAAAAABAgARMBASICExAxMyQSJA/9oACAEBAAEFAoq3h3CbxN83zfN5m+BhLEvRmm8zcZuMszcZ9hn2TeDzZdALPGwIfkm4nIfMNwPAb4sKiDrgz5VXVlx+RWvh7xZrwV1wVOLLkBscmN8RgQc2FHU81NHi5oYf81oBZ5mHRRcasHxno8GNnIpxj3Apo6uaGVf1gPsGJD1o5s5V/WBvcaHuMaGQqAJ8Y0sc39gF4wbD4VFxlrQetengY2Yrdb59kBvV/YpqE2dfJ7xSP+uYE3bYWtYooM0Ve2a+SGjo2oFQsJuwJ6/65CoW0UdBQI7aeT3VR1qvhMJ6gSEm9fYVrinvyYQsLATeYfdQSJuEVrJUGfXNhlUCb139TbcOtnj8cIscLnRlQECFrw/HxbgJZ4hoTeqfmOO8/sAocH/Wvh9PMCzo/wCeAxKkrk/6yIOtD2Mn8X9cianpxjs8GHeL+RP1xZjegGP4xxIuHrD/ADRRQ4uO9Q1Yk84uMaCzycXyA65AWebrWFVuAVgYUcaisBjLzVLnmEi4wrEq1jKytQhMCgZD3GWuYW4FrLU2iAAf8DJwomKmD//EACAQAAAGAgMBAQAAAAAAAAAAABARITAxUAFAACBwYGH/2gAIAQEABj8CakICG55IQweGU5NGjpieKJep7C+imE0S94240l006EP6OWF3YUZtIulpcXR+Ar8yjv8A/8QAIhAAAgEEAgMBAQEAAAAAAAAAAREAECAhMUFRMGFxgbFA/9oACAEBAAE/IY4zqxWEgbInpQi1mE+IboQ4x6hAHInbjOYkYgRPhPfCf1PYgHA5AIO0DkKN1VVdFMBEghQCvIM6H6Ydi5xZ8ozLxAhzCDcBra36iH5NFXg8TivMqx7KM8XOoJJiI+6GhABGwzRGvAVai7mYiTOSFFCKcT98PFAUWJnqKoo8hq0gdP2EDgxQx4osfaYnaafBMNcAKL3b8KLqwCYnk0M5uY5E2bdFCog1eDELqjG5l2YVxFc1eoFBRqYifCqcZj8QXGhwTW34EJoYJ9E37sExumq8030NM+vAus0Z7iGDUY+qvwHUEM1wxxxx/wCDR9w2KcTi84gDI9x5G6bIJxPWmw7BYEJCEIo2rFmpkYeQPCMy4qxRjhCZFQAI4E+NxRBiHGNAxoKjGBASR6ioORjJMwhHVN0PCslRVbCGAwjLCi6m+3ANJwBZ4hcdCvFdvo0cHLoMhRgJANBxTsTB1DvMeYXzQ6xX/leWxEcOEZOJkDc0ERhuA4RgMED1ggjYoUkXGLCYxAjUpqJQ1KjGYF90CMIVf5wNG0bqp3zAjMYZlBg1P2fE9xIawYzmU0Y3AT5wYXUcpkTuGYidGAggI1JsQgzVQyTMbaEgQeDFGzNIIfAYhFjs2JsIcR6VSZtC7cbqIpuAJ1Ag90U/dQpiOGx1JpiAEkIJAtFfVgOSG0OqqBEoIL+LSR8PDjM4CAAEBFBYb+B4gVHOYp+4d+eOM2WGox9wZGZz4wQO4OrFfVVRTFq2eeqC26tMCQRs5jhDqAE6HizGDYIEYDKOM93FnJ5i2qu7NqcV91BI1zEVQQ4KvxtKNDsxAGVQhAHuEkgDquU4FwiFnNBMSb8RAL2GNeEh+oghDTdRT5lhv3gRP3zeDQUZGryZYCYDEyYLBqj7gARhTRsJxH6sAJKEB9+BVCYSHFfQT3ppu1WCAARhPm83zABiGro6/tmU7ppBQmZgjqDCa7hwpuJhEQgzpCFuo1BAPOZoYmp9t//aAAgBAQAAABBLMM9hBQ5BhWtZKBJbZ0aNooz8HaB8AsdyK/00q/5H4VdP3R/+Hrfa4vzuXTpIU8Z5dcOCesowRFPfcxdteZcqssT709wlII/qUm29/t5Py+u/X73/AIgn6y+D7P4m6Te/EfOlnG9Z/wD/AFMWkA80kGondYiE+flAo//EACYQAQACAgIDAAIDAAMBAAAAAAEAESExEEFRYXEggZGhscHh8NH/2gAIAQEAAT8Q/wBngv8A3P8ACXAXUAfYs+49QXoqKYX1iGX9Tc7p8EU4P2zzyRAAfbC3Kxe8+ZjCn+eIagfk6KZ62YoynRFNA/uNB4+obhPgh1/yTyz6XAbHyD/2TFZPcpolzJ7g3G32JXGiZ7PHDEe9viAAKAonUs3DGuEFkTNUjdHwxHnqdS3451Zc0ls9VAQL3U7NdYl8dcXvjdRwzqaNRLCyHW/13wgkSphESx2R8OXp/wCJkv8A08FmdRQFWg2sRvCdsVW1visXxXF4Tmnpy1h4NEf7mYLRWyeeAtqJdtv7rg0ysXf6hhil3OuLwUw6HB2eZdwYvh3qdep81AhgiAVaDuOtB174rGyU+OeoA91EC9i1G7zCpdD1FtcKAFWUVs8SkRErHGw89D/Zvkw+u5TaHL48RWh1PkQkpNMLoOk8cNPnI7lNTOWG/bMVcpddcWhuWQTjTqUXN9ijqClIpIvcPMws5dMyqlN/evxHZwGA7IOO4KB3l4BtBGur4Gsm5fola9tkolx66YmZXUu+EwjwErxKdQQD1yKN8ayNMubzeSCEp0xcPsv3CFMdw1h+SU1DcSCv+uMB/CEEUQ0Q3tvxgmsbnfmAt11+GSuf8zsI5ILmsTxQYJQsFqVDxAvESV+ki0KcVbVWyzjGJdwoOHn3EVw9VL1k/LabfsNI6eL1fBcVSvGtM2wvrj9xyzxRp+TZX8QVmHMvgeg4t8sV8zWSG+A8qZc/UHfuWMmPcVNsvqUuaxFp7algh+WTHDDR+4VTe4V70mHuZj+FRICvb1DUox8DDl4tuxgS4blqrAS8VHgaeLmL9SwfrDb67iVPBDfpbg7hee5KSj6ilxjP853HT1Diql447qXhINZGoNZdsrx1hOs1e0o4afUFpu1nzjVO4/xOpuuEUKzu7lOH+EYYB5cMao9yq34QC6geWCab1AACVKqVeZ1PaJbRBNY4EI2BITvlYFx44KEss8Ry+IKhOoBR+qXKmDNwpfvn8Krfc7hleg6g5FPfUvVgkAqVXUyQrYLC3HmE7UGWPdoacK46mABntgGKMdoUmyagm2F3Feiu4oUq9MT2ooMjngh3vRHJi+I1Sh8MSmrgNAn7lr8Zt+HAW0tSx1KTZuKKs3wogeI9VsJUe0rzB0DbLJYslA7MsTcx5lKXOfcxQpdeeTK5D4Bj1we/RidSyDbqbk25vqJfzJUqiLmBcSX6SxYiYXV6uAXbEJMPId8Okeoat5ECXX/2W+WdS+NEY93F6B3KJZcwGih7mpP7ZTty2+IahU6fEVlFPnzHLEbp0x2mH3xb5mlu38ArOioHul8t3iN+JW5QzRFPTxWyDY2RrDFakqU4hN35iX5r+YoMW+ovjg5x+nwzXAHa/wASyBIbVeFlX30TU4niY8sdEoNB4jsb3Hb6l1HUTAo+QShvwFkChc2BiBIACyuo+5eQ7j3gn/ozFulvuJaz9wckG0+g7iUcktig/wCxamOP1C1s3BbOtRZdLBbViI7ZmfqQQG7dREUSk5MMTRuXAY7Fk7MfUMppLMn7Ibjlh/EsldSvcvFT7B6VVA6muKHuJVyG04umUAUfY2he2EQUJbJbeCy2KoeLisATGw6mHz8lzLNq4OCVQMZfvi/Uozf8kQuG5brEFk0xxLzd5lvTGVQI5lmccYe3/JWy2Ag+vmHf4HYdLhxvZCAF1MhKLY4svjr2vAoPnlf52dHUXUOztXH8KF8T5hhlnc6m+b8RMLWvUUnpDtleQRx7mlePwKg5Kl/gsK7gBHNmPUPIGXkhXqZjvP8AXBpGXQ9RKxAKbu/w+S828Y4St7n6JbAALz7gBUq/wFZObE09CWZR2sasDfFXrfHU/fFMzx+5XLtKCDRgl5vhzM8a4ZltzNVDyY003Ll80wbM01PkrOguLL43LDGT1W2KsSsaCGmWFLotgto145pDgLaN/jYjrBMNbeP54U4JfrLBGqIt25DD65SbfLzL6Whq4b/UtaP8gC9jxUrhCmbNCfvgRFRt7juAb/qLavmZCQXWsGYb68cjWy/s3orgZnuXbbwlOMnUblHJiYwZOErxC1xuJhbn0RRGL84jhabnjAaig1pLaq8eIMYVDr5OuN8afZe1syc6cxtiszBdRg/Al4pOGPp3KADjGsSrE8ZnyDTXTA2OSLulL4GmzqKrat++G0L64rOUJgWBtgGdB/cVCDl1FqLaWkGyJqnZEszHuNuFZqK4GJWL3Oo74W6gKAtYGXbaGc8BfyCj/wBxOyH9QNLmG95PERpvw8TvX4GNzfUpPidsMAUHRAyrRABgiWM+z9QULmGYtYxDmGdLHT54zDqEYAW9z2EQcmfUqVBQKsAtz3fEctT+YZ6uPglemCjiWJaVHDcWynModBMyYfUfzaHyArQK+pnEr5Zkq9jLuFKvEPsrMIgwA2GY5IESymWCuz+yUHs/yI+VpjnLO4tu+O+GtV5Srj77gAoMwC5XnHuNihnv/IexL/8AXBvJZFfqfZjc+F/Io5JdpmaCHzFDc6j+4eTXyKiqltH8sc7WGNTySrBub3/cyab9MKFkVk60xAWZmYJHqKuTwiaEeP1N4V5cSgvY66lFGEa9mUhaljkC45cuZmKHc//Z"/>
+               </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 4em" rowspan="1">
+                  <span class="group">eExam
+            -
+          </span>Patient Exam Information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eExam.01
+            -
+          </span>
+						            
+					          Estimated Body Weight in Kilograms</td>
+               <td>20.5</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eExam.02
+            -
+          </span>
+						            
+					          Length Based Tape Measure</td>
+               <td>Blue</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eExam.AssessmentGroup
+            -
+          </span>Group Tag to hold assessment information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eExam.03
+            -
+          </span>
+									                  
+								                Date/Time of Assessment</td>
+               <td>November 4, 2024, 10:33:42 GMT-05:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eExam.04
+            -
+          </span>
+									                  
+								                Skin Assessment</td>
+               <td>Mottled</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eExam.05
+            -
+          </span>
+									                  
+								                Head Assessment</td>
+               <td>Normal</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eExam.06
+            -
+          </span>
+									                  
+								                Face Assessment</td>
+               <td>Normal</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eExam.07
+            -
+          </span>
+									                  
+								                Neck Assessment</td>
+               <td>Stridor</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eExam.09
+            -
+          </span>
+									                  
+								                Heart Assessment</td>
+               <td>Normal</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eExam.AbdomenGroup
+            -
+          </span>Group Tag to hold abdomen assessment findings information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eExam.10
+            -
+          </span>
+												                        
+											                      Abdominal Assessment Finding Location</td>
+               <td>Generalized</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eExam.11
+            -
+          </span>
+												                        
+											                      Abdomen Assessment</td>
+               <td>Normal</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eExam.ExtremityGroup
+            -
+          </span>Group Tag to hold extremity assessment findings information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eExam.15
+            -
+          </span>
+												                        
+											                      Extremity Assessment Finding Location</td>
+               <td>Finger-2nd (Index)-Left</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eExam.16
+            -
+          </span>
+												                        
+											                      Extremities Assessment</td>
+               <td>Cyanosis</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eExam.ExtremityGroup
+            -
+          </span>Group Tag to hold extremity assessment findings information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eExam.15
+            -
+          </span>
+												                        
+											                      Extremity Assessment Finding Location</td>
+               <td>Finger-2nd (Index)-Right</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eExam.16
+            -
+          </span>
+												                        
+											                      Extremities Assessment</td>
+               <td>Cyanosis</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eExam.ExtremityGroup
+            -
+          </span>Group Tag to hold extremity assessment findings information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eExam.15
+            -
+          </span>
+												                        
+											                      Extremity Assessment Finding Location</td>
+               <td>Finger-3rd (Middle)-Left</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eExam.16
+            -
+          </span>
+												                        
+											                      Extremities Assessment</td>
+               <td>Cyanosis</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eExam.ExtremityGroup
+            -
+          </span>Group Tag to hold extremity assessment findings information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eExam.15
+            -
+          </span>
+												                        
+											                      Extremity Assessment Finding Location</td>
+               <td>Finger-3rd (Middle)-Right</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eExam.16
+            -
+          </span>
+												                        
+											                      Extremities Assessment</td>
+               <td>Cyanosis</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eExam.ExtremityGroup
+            -
+          </span>Group Tag to hold extremity assessment findings information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eExam.15
+            -
+          </span>
+												                        
+											                      Extremity Assessment Finding Location</td>
+               <td>Finger-4th (Ring)-Left</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eExam.16
+            -
+          </span>
+												                        
+											                      Extremities Assessment</td>
+               <td>Cyanosis</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eExam.ExtremityGroup
+            -
+          </span>Group Tag to hold extremity assessment findings information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eExam.15
+            -
+          </span>
+												                        
+											                      Extremity Assessment Finding Location</td>
+               <td>Finger-4th (Ring)-Right</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eExam.16
+            -
+          </span>
+												                        
+											                      Extremities Assessment</td>
+               <td>Cyanosis</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eExam.ExtremityGroup
+            -
+          </span>Group Tag to hold extremity assessment findings information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eExam.15
+            -
+          </span>
+												                        
+											                      Extremity Assessment Finding Location</td>
+               <td>Finger-5th (Smallest)-Left</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eExam.16
+            -
+          </span>
+												                        
+											                      Extremities Assessment</td>
+               <td>Cyanosis</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eExam.ExtremityGroup
+            -
+          </span>Group Tag to hold extremity assessment findings information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eExam.15
+            -
+          </span>
+												                        
+											                      Extremity Assessment Finding Location</td>
+               <td>Finger-5th (Smallest)-Right</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eExam.16
+            -
+          </span>
+												                        
+											                      Extremities Assessment</td>
+               <td>Cyanosis</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eExam.ExtremityGroup
+            -
+          </span>Group Tag to hold extremity assessment findings information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eExam.15
+            -
+          </span>
+												                        
+											                      Extremity Assessment Finding Location</td>
+               <td>Thumb-Left</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eExam.16
+            -
+          </span>
+												                        
+											                      Extremities Assessment</td>
+               <td>Cyanosis</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eExam.ExtremityGroup
+            -
+          </span>Group Tag to hold extremity assessment findings information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eExam.15
+            -
+          </span>
+												                        
+											                      Extremity Assessment Finding Location</td>
+               <td>Thumb-Right</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eExam.16
+            -
+          </span>
+												                        
+											                      Extremities Assessment</td>
+               <td>Cyanosis</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eExam.EyeGroup
+            -
+          </span>Group Tag to hold eye assessment findings information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eExam.17
+            -
+          </span>
+												                        
+											                      Eye Assessment Finding Location</td>
+               <td>Bilateral</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eExam.18
+            -
+          </span>
+												                        
+											                      Eye Assessment</td>
+               <td>PERRL</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eExam.LungGroup
+            -
+          </span>Group Tag to hold lung assessment findings information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eExam.22
+            -
+          </span>
+												                        
+											                      Lung Assessment Finding Location</td>
+               <td>Bilateral</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="3">
+                  <span>eExam.23
+            -
+          </span>
+												                        
+											                      Lung Assessment</td>
+               <td>Increased Respiratory Effort</td>
+            </tr>
+            <tr>
+               <td>Wheezing-Expiratory</td>
+            </tr>
+            <tr>
+               <td>Wheezing-Inspiratory</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eExam.ChestGroup
+            -
+          </span>Group Tag to hold chest assessment findings information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eExam.24
+            -
+          </span>
+												                        
+											                      Chest Assessment Finding Location</td>
+               <td>General - Posterior</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="2">
+                  <span>eExam.25
+            -
+          </span>
+												                        
+											                      Chest Assessment</td>
+               <td>Accessory Muscles Used with Breathing</td>
+            </tr>
+            <tr>
+               <td>Pain with Inspiration/Expiration</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eExam.19
+            -
+          </span>
+									                  
+								                Mental Status Assessment</td>
+               <td>State of emotional shock and stress, unspecified</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eExam.20
+            -
+          </span>
+									                  
+								                Neurological Assessment</td>
+               <td>Normal Baseline for Patient</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 4em" rowspan="1">
+                  <span class="group">eProtocols
+            -
+          </span>Medical Protocols Information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eProtocols.ProtocolGroup
+            -
+          </span>Group Tag to hold eProtocol information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eProtocols.01
+            -
+          </span>
+									                  
+								                Protocols Used</td>
+               <td>Medical-Respiratory Distress/Asthma/COPD/Reactive Airway</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eProtocols.02
+            -
+          </span>
+									                  
+								                Protocol Age Category</td>
+               <td>Pediatric Only</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 4em" rowspan="1">
+                  <span class="group">eMedications
+            -
+          </span>Intervention Medications Information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eMedications.MedicationGroup
+            -
+          </span>Group Tag to hold eMedication information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.01
+            -
+          </span>
+									                  
+								                Date/Time Medication Administered</td>
+               <td>November 4, 2024, 10:32:29 GMT-05:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.02
+            -
+          </span>
+									                  
+								                Medication Administered Prior to this Unit's EMS Care</td>
+               <td>No</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.03
+            -
+          </span>
+									                  
+								                Medication Administered</td>
+               <td>[CodeType
+    =
+    
+            "9924003"
+          ] 435 - albuterol</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.04
+            -
+          </span>
+									                  
+								                Medication Administered Route</td>
+               <td>Inhalation</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eMedications.DosageGroup
+            -
+          </span>Group Tag to hold info about the medication dosage administered to the patient</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eMedications.05
+            -
+          </span>
+												                        
+											                      Medication Dosage</td>
+               <td>2.5</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eMedications.06
+            -
+          </span>
+												                        
+											                      Medication Dosage Units</td>
+               <td>Milligrams (mg)</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.07
+            -
+          </span>
+									                  
+								                Response to Medication</td>
+               <td>Improved</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.08
+            -
+          </span>
+									                  
+								                Medication Complication</td>
+               <td>None</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.09
+            -
+          </span>
+									                  
+								                Medication Crew (Healthcare Professionals) ID</td>
+               <td>EMT470248 - Demetrius Muñoz</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.10
+            -
+          </span>
+									                  
+								                Role/Type of Person Administering Medication</td>
+               <td>Emergency Medical Technician (EMT)</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.11
+            -
+          </span>
+									                  
+								                Medication Authorization</td>
+               <td>Written Orders (Patient Specific)</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eMedications.MedicationGroup
+            -
+          </span>Group Tag to hold eMedication information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.01
+            -
+          </span>
+									                  
+								                Date/Time Medication Administered</td>
+               <td>November 4, 2024, 10:35:13 GMT-05:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.02
+            -
+          </span>
+									                  
+								                Medication Administered Prior to this Unit's EMS Care</td>
+               <td>No</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.03
+            -
+          </span>
+									                  
+								                Medication Administered</td>
+               <td>[CodeType
+    =
+    
+            "9924003"
+          ] 6902 - methylprednisolone</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.04
+            -
+          </span>
+									                  
+								                Medication Administered Route</td>
+               <td>Oral</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eMedications.DosageGroup
+            -
+          </span>Group Tag to hold info about the medication dosage administered to the patient</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eMedications.05
+            -
+          </span>
+												                        
+											                      Medication Dosage</td>
+               <td>2.5</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eMedications.06
+            -
+          </span>
+												                        
+											                      Medication Dosage Units</td>
+               <td>Milligrams per Kilogram (mg/kg)</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.07
+            -
+          </span>
+									                  
+								                Response to Medication</td>
+               <td>Improved</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.08
+            -
+          </span>
+									                  
+								                Medication Complication</td>
+               <td>Itching</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.09
+            -
+          </span>
+									                  
+								                Medication Crew (Healthcare Professionals) ID</td>
+               <td>PMD584736 - Willie Noe Mante</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.10
+            -
+          </span>
+									                  
+								                Role/Type of Person Administering Medication</td>
+               <td>Paramedic</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.11
+            -
+          </span>
+									                  
+								                Medication Authorization</td>
+               <td>Written Orders (Patient Specific)</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eMedications.MedicationGroup
+            -
+          </span>Group Tag to hold eMedication information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.01
+            -
+          </span>
+									                  
+								                Date/Time Medication Administered</td>
+               <td>November 4, 2024, 10:37:00 GMT-05:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.02
+            -
+          </span>
+									                  
+								                Medication Administered Prior to this Unit's EMS Care</td>
+               <td>No</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.03
+            -
+          </span>
+									                  
+								                Medication Administered</td>
+               <td>[CodeType
+    =
+    
+            "9924003"
+          ] 7806 - oxygen</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.04
+            -
+          </span>
+									                  
+								                Medication Administered Route</td>
+               <td>Non-Rebreather Mask</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eMedications.DosageGroup
+            -
+          </span>Group Tag to hold info about the medication dosage administered to the patient</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eMedications.05
+            -
+          </span>
+												                        
+											                      Medication Dosage</td>
+               <td>12</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eMedications.06
+            -
+          </span>
+												                        
+											                      Medication Dosage Units</td>
+               <td>Liters Per Minute (LPM [gas])</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.07
+            -
+          </span>
+									                  
+								                Response to Medication</td>
+               <td>Improved</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.08
+            -
+          </span>
+									                  
+								                Medication Complication</td>
+               <td>None</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.09
+            -
+          </span>
+									                  
+								                Medication Crew (Healthcare Professionals) ID</td>
+               <td>EMT470248 - Demetrius Muñoz</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.10
+            -
+          </span>
+									                  
+								                Role/Type of Person Administering Medication</td>
+               <td>Emergency Medical Technician (EMT)</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.11
+            -
+          </span>
+									                  
+								                Medication Authorization</td>
+               <td>Protocol (Standing Order)</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eMedications.MedicationGroup
+            -
+          </span>Group Tag to hold eMedication information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.01
+            -
+          </span>
+									                  
+								                Date/Time Medication Administered</td>
+               <td>November 4, 2024, 11:05:13 GMT-05:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.02
+            -
+          </span>
+									                  
+								                Medication Administered Prior to this Unit's EMS Care</td>
+               <td>No</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.03
+            -
+          </span>
+									                  
+								                Medication Administered</td>
+               <td>[CodeType
+    =
+    
+            "9924003"
+          ] 435 - albuterol</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.04
+            -
+          </span>
+									                  
+								                Medication Administered Route</td>
+               <td>Inhalation</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eMedications.DosageGroup
+            -
+          </span>Group Tag to hold info about the medication dosage administered to the patient</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eMedications.05
+            -
+          </span>
+												                        
+											                      Medication Dosage</td>
+               <td>2.5</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eMedications.06
+            -
+          </span>
+												                        
+											                      Medication Dosage Units</td>
+               <td>Milligrams (mg)</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.07
+            -
+          </span>
+									                  
+								                Response to Medication</td>
+               <td>Improved</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.08
+            -
+          </span>
+									                  
+								                Medication Complication</td>
+               <td>None</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.09
+            -
+          </span>
+									                  
+								                Medication Crew (Healthcare Professionals) ID</td>
+               <td>OC729341 - Madelynn Wolff</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.10
+            -
+          </span>
+									                  
+								                Role/Type of Person Administering Medication</td>
+               <td>Student</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.11
+            -
+          </span>
+									                  
+								                Medication Authorization</td>
+               <td>Written Orders (Patient Specific)</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eMedications.MedicationGroup
+            -
+          </span>Group Tag to hold eMedication information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.01
+            -
+          </span>
+									                  
+								                Date/Time Medication Administered</td>
+               <td>November 4, 2024, 11:05:13 GMT-05:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.02
+            -
+          </span>
+									                  
+								                Medication Administered Prior to this Unit's EMS Care</td>
+               <td>No</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.03
+            -
+          </span>
+									                  
+								                Medication Administered</td>
+               <td>[CodeType
+    =
+    
+            "9924003"
+          ] 435 - albuterol</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.04
+            -
+          </span>
+									                  
+								                Medication Administered Route</td>
+               <td>Inhalation</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span class="group">eMedications.DosageGroup
+            -
+          </span>Group Tag to hold info about the medication dosage administered to the patient</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eMedications.05
+            -
+          </span>
+												                        
+											                      Medication Dosage</td>
+               <td>2.5</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 7em" rowspan="1">
+                  <span>eMedications.06
+            -
+          </span>
+												                        
+											                      Medication Dosage Units</td>
+               <td>Milligrams (mg)</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.07
+            -
+          </span>
+									                  
+								                Response to Medication</td>
+               <td>Improved</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.08
+            -
+          </span>
+									                  
+								                Medication Complication</td>
+               <td>None</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.09
+            -
+          </span>
+									                  
+								                Medication Crew (Healthcare Professionals) ID</td>
+               <td>PMD584736 - Willie Noe Mante</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.10
+            -
+          </span>
+									                  
+								                Role/Type of Person Administering Medication</td>
+               <td>Paramedic</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eMedications.11
+            -
+          </span>
+									                  
+								                Medication Authorization</td>
+               <td>Written Orders (Patient Specific)</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 4em" rowspan="1">
+                  <span class="group">eProcedures
+            -
+          </span>Intervention Procedures Information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eProcedures.ProcedureGroup
+            -
+          </span>Group Tag to hold eProcedures information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eProcedures.01
+            -
+          </span>
+									                  
+								                Date/Time Procedure Performed</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eProcedures.02
+            -
+          </span>
+									                  
+								                Procedure Performed Prior to this Unit's EMS Care</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eProcedures.03
+            -
+          </span>
+									                  
+								                Procedure</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eProcedures.05
+            -
+          </span>
+									                  
+								                Number of Procedure Attempts</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eProcedures.06
+            -
+          </span>
+									                  
+								                Procedure Successful</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eProcedures.07
+            -
+          </span>
+									                  
+								                Procedure Complication</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eProcedures.08
+            -
+          </span>
+									                  
+								                Response to Procedure</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eProcedures.10
+            -
+          </span>
+									                  
+								                Role/Type of Person Performing the Procedure</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 4em" rowspan="1">
+                  <span class="group">eDisposition
+            -
+          </span>Patient Disposition Information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eDisposition.DestinationGroup
+            -
+          </span>Group Tag to hold info about the Destination and the Disposition details</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eDisposition.01
+            -
+          </span>
+									                  
+								                Destination/Transferred To, Name</td>
+               <td>Ascension Sacred Heart Pensacola</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eDisposition.02
+            -
+          </span>
+									                  
+								                Destination/Transferred To, Code</td>
+               <td>231000254433</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eDisposition.03
+            -
+          </span>
+									                  
+								                Destination Street Address</td>
+               <td>
+                  <em>[Value from DEMDataSet]</em>
+               </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eDisposition.04
+            -
+          </span>
+									                  
+								                Destination City</td>
+               <td>
+                  <em>[Value from DEMDataSet]</em>
+               </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eDisposition.05
+            -
+          </span>
+									                  
+								                Destination State</td>
+               <td>
+                  <em>[Value from DEMDataSet]</em>
+               </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eDisposition.06
+            -
+          </span>
+									                  
+								                Destination County</td>
+               <td>
+                  <em>[Value from DEMDataSet]</em>
+               </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eDisposition.07
+            -
+          </span>
+									                  
+								                Destination ZIP Code</td>
+               <td>
+                  <em>[Value from DEMDataSet]</em>
+               </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eDisposition.08
+            -
+          </span>
+									                  
+								                Destination Country</td>
+               <td>
+                  <em>[Value from DEMDataSet]</em>
+               </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eDisposition.09
+            -
+          </span>
+									                  
+								                Destination GPS Location</td>
+               <td>
+                  <em>[Value from DEMDataSet]</em>
+               </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eDisposition.10
+            -
+          </span>
+									                  
+								                Destination Location US National Grid Coordinates </td>
+               <td>
+                  <em>[Value from DEMDataSet]</em>
+               </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eDisposition.11
+            -
+          </span>
+						            
+					          Number of Patients Transported in this EMS Unit</td>
+               <td>1</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eDisposition.IncidentDispositionGroup
+            -
+          </span>Group Tag to hold info about the incident disposition details</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eDisposition.27
+            -
+          </span>
+									                  
+								                Unit Disposition</td>
+               <td>Patient Contact Made</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eDisposition.28
+            -
+          </span>
+									                  
+								                Patient Evaluation/Care</td>
+               <td>Patient Evaluated and Care Provided</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eDisposition.29
+            -
+          </span>
+									                  
+								                Crew Disposition</td>
+               <td>Initiated and Continued Primary Care</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eDisposition.30
+            -
+          </span>
+									                  
+								                Transport Disposition</td>
+               <td>Transport by This EMS Unit (This Crew Only)</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eDisposition.13
+            -
+          </span>
+						            
+					          How Patient Was Moved to Ambulance</td>
+               <td>Carried</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="2">
+                  <span>eDisposition.14
+            -
+          </span>
+						            
+					          Position of Patient During Transport</td>
+               <td>Fowlers (Semi-Upright Sitting)</td>
+            </tr>
+            <tr>
+               <td>Ambulance Integrated Car Seat</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="2">
+                  <span>eDisposition.15
+            -
+          </span>
+						            
+					          How Patient Was Moved From Ambulance</td>
+               <td>Carried</td>
+            </tr>
+            <tr>
+               <td>Wheelchair</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eDisposition.16
+            -
+          </span>
+						            
+					          EMS Transport Method</td>
+               <td>Ground-Ambulance</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eDisposition.17
+            -
+          </span>
+						            
+					          Transport Mode from Scene</td>
+               <td>Emergent (Immediate Response)</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="2">
+                  <span>eDisposition.18
+            -
+          </span>
+						            
+					          Additional Transport Mode Descriptors</td>
+               <td>Intersection Navigation-With Normal Light Patterns</td>
+            </tr>
+            <tr>
+               <td>No Lights or Sirens</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eDisposition.19
+            -
+          </span>
+						            
+					          Acuity Upon EMS Release of Patient</td>
+               <td>Emergent (Yellow)</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="2">
+                  <span>eDisposition.20
+            -
+          </span>
+						            
+					          Reason for Choosing Destination</td>
+               <td>Patient's Physician's Choice</td>
+            </tr>
+            <tr>
+               <td>Regional Specialty Center</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eDisposition.21
+            -
+          </span>
+						            
+					          Type of Destination</td>
+               <td>Hospital-Emergency Department</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eDisposition.22
+            -
+          </span>
+						            
+					          Hospital In-Patient Destination</td>
+               <td>[NV
+    =
+    Not Applicable] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="2">
+                  <span>eDisposition.23
+            -
+          </span>
+						            
+					          Hospital Capability</td>
+               <td>Hospital (General)</td>
+            </tr>
+            <tr>
+               <td>Pediatric Center</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eDisposition.HospitalTeamActivationGroup
+            -
+          </span>Group Tag to hold info about the destination team pre-arrival activation</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eDisposition.24
+            -
+          </span>
+									                  
+								                Destination Team Pre-Arrival Alert or Activation</td>
+               <td>No</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eDisposition.25
+            -
+          </span>
+									                  
+								                Date/Time of Destination Prearrival Alert or Activation</td>
+               <td>[NV
+    =
+    Not Applicable] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eDisposition.32
+            -
+          </span>
+						            
+					          Level of Care Provided per Protocol</td>
+               <td>ALS - Paramedic</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 4em" rowspan="1">
+                  <span class="group">eOutcome
+            -
+          </span>Patient Outcome Information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eOutcome.01
+            -
+          </span>
+						            
+					          Emergency Department Disposition</td>
+               <td>Admitted as an inpatient to this hospital.</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eOutcome.02
+            -
+          </span>
+						            
+					          Hospital Disposition</td>
+               <td>Discharged to home or self care (routine discharge)</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eOutcome.ExternalDataGroup
+            -
+          </span>Group Tag to hold information about external report or record</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eOutcome.03
+            -
+          </span>
+									                  
+								                External Report ID/Number Type</td>
+               <td>Hospital-Receiving</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eOutcome.04
+            -
+          </span>
+									                  
+								                External Report ID/Number</td>
+               <td>AH39271.2840</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eOutcome.EmergencyDepartmentProceduresGroup
+            -
+          </span>Group Tag to hold information about emergency department procedures</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eOutcome.09
+            -
+          </span>
+									                  
+								                Emergency Department Procedures</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eOutcome.19
+            -
+          </span>
+									                  
+								                Date/Time Emergency Department Procedure Performed</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eOutcome.10
+            -
+          </span>
+						            
+					          Emergency Department Diagnosis</td>
+               <td>J45.42 - Moderate persistent asthma with status asthmaticus</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eOutcome.11
+            -
+          </span>
+						            
+					          Date/Time of Hospital Admission</td>
+               <td>November 4, 2024, 11:58:31 GMT-05:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eOutcome.HospitalProceduresGroup
+            -
+          </span>Group Tag to hold information about hospital procedures</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eOutcome.12
+            -
+          </span>
+									                  
+								                Hospital Procedures</td>
+               <td>5A19054 - Respiratory Ventilation, Single, Nonmechanical</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eOutcome.20
+            -
+          </span>
+									                  
+								                Date/Time Hospital Procedure Performed</td>
+               <td>November 4, 2024, 12:03:25 GMT-05:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eOutcome.HospitalProceduresGroup
+            -
+          </span>Group Tag to hold information about hospital procedures</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eOutcome.12
+            -
+          </span>
+									                  
+								                Hospital Procedures</td>
+               <td>GZ3ZZZZ - Medication Management</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eOutcome.20
+            -
+          </span>
+									                  
+								                Date/Time Hospital Procedure Performed</td>
+               <td>[NV
+    =
+    Not Recorded] </td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="3">
+                  <span>eOutcome.13
+            -
+          </span>
+						            
+					          Hospital Diagnosis</td>
+               <td>J34.8200 - Internal nasal valve collapse, unspecified</td>
+            </tr>
+            <tr>
+               <td>J45.42 - Moderate persistent asthma with status asthmaticus</td>
+            </tr>
+            <tr>
+               <td>J45.990 - Exercise induced bronchospasm</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eOutcome.16
+            -
+          </span>
+						            
+					          Date/Time of Hospital Discharge</td>
+               <td>November 4, 2024, 18:20:19 GMT-05:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eOutcome.18
+            -
+          </span>
+						            
+					          Date/Time of Emergency Department Admission</td>
+               <td>November 4, 2024, 11:41:10 GMT-05:00</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 4em" rowspan="1">
+                  <span class="group">eOther
+            -
+          </span>Other Miscellaneous Information</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eOther.01
+            -
+          </span>
+						            
+					          Review Requested</td>
+               <td>No</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span>eOther.08
+            -
+          </span>
+						            
+					          Crew Member Completing this Report</td>
+               <td>PMD584736 - Willie Noe Mante</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 5em" rowspan="1">
+                  <span class="group">eOther.SignatureGroup
+            -
+          </span>Group Tag to hold signature details</td>
+               <td/>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eOther.12
+            -
+          </span>
+									                  
+								                Type of Person Signing</td>
+               <td>Other</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eOther.13
+            -
+          </span>
+									                  
+								                Signature Reason</td>
+               <td>Other</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eOther.14
+            -
+          </span>
+									                  
+								                Type Of Patient Representative</td>
+               <td>Other</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eOther.15
+            -
+          </span>
+									                  
+								                Signature Status</td>
+               <td>Physical Signature/Paper Copy Obtained</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eOther.20
+            -
+          </span>
+									                  
+								                Signature Last Name</td>
+               <td>Ward</td>
+            </tr>
+            <tr>
+               <td class="element" style="padding-left: 6em" rowspan="1">
+                  <span>eOther.21
+            -
+          </span>
+									                  
+								                Signature First Name</td>
+               <td>Diana</td>
+            </tr>
+         </tbody>
+      </table>
+   </body>
+</html>

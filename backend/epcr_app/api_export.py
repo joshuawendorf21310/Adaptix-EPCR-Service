@@ -1,5 +1,5 @@
 """NEMSIS export API routes with full lifecycle endpoints."""
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from adaptix_contracts.schemas.nemsis_exports import (
@@ -114,4 +114,27 @@ async def retry_export(
         user_id=user_id,
         export_id=export_id,
         request=request,
+    )
+
+
+@router.get("/export/{export_id}/artifact", status_code=200)
+async def get_export_artifact(
+    export_id: int,
+    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
+    session: AsyncSession = Depends(get_session),
+) -> Response:
+    """Return the raw XML artifact bytes and checksum for an export attempt."""
+    tenant_id = require_header(x_tenant_id, "X-Tenant-ID")
+    xml_bytes, file_name, mime_type, checksum = await NemsisExportService.get_export_artifact(
+        session=session,
+        tenant_id=tenant_id,
+        export_id=export_id,
+    )
+    return Response(
+        content=xml_bytes,
+        media_type=mime_type,
+        headers={
+            "Content-Disposition": f'attachment; filename="{file_name}"',
+            "X-Checksum-SHA256": checksum,
+        },
     )

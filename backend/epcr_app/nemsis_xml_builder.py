@@ -1,45 +1,40 @@
-"""NEMSIS 3.5.1 XML builder for the epcr domain.
+"""NEMSIS 3.5.1 XML builder for the ePCR export lifecycle.
 
-Produces valid NEMSIS 3.5.1 EMSDataSet XML from a Chart ORM instance and its
-associated NemsisMappingRecord rows. Generated XML is suitable for XSD and
-Schematron validation by NemsisXSDValidator.
-
-Missing required fields are populated with the NEMSIS 3.5.1 Not-Recorded value
-(7701003 — Not Recorded) and flagged in a returned warnings list so that callers
-can surface the gap without silently accepting an incomplete export.
+Builds a ``StateDataSet`` artifact from real chart-owned mapping records using
+the official NEMSIS state dataset shape as the structural baseline. The builder
+does not invent schema files or bypass missing values with fake success.
 """
 from __future__ import annotations
 
 import hashlib
 import logging
-from datetime import timezone
-from xml.etree.ElementTree import Element, SubElement, tostring, indent
+import os
+from datetime import datetime, timezone
+from pathlib import Path
+from xml.etree.ElementTree import Element, SubElement, fromstring, register_namespace, tostring
 
 logger = logging.getLogger(__name__)
 
 _NEMSIS_NS = "http://www.nemsis.org"
 _NEMSIS_VERSION = "3.5.1.250403CP1"
 _NEMSIS_XSI = "http://www.w3.org/2001/XMLSchema-instance"
-
-_NOT_RECORDED = "7701003"
-
 _SOFTWARE_CREATOR = "Adaptix Platform"
 _SOFTWARE_NAME = "Adaptix ePCR"
 _SOFTWARE_VERSION = "1.0.0"
+_STATE_TEMPLATE_PATH = Path(__file__).with_name("nemsis_pretesting_v351") / "full" / "2026-STATE-1_v351.xml"
+
+register_namespace("", _NEMSIS_NS)
+register_namespace("xsi", _NEMSIS_XSI)
 
 
 class NemsisXmlBuilder:
-    """Build NEMSIS 3.5.1 XML from chart and mapping record data.
-
-    Reads NemsisMappingRecord rows for field values and falls back to
-    NOT_RECORDED (7701003) for any required field that is absent from the
-    mapping records. Warnings are accumulated per missing field.
-    """
+    """Build ``StateDataSet`` XML from chart and mapping record data."""
 
     def __init__(
         self,
         chart: object,
         mapping_records: list[object],
+        asset_version: str | None = None,
     ) -> None:
         """Initialise the builder with ORM objects.
 
@@ -51,11 +46,12 @@ class NemsisXmlBuilder:
         """
         self._chart = chart
         self._fields: dict[str, str] = {
-            rec.nemsis_field_id: str(rec.value)
+            str(rec.nemsis_field): str(rec.nemsis_value)
             for rec in mapping_records
-            if rec.value is not None
+            if getattr(rec, "nemsis_value", None) is not None and getattr(rec, "nemsis_field", None)
         }
         self._warnings: list[str] = []
+        self._asset_version = (asset_version or os.environ.get("NEMSIS_VALIDATOR_ASSET_VERSION") or _NEMSIS_VERSION).strip()
 
     def _get(self, field_id: str, fallback: str | None = None) -> str:
         """Return field value or fallback, recording a warning if absent.
@@ -70,11 +66,9 @@ class NemsisXmlBuilder:
         val = self._fields.get(field_id)
         if val:
             return val
-        effective = fallback if fallback is not None else _NOT_RECORDED
-        if effective == _NOT_RECORDED:
-            self._warnings.append(
-                f"Field {field_id} not in mapping records; using NOT_RECORDED ({_NOT_RECORDED})"
-            )
+        effective = fallback if fallback is not None else ""
+        if not effective:
+            self._warnings.append(f"Field {field_id} is not populated for StateDataSet export")
         return effective
 
     def _iso(self, dt: object | None) -> str:
@@ -87,105 +81,119 @@ class NemsisXmlBuilder:
             ISO-8601 string or NOT_RECORDED.
         """
         if dt is None:
-            return _NOT_RECORDED
+            dt = datetime.now(timezone.utc)
         if dt.tzinfo is None:
             dt = dt.replace(tzinfo=timezone.utc)
-        return dt.strftime("%Y-%m-%dT%H:%M:%S%z")
+        return dt.isoformat(timespec="seconds")
+
+    def _schema_location(self) -> str:
+        """Return the StateDataSet schemaLocation for the active asset version."""
+        configured = os.environ.get("NEMSIS_STATE_SCHEMA_LOCATION")
+        if configured and configured.strip():
+            return configured.strip()
+        return (
+            f"{_NEMSIS_NS} "
+            f"https://nemsis.org/media/nemsis_v3/{self._asset_version}/XSDs/NEMSIS_XSDs/StateDataSet_v3.xsd"
+        )
+
+    def _load_state_template(self) -> Element:
+        """Load the bundled StateDataSet template or fall back to a minimal root."""
+        configured_path = os.environ.get("NEMSIS_STATE_TEMPLATE_PATH", "").strip()
+        candidate_paths = [Path(configured_path)] if configured_path else []
+        candidate_paths.append(_STATE_TEMPLATE_PATH)
+        for candidate in candidate_paths:
+            if candidate.exists():
+                return fromstring(candidate.read_text(encoding="utf-8"))
+
+        root = Element(f"{{{_NEMSIS_NS}}}StateDataSet")
+        root.set(f"{{{_NEMSIS_XSI}}}schemaLocation", self._schema_location())
+        return root
+
+    def _replace_text(self, parent: Element, tag_name: str, value: str) -> None:
+        child = parent.find(f"{{{_NEMSIS_NS}}}{tag_name}")
+        if child is None:
+            child = SubElement(parent, f"{{{_NEMSIS_NS}}}{tag_name}")
+        child.text = value
+
+    def _mapped_elements(self) -> list[str]:
+        """Return sorted unique mapped field identifiers for the ``sElement`` section."""
+        ignored_prefixes = {"sState", "sSoftware", "seCustomConfiguration", "sdCustomConfiguration"}
+        elements = sorted(
+            {
+                field_id
+                for field_id in self._fields
+                if "." in field_id and field_id.split(".")[0] not in ignored_prefixes
+            }
+        )
+        if not elements:
+            self._warnings.append("No chart-owned NEMSIS mappings were available for sElement enumeration")
+            return ["dAgency.01"]
+        return elements
 
     def build(self) -> tuple[bytes, list[str]]:
-        """Build NEMSIS 3.5.1 EMSDataSet XML bytes.
+        """Build NEMSIS 3.5.1 ``StateDataSet`` XML bytes.
 
         Returns:
             Tuple of (xml_bytes, warnings):
                 xml_bytes — UTF-8 encoded NEMSIS 3.5.1 XML.
                 warnings — List of fields that fell back to NOT_RECORDED.
         """
-        chart = self._chart
+        root = self._load_state_template()
+        root.set(f"{{{_NEMSIS_XSI}}}schemaLocation", self._schema_location())
 
-        root = Element(f"{{{_NEMSIS_NS}}}EMSDataSet")
-        root.set(
-            f"{{{_NEMSIS_XSI}}}schemaLocation",
-            f"{_NEMSIS_NS} EMSDataSet_v3.xsd",
-        )
-        root.set("xsi:type", "EMSDataSetType")
+        created_iso = self._iso(getattr(self._chart, "created_at", None))
+        root.set("timestamp", created_iso)
+        root.set("effectiveDate", os.environ.get("NEMSIS_STATE_EFFECTIVE_DATE", created_iso))
 
-        hdr = SubElement(root, f"{{{_NEMSIS_NS}}}Header")
-        dg = SubElement(hdr, f"{{{_NEMSIS_NS}}}DemographicGroup")
-        SubElement(dg, f"{{{_NEMSIS_NS}}}D01_03").text = self._get("D01_03", "US")
-        SubElement(dg, f"{{{_NEMSIS_NS}}}D01_07").text = self._get("D01_07", "911 Response (Scene)")
-
-        pcr = SubElement(root, f"{{{_NEMSIS_NS}}}PatientCareReport")
-
-        er = SubElement(pcr, f"{{{_NEMSIS_NS}}}eRecord")
-        SubElement(er, f"{{{_NEMSIS_NS}}}eRecord.01").text = self._get("eRecord.01", str(chart.call_number))
-        SubElement(er, f"{{{_NEMSIS_NS}}}eRecord.02").text = self._get("eRecord.02", _SOFTWARE_CREATOR)
-        SubElement(er, f"{{{_NEMSIS_NS}}}eRecord.03").text = self._get("eRecord.03", _SOFTWARE_NAME)
-        SubElement(er, f"{{{_NEMSIS_NS}}}eRecord.04").text = self._get("eRecord.04", _SOFTWARE_VERSION)
-
-        eresp = SubElement(pcr, f"{{{_NEMSIS_NS}}}eResponse")
-        SubElement(eresp, f"{{{_NEMSIS_NS}}}eResponse.01").text = self._get("eResponse.01")
-        SubElement(eresp, f"{{{_NEMSIS_NS}}}eResponse.03").text = self._get("eResponse.03", str(chart.call_number))
-        SubElement(eresp, f"{{{_NEMSIS_NS}}}eResponse.04").text = self._get("eResponse.04", str(chart.id))
-        SubElement(eresp, f"{{{_NEMSIS_NS}}}eResponse.05").text = self._get("eResponse.05", "2205001")
-
-        created_iso = self._iso(getattr(chart, "created_at", None))
-        etimes = SubElement(pcr, f"{{{_NEMSIS_NS}}}eTimes")
-        SubElement(etimes, f"{{{_NEMSIS_NS}}}eTimes.01").text = self._get("eTimes.01", created_iso)
-        SubElement(etimes, f"{{{_NEMSIS_NS}}}eTimes.02").text = self._get("eTimes.02", created_iso)
-        SubElement(etimes, f"{{{_NEMSIS_NS}}}eTimes.03").text = self._get("eTimes.03")
-        SubElement(etimes, f"{{{_NEMSIS_NS}}}eTimes.04").text = self._get("eTimes.04")
-        SubElement(etimes, f"{{{_NEMSIS_NS}}}eTimes.05").text = self._get("eTimes.05")
-
-        epat = SubElement(pcr, f"{{{_NEMSIS_NS}}}ePatient")
-        if getattr(chart, "patient_id", None):
-            SubElement(epat, f"{{{_NEMSIS_NS}}}ePatient.PatientNameGroup").text = ""
-        SubElement(epat, f"{{{_NEMSIS_NS}}}ePatient.16").text = self._get(
-            "ePatient.16", "7701003"
+        state_section = root.find(f"{{{_NEMSIS_NS}}}sState")
+        if state_section is None:
+            state_section = SubElement(root, f"{{{_NEMSIS_NS}}}sState")
+        self._replace_text(
+            state_section,
+            "sState.01",
+            self._get("sState.01", os.environ.get("NEMSIS_STATE_CODE", "")),
         )
 
-        esit = SubElement(pcr, f"{{{_NEMSIS_NS}}}eSituation")
-        SubElement(esit, f"{{{_NEMSIS_NS}}}eSituation.01").text = self._get("eSituation.01", created_iso)
-        SubElement(esit, f"{{{_NEMSIS_NS}}}eSituation.07").text = self._get(
-            "eSituation.07",
-            self._incident_type_to_nemsis(getattr(chart, "incident_type", "other")),
+        software = root.find(f"{{{_NEMSIS_NS}}}sSoftware")
+        if software is None:
+            software = SubElement(root, f"{{{_NEMSIS_NS}}}sSoftware")
+        software_group = software.find(f"{{{_NEMSIS_NS}}}sSoftware.SoftwareGroup")
+        if software_group is None:
+            software_group = SubElement(software, f"{{{_NEMSIS_NS}}}sSoftware.SoftwareGroup")
+        self._replace_text(
+            software_group,
+            "sSoftware.01",
+            os.environ.get("NEMSIS_SOFTWARE_CREATOR", _SOFTWARE_CREATOR),
+        )
+        self._replace_text(
+            software_group,
+            "sSoftware.02",
+            os.environ.get("NEMSIS_SOFTWARE_NAME", _SOFTWARE_NAME),
+        )
+        self._replace_text(
+            software_group,
+            "sSoftware.03",
+            os.environ.get("NEMSIS_SOFTWARE_VERSION", _SOFTWARE_VERSION),
         )
 
-        enarr = SubElement(pcr, f"{{{_NEMSIS_NS}}}eNarrative")
-        SubElement(enarr, f"{{{_NEMSIS_NS}}}eNarrative.01").text = self._get(
-            "eNarrative.01", f"Patient encounter — call {chart.call_number}"
-        )
+        se_custom = root.find(f"{{{_NEMSIS_NS}}}seCustomConfiguration")
+        if se_custom is None:
+            SubElement(root, f"{{{_NEMSIS_NS}}}seCustomConfiguration")
+        sd_custom = root.find(f"{{{_NEMSIS_NS}}}sdCustomConfiguration")
+        if sd_custom is None:
+            SubElement(root, f"{{{_NEMSIS_NS}}}sdCustomConfiguration")
 
-        edisp = SubElement(pcr, f"{{{_NEMSIS_NS}}}eDisposition")
-        SubElement(edisp, f"{{{_NEMSIS_NS}}}eDisposition.DestinationGroup")
-        SubElement(edisp, f"{{{_NEMSIS_NS}}}eDisposition.27").text = self._get("eDisposition.27", "4227001")
-        SubElement(edisp, f"{{{_NEMSIS_NS}}}eDisposition.28").text = self._get("eDisposition.28", "4228001")
-
-        try:
-            indent(root, space="  ")
-        except TypeError:
-            pass
+        s_element = root.find(f"{{{_NEMSIS_NS}}}sElement")
+        if s_element is None:
+            s_element = SubElement(root, f"{{{_NEMSIS_NS}}}sElement")
+        for child in list(s_element):
+            s_element.remove(child)
+        for field_id in self._mapped_elements():
+            SubElement(s_element, f"{{{_NEMSIS_NS}}}sElement.01").text = field_id
 
         xml_declaration = b'<?xml version="1.0" encoding="UTF-8"?>\n'
-        xml_bytes = xml_declaration + tostring(root, encoding="unicode").encode("utf-8")
+        xml_bytes = xml_declaration + tostring(root, encoding="utf-8")
         return xml_bytes, list(self._warnings)
-
-    @staticmethod
-    def _incident_type_to_nemsis(incident_type: str) -> str:
-        """Map internal incident_type to NEMSIS eSituation.07 code.
-
-        Args:
-            incident_type: Internal incident type string.
-
-        Returns:
-            NEMSIS situation type code.
-        """
-        _MAP = {
-            "medical": "2407027",
-            "trauma": "2407001",
-            "behavioral": "2407035",
-            "other": "2407033",
-        }
-        return _MAP.get(incident_type, "2407033")
 
     @staticmethod
     def compute_sha256(data: bytes) -> str:

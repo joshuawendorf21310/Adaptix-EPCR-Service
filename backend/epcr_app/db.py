@@ -3,42 +3,83 @@
 Provides async database connection management with truthful health verification.
 Health checks validate actual database connectivity before reporting healthy status.
 
-Raises RuntimeError at import time if EPCR_DATABASE_URL (or legacy CARE_DATABASE_URL)
-is not configured so that misconfigured deployments fail explicitly.
+The database URL is validated lazily so test modules can import the application,
+override dependencies, and exercise non-database paths without fabricating a
+production configuration. Startup and database-backed flows still fail
+explicitly when the database URL is missing.
 """
+from functools import lru_cache
 import logging
 import os
+from sqlalchemy.engine import make_url
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.exc import SQLAlchemyError
 
 logger = logging.getLogger(__name__)
 
-_raw_url = os.environ.get("EPCR_DATABASE_URL") or os.environ.get("CARE_DATABASE_URL")
-if not _raw_url:
-    raise RuntimeError(
-        "EPCR_DATABASE_URL is not configured. "
-        "Set this environment variable to a valid asyncpg connection string "
-        "before starting the ePCR service. SQLite is not permitted in production."
+
+def _configured_database_url() -> str | None:
+    """Return the configured database URL if present."""
+    return os.environ.get("EPCR_DATABASE_URL") or os.environ.get("CARE_DATABASE_URL")
+
+
+def _require_database_url() -> str:
+    """Return the configured database URL or fail with a production-safe message."""
+    database_url = _configured_database_url()
+    if not database_url:
+        raise RuntimeError(
+            "EPCR_DATABASE_URL is not configured. "
+            "Set this environment variable to a valid asyncpg connection string "
+            "before starting the ePCR service. SQLite is not permitted in production."
+        )
+    return database_url
+
+
+def _engine_options(database_url: str) -> dict:
+    """Build engine options that respect the selected SQLAlchemy dialect.
+
+    SQLite test engines use StaticPool/NullPool semantics that do not accept
+    queue pool sizing arguments, while production asyncpg deployments do.
+
+    Args:
+        database_url: SQLAlchemy connection URL.
+
+    Returns:
+        dict: Keyword arguments safe to pass into ``create_async_engine``.
+    """
+    options = {
+        "echo": False,
+        "pool_pre_ping": True,
+    }
+
+    dialect_name = make_url(database_url).get_backend_name()
+    if dialect_name != "sqlite":
+        options["pool_size"] = 10
+        options["max_overflow"] = 20
+
+    return options
+
+
+@lru_cache(maxsize=None)
+def _get_engine(database_url: str):
+    """Create or reuse an async engine for the provided database URL."""
+    return create_async_engine(
+        database_url,
+        **_engine_options(database_url),
     )
 
-DATABASE_URL: str = _raw_url
 
-engine = create_async_engine(
-    DATABASE_URL,
-    echo=False,
-    pool_pre_ping=True,
-    pool_size=10,
-    max_overflow=20,
-)
-
-async_session_maker = async_sessionmaker(
-    engine,
-    class_=AsyncSession,
-    expire_on_commit=False,
-    autocommit=False,
-    autoflush=False
-)
+@lru_cache(maxsize=None)
+def _get_session_maker(database_url: str):
+    """Create or reuse a sessionmaker bound to the configured database URL."""
+    return async_sessionmaker(
+        _get_engine(database_url),
+        class_=AsyncSession,
+        expire_on_commit=False,
+        autocommit=False,
+        autoflush=False,
+    )
 
 
 async def get_session():
@@ -47,7 +88,7 @@ async def get_session():
     Yields:
         AsyncSession: Database session for the request lifetime.
     """
-    async with async_session_maker() as session:
+    async with _get_session_maker(_require_database_url())() as session:
         yield session
 
 
@@ -62,7 +103,7 @@ async def init_db():
     """
     try:
         from epcr_app.models import Base
-        async with engine.begin() as conn:
+        async with _get_engine(_require_database_url()).begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
         logger.info("Database initialized successfully")
     except SQLAlchemyError as e:
@@ -89,8 +130,17 @@ async def check_health() -> dict:
         >>> health = await check_health()
         >>> assert health["status"] in ["healthy", "degraded"]
     """
+    database_url = _configured_database_url()
+    if not database_url:
+        logger.warning("Health check failed: database URL is not configured")
+        return {
+            "status": "degraded",
+            "service": "epcr",
+            "database": "misconfigured: missing EPCR_DATABASE_URL",
+        }
+
     try:
-        async with async_session_maker() as session:
+        async with _get_session_maker(database_url)() as session:
             await session.execute(text("SELECT 1"))
         logger.debug("Health check: database responsive")
         return {

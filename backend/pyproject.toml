@@ -19,6 +19,7 @@ dependencies = [
     "python-jose[cryptography]>=3.3.0",
     "boto3>=1.34.0",
     "lxml>=5.2.0",
+    "saxonche>=12.5.0",
     "zeep>=4.2.1",
     "httpx>=0.27.0",
 ]

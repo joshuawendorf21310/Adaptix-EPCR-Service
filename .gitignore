@@ -32,3 +32,7 @@ Thumbs.db
 htmlcov/
 .coverage
 coverage.xml
+
+# Local CTA/NEMSIS harness artifacts
+nemsis_test/logs/*.json
+nemsis_test/output/

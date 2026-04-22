@@ -19,6 +19,7 @@ from adaptix_contracts.schemas.nemsis_exports import (
     ExportLifecycleStatus,
     ExportReadinessSnapshot,
     ExportTriggerSource,
+    ExportValidationMetadata,
     GenerateExportRequest,
     GenerateExportResponse,
     RetryExportRequest,
@@ -32,6 +33,14 @@ from epcr_app.nemsis_xsd_validator import NemsisXSDValidator
 logger = logging.getLogger(__name__)
 
 _VALIDATOR = NemsisXSDValidator()
+
+
+class ExportValidationFailure(ValueError):
+    """Raised when an export artifact fails official NEMSIS validation."""
+
+    def __init__(self, message: str, validation: dict) -> None:
+        super().__init__(message)
+        self.validation = validation
 
 
 def _get_s3_bucket() -> str:
@@ -52,8 +61,36 @@ def _get_s3_bucket() -> str:
     return bucket
 
 
+def _get_s3_client():
+    """Build an S3 client honoring optional local endpoint configuration.
+
+    The local CTA harness runs against a moto-backed S3 endpoint so the live
+    export pipeline can persist and retrieve artifacts without introducing fake
+    storage behavior.
+    """
+    endpoint_url = (
+        os.environ.get("AWS_ENDPOINT_URL_S3")
+        or os.environ.get("BOTO3_S3_ENDPOINT_URL")
+        or os.environ.get("AWS_S3_ENDPOINT_URL")
+    )
+    region_name = (
+        os.environ.get("AWS_REGION")
+        or os.environ.get("AWS_DEFAULT_REGION")
+        or "us-east-1"
+    )
+    kwargs = {"region_name": region_name}
+    if endpoint_url and endpoint_url.strip():
+        kwargs["endpoint_url"] = endpoint_url.strip()
+    return boto3.client("s3", **kwargs)
+
+
 class NemsisExportService:
     """Export lifecycle management with state transitions, retry logic, and audit."""
+
+    @staticmethod
+    async def _refresh_attempt(session: AsyncSession, row: NemsisExportAttempt) -> None:
+        """Refresh an attempt after commit so async responses never lazy-load expired fields."""
+        await session.refresh(row)
 
     @staticmethod
     async def _build_and_store_artifact(
@@ -62,7 +99,7 @@ class NemsisExportService:
         chart_id: str,
         tenant_id: str,
         attempt_id: int,
-    ) -> tuple[bytes, str, str]:
+    ) -> tuple[bytes, str, str, dict]:
         """Build real NEMSIS 3.5.1 XML, validate it, upload to S3, return artifact data.
 
         Args:
@@ -98,30 +135,33 @@ class NemsisExportService:
         )
         mapping_records = list(mapping_result.scalars().all())
 
-        builder = NemsisXmlBuilder(chart=chart, mapping_records=mapping_records)
+        builder = NemsisXmlBuilder(
+            chart=chart,
+            mapping_records=mapping_records,
+            asset_version=_VALIDATOR.asset_version,
+        )
         xml_bytes, xml_warnings = builder.build()
 
         if xml_warnings:
             logger.warning(
-                "NEMSIS XML built with %d NOT_RECORDED fields for chart %s: %s",
+                "NEMSIS StateDataSet built with %d mapping warnings for chart %s: %s",
                 len(xml_warnings),
                 chart_id,
                 xml_warnings,
             )
 
         validation = _VALIDATOR.validate_xml(xml_bytes)
-        if not validation.get("validation_skipped", False) and not validation.get("valid", False):
-            xsd_errs = validation.get("xsd_errors", [])
-            sch_errs = validation.get("schematron_errors", [])
-            all_errs = xsd_errs + sch_errs
-            raise ValueError(
+        if not validation.get("valid", False):
+            all_errs = validation.get("errors", [])
+            raise ExportValidationFailure(
                 f"Generated NEMSIS XML failed validation ({len(all_errs)} errors): "
-                + "; ".join(all_errs[:5])
+                + "; ".join(all_errs[:5]),
+                validation,
             )
 
         bucket = _get_s3_bucket()
         storage_key = f"nemsis/{tenant_id}/{chart_id}/{attempt_id}.xml"
-        s3_client = boto3.client("s3")
+        s3_client = _get_s3_client()
         try:
             s3_client.put_object(
                 Bucket=bucket,
@@ -141,7 +181,26 @@ class NemsisExportService:
             len(xml_bytes),
             checksum[:16] + "…",
         )
-        return xml_bytes, storage_key, checksum
+        return xml_bytes, storage_key, checksum, validation
+
+    @staticmethod
+    def _validation_from_row(row: NemsisExportAttempt) -> ExportValidationMetadata | None:
+        if (
+            row.xsd_valid is None
+            and row.schematron_valid is None
+            and not row.validator_errors
+            and not row.validator_warnings
+            and not row.validator_asset_version
+        ):
+            return None
+
+        return ExportValidationMetadata(
+            xsd_valid=row.xsd_valid,
+            schematron_valid=row.schematron_valid,
+            errors=row.validator_errors or [],
+            warnings=row.validator_warnings or [],
+            validator_asset_version=row.validator_asset_version,
+        )
 
     @staticmethod
     async def _create_event(
@@ -250,6 +309,7 @@ class NemsisExportService:
                 missing_mandatory_fields=row.missing_mandatory_fields or [],
             ),
             artifact=artifact,
+            validation=NemsisExportService._validation_from_row(row),
             created_at=row.created_at,
             updated_at=row.updated_at,
             requested_at=row.requested_at,
@@ -348,6 +408,7 @@ class NemsisExportService:
                 snapshot=snapshot,
             )
             await session.commit()
+            await NemsisExportService._refresh_attempt(session, blocked)
             return GenerateExportResponse(
                 export_id=blocked.id,
                 chart_id=blocked.chart_id,
@@ -396,7 +457,7 @@ class NemsisExportService:
         )
 
         try:
-            xml_bytes, storage_key, checksum = await NemsisExportService._build_and_store_artifact(
+            xml_bytes, storage_key, checksum, validation = await NemsisExportService._build_and_store_artifact(
                 session,
                 chart_id=request.chart_id,
                 tenant_id=tenant_id,
@@ -414,6 +475,11 @@ class NemsisExportService:
             attempt.artifact_size_bytes = len(xml_bytes)
             attempt.artifact_storage_key = storage_key
             attempt.artifact_checksum_sha256 = checksum
+            attempt.xsd_valid = validation.get("xsd_valid")
+            attempt.schematron_valid = validation.get("schematron_valid")
+            attempt.validator_errors = validation.get("errors", [])
+            attempt.validator_warnings = validation.get("warnings", [])
+            attempt.validator_asset_version = validation.get("validator_asset_version")
 
             await NemsisExportService._create_event(
                 session,
@@ -424,10 +490,16 @@ class NemsisExportService:
                 from_status=ExportLifecycleStatus.GENERATION_IN_PROGRESS.value,
                 to_status=attempt.status,
                 message=attempt.message,
-                detail={"artifact_storage_key": attempt.artifact_storage_key},
+                detail={
+                    "artifact_storage_key": attempt.artifact_storage_key,
+                    "xsd_valid": attempt.xsd_valid,
+                    "schematron_valid": attempt.schematron_valid,
+                    "validator_asset_version": attempt.validator_asset_version,
+                },
                 user_id=user_id,
             )
             await session.commit()
+            await NemsisExportService._refresh_attempt(session, attempt)
             logger.info(f"Export generation succeeded: attempt={attempt.id}, chart={request.chart_id}")
 
             return GenerateExportResponse(
@@ -448,15 +520,26 @@ class NemsisExportService:
                     storage_key=attempt.artifact_storage_key,
                     checksum_sha256=attempt.artifact_checksum_sha256,
                 ),
+                validation=NemsisExportService._validation_from_row(attempt),
                 created_at=attempt.created_at,
                 updated_at=attempt.updated_at,
             )
         except Exception as exc:
             attempt.status = ExportLifecycleStatus.GENERATION_FAILED.value
-            attempt.failure_type = ExportFailureType.GENERATION_ERROR.value
+            attempt.failure_type = (
+                ExportFailureType.VALIDATION_ERROR.value
+                if "validation" in str(exc).lower()
+                else ExportFailureType.GENERATION_ERROR.value
+            )
             attempt.failure_reason = str(exc)
             attempt.message = "Export generation failed."
             attempt.completed_at = datetime.now(timezone.utc)
+            if isinstance(exc, ExportValidationFailure):
+                attempt.xsd_valid = exc.validation.get("xsd_valid")
+                attempt.schematron_valid = exc.validation.get("schematron_valid")
+                attempt.validator_errors = exc.validation.get("errors", [])
+                attempt.validator_warnings = exc.validation.get("warnings", [])
+                attempt.validator_asset_version = exc.validation.get("validator_asset_version")
 
             await NemsisExportService._create_event(
                 session,
@@ -471,6 +554,7 @@ class NemsisExportService:
                 user_id=user_id,
             )
             await session.commit()
+            await NemsisExportService._refresh_attempt(session, attempt)
             logger.error(
                 f"Export generation failed: attempt={attempt.id}, chart={request.chart_id}, "
                 f"error={str(exc)}"
@@ -482,12 +566,13 @@ class NemsisExportService:
                 success=False,
                 blocked=False,
                 status=ExportLifecycleStatus.GENERATION_FAILED,
-                failure_type=ExportFailureType.GENERATION_ERROR,
+                failure_type=ExportFailureType(attempt.failure_type),
                 message=attempt.message,
                 failure_reason=attempt.failure_reason,
                 retry_count=attempt.retry_count,
                 readiness_snapshot=snapshot,
                 artifact=None,
+                validation=NemsisExportService._validation_from_row(attempt),
                 created_at=attempt.created_at,
                 updated_at=attempt.updated_at,
             )
@@ -634,6 +719,7 @@ class NemsisExportService:
             )
             original.superseded_by_export_id = blocked_retry.id
             await session.commit()
+            await NemsisExportService._refresh_attempt(session, blocked_retry)
 
             return RetryExportResponse(
                 original_export_id=original.id,
@@ -671,7 +757,7 @@ class NemsisExportService:
             retry_attempt.status = ExportLifecycleStatus.GENERATION_IN_PROGRESS.value
             retry_attempt.started_at = datetime.now(timezone.utc)
 
-            xml_bytes, storage_key, checksum = await NemsisExportService._build_and_store_artifact(
+            xml_bytes, storage_key, checksum, validation = await NemsisExportService._build_and_store_artifact(
                 session,
                 chart_id=original.chart_id,
                 tenant_id=tenant_id,
@@ -686,6 +772,11 @@ class NemsisExportService:
             retry_attempt.artifact_size_bytes = len(xml_bytes)
             retry_attempt.artifact_storage_key = storage_key
             retry_attempt.artifact_checksum_sha256 = checksum
+            retry_attempt.xsd_valid = validation.get("xsd_valid")
+            retry_attempt.schematron_valid = validation.get("schematron_valid")
+            retry_attempt.validator_errors = validation.get("errors", [])
+            retry_attempt.validator_warnings = validation.get("warnings", [])
+            retry_attempt.validator_asset_version = validation.get("validator_asset_version")
 
             await NemsisExportService._create_event(
                 session,
@@ -699,6 +790,7 @@ class NemsisExportService:
                 user_id=user_id,
             )
             await session.commit()
+            await NemsisExportService._refresh_attempt(session, retry_attempt)
             logger.info(
                 f"Retry generation succeeded: original={original.id}, "
                 f"new={retry_attempt.id}, chart={original.chart_id}"
@@ -720,10 +812,20 @@ class NemsisExportService:
             )
         except Exception as exc:
             retry_attempt.status = ExportLifecycleStatus.GENERATION_FAILED.value
-            retry_attempt.failure_type = ExportFailureType.GENERATION_ERROR.value
+            retry_attempt.failure_type = (
+                ExportFailureType.VALIDATION_ERROR.value
+                if "validation" in str(exc).lower()
+                else ExportFailureType.GENERATION_ERROR.value
+            )
             retry_attempt.failure_reason = str(exc)
             retry_attempt.message = "Retry generation failed."
             retry_attempt.completed_at = datetime.now(timezone.utc)
+            if isinstance(exc, ExportValidationFailure):
+                retry_attempt.xsd_valid = exc.validation.get("xsd_valid")
+                retry_attempt.schematron_valid = exc.validation.get("schematron_valid")
+                retry_attempt.validator_errors = exc.validation.get("errors", [])
+                retry_attempt.validator_warnings = exc.validation.get("warnings", [])
+                retry_attempt.validator_asset_version = exc.validation.get("validator_asset_version")
 
             await NemsisExportService._create_event(
                 session,
@@ -738,6 +840,7 @@ class NemsisExportService:
                 user_id=user_id,
             )
             await session.commit()
+            await NemsisExportService._refresh_attempt(session, retry_attempt)
             logger.error(
                 f"Retry generation failed: original={original.id}, "
                 f"new={retry_attempt.id}, chart={original.chart_id}, error={str(exc)}"
@@ -749,7 +852,7 @@ class NemsisExportService:
                 success=False,
                 blocked=False,
                 status=ExportLifecycleStatus.GENERATION_FAILED,
-                failure_type=ExportFailureType.GENERATION_ERROR,
+                failure_type=ExportFailureType(retry_attempt.failure_type),
                 message=retry_attempt.message,
                 failure_reason=retry_attempt.failure_reason,
                 retry_count=retry_attempt.retry_count,
@@ -757,3 +860,47 @@ class NemsisExportService:
                 created_at=retry_attempt.created_at,
                 updated_at=retry_attempt.updated_at,
             )
+
+    @staticmethod
+    async def get_export_artifact(
+        session: AsyncSession,
+        *,
+        tenant_id: str,
+        export_id: int,
+    ) -> tuple[bytes, str, str, str]:
+        """Return raw XML artifact bytes, filename, mime type, and checksum."""
+        result = await session.execute(
+            select(NemsisExportAttempt).where(
+                NemsisExportAttempt.id == export_id,
+                NemsisExportAttempt.tenant_id == tenant_id,
+            )
+        )
+        row = result.scalar_one_or_none()
+        if row is None or not row.artifact_storage_key:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Export artifact not found")
+
+        bucket = _get_s3_bucket()
+        s3_client = _get_s3_client()
+        try:
+            response = s3_client.get_object(Bucket=bucket, Key=row.artifact_storage_key)
+            artifact_bytes = response["Body"].read()
+        except ClientError as exc:
+            logger.error("Failed to retrieve NEMSIS artifact export_id=%s: %s", export_id, exc)
+            raise HTTPException(
+                status_code=status.HTTP_502_BAD_GATEWAY,
+                detail="Failed to retrieve export artifact from storage",
+            ) from exc
+
+        checksum = NemsisXmlBuilder.compute_sha256(artifact_bytes)
+        if row.artifact_checksum_sha256 and checksum != row.artifact_checksum_sha256:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Stored export artifact checksum mismatch",
+            )
+
+        return (
+            artifact_bytes,
+            row.artifact_file_name or f"export-{export_id}.xml",
+            row.artifact_mime_type or "application/xml",
+            checksum,
+        )

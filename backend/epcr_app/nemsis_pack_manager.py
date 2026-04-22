@@ -27,6 +27,7 @@ _S3_PREFIX = os.environ.get("NEMSIS_PACK_S3_PREFIX", "nemsis/packs")
 _VALID_PACK_TYPES = frozenset({
     "national_xsd",
     "national_schematron",
+    "official_source_bundle",
     "wi_state_dataset",
     "wi_schematron",
     "cs_scenarios",
@@ -46,6 +47,48 @@ _ROLE_HINTS: dict[str, str] = {
     ".rnc": "schematron",
 }
 
+_OFFICIAL_FILE_ROLE_HINTS: dict[str, str] = {
+    "combined_elementdetails_full.txt": "element_details",
+    "combined_elementdetails.txt": "required_elements",
+    "combined_elementenumerations.txt": "element_enumerations",
+    "combined_elementattributes.txt": "attribute_enumerations",
+    "emsdataset_v3_xsd.html": "ems_dataset_api",
+    "emsdataset_v3.html": "ems_dataset_api",
+    "nemsis_xsds.zip": "xsd_bundle",
+    "nemsisdatadictionary.pdf": "data_dictionary",
+    "index.html": "data_dictionary",
+    "overview.html": "overview",
+    "extended data definitions.pdf": "extended_definitions",
+}
+
+
+def _required_roles_for_pack_type(pack_type: str) -> set[str]:
+    """Return the required file roles for a given pack type.
+
+    Args:
+        pack_type: Resource pack category identifier.
+
+    Returns:
+        Set of required file-role names.
+    """
+    required_by_type: dict[str, set[str]] = {
+        "national_xsd": {"xsd"},
+        "national_schematron": {"schematron"},
+        "official_source_bundle": {
+            "data_dictionary",
+            "xsd_bundle",
+            "ems_dataset_api",
+            "element_details",
+            "element_enumerations",
+            "attribute_enumerations",
+        },
+        "wi_state_dataset": {"xsd", "schematron"},
+        "wi_schematron": {"schematron"},
+        "cs_scenarios": {"scenario"},
+        "bundle": {"xsd", "schematron"},
+    }
+    return required_by_type.get(pack_type, set())
+
 
 def _detect_role(file_name: str, content_prefix: bytes | None = None) -> str:
     """Infer a pack file role from its filename extension.
@@ -57,7 +100,12 @@ def _detect_role(file_name: str, content_prefix: bytes | None = None) -> str:
     Returns:
         Role string such as 'xsd', 'schematron', 'scenario', 'sample', or 'unknown'.
     """
-    ext = os.path.splitext(file_name.lower())[1]
+    lowered_name = file_name.lower()
+    base_name = os.path.basename(lowered_name)
+    if base_name in _OFFICIAL_FILE_ROLE_HINTS:
+        return _OFFICIAL_FILE_ROLE_HINTS[base_name]
+
+    ext = os.path.splitext(lowered_name)[1]
     if ext in _ROLE_HINTS:
         return _ROLE_HINTS[ext]
     if content_prefix:
@@ -472,15 +520,7 @@ class PackManager:
         files = await self.list_pack_files(pack_id=pack_id, tenant_id=tenant_id)
 
         roles_present = {f["file_role"] for f in files if f.get("file_role")}
-        required_by_type: dict[str, set[str]] = {
-            "national_xsd": {"xsd"},
-            "national_schematron": {"schematron"},
-            "wi_state_dataset": {"xsd", "schematron"},
-            "wi_schematron": {"schematron"},
-            "cs_scenarios": {"scenario"},
-            "bundle": {"xsd", "schematron"},
-        }
-        required = required_by_type.get(pack.get("pack_type", ""), set())
+        required = _required_roles_for_pack_type(pack.get("pack_type", ""))
         missing = sorted(required - roles_present)
 
         return {
