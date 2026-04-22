@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import logging
 import os
+import hashlib
 import tempfile
 import zipfile
 from pathlib import Path
@@ -32,6 +33,21 @@ class NemsisXSDValidator:
         self.asset_version = os.environ.get("NEMSIS_VALIDATOR_ASSET_VERSION", "").strip() or None
         self._xsd_tempdir: tempfile.TemporaryDirectory[str] | None = None
 
+    def close(self) -> None:
+        """Release any temporary extraction directory resources."""
+        if self._xsd_tempdir is not None:
+            self._xsd_tempdir.cleanup()
+            self._xsd_tempdir = None
+
+    def __del__(self) -> None:
+        """Best-effort cleanup to prevent unraisable tempfile warnings."""
+        try:
+            self.close()
+        except Exception:  # noqa: BLE001 — destructor must not raise
+            logging.getLogger(__name__).debug(
+                "XSD validator cleanup failed during __del__", exc_info=True,
+            )
+
     @staticmethod
     def _check_lxml() -> bool:
         """Return True if lxml is importable."""
@@ -56,6 +72,7 @@ class NemsisXSDValidator:
         valid: bool,
         xsd_valid: bool,
         schematron_valid: bool,
+        checksum_sha256: str | None = None,
         xsd_errors: list[str] | None = None,
         schematron_errors: list[str] | None = None,
         schematron_warnings: list[str] | None = None,
@@ -75,6 +92,7 @@ class NemsisXSDValidator:
             "cardinality_errors": [],
             "errors": [*xsd_errors, *schematron_errors],
             "warnings": list(schematron_warnings),
+            "checksum_sha256": checksum_sha256,
             "validator_asset_version": asset_version,
         }
 
@@ -244,12 +262,19 @@ class NemsisXSDValidator:
             xsd_errors (list[str]), schematron_errors (list[str]),
             schematron_warnings (list[str]), cardinality_errors (list[str]).
         """
+        if isinstance(xml_content, str):
+            xml_bytes = xml_content.encode("utf-8")
+        else:
+            xml_bytes = xml_content
+        checksum_sha256 = hashlib.sha256(xml_bytes).hexdigest()
+
         if not self._lxml_available:
             logger.warning("NemsisXSDValidator: lxml not available")
             return self._result(
                 valid=False,
                 xsd_valid=False,
                 schematron_valid=False,
+                checksum_sha256=checksum_sha256,
                 xsd_errors=["lxml library not installed; official NEMSIS validation cannot run"],
                 asset_version=self.asset_version,
             )
@@ -261,6 +286,7 @@ class NemsisXSDValidator:
                 valid=False,
                 xsd_valid=False,
                 schematron_valid=False,
+                checksum_sha256=checksum_sha256,
                 xsd_errors=[
                     f"Official NEMSIS XSD assets not found at '{self._xsd_path}'. "
                     "Provide either an extracted directory or the official NEMSIS_XSDs.zip bundle."
@@ -274,6 +300,7 @@ class NemsisXSDValidator:
                 valid=False,
                 xsd_valid=False,
                 schematron_valid=False,
+                checksum_sha256=checksum_sha256,
                 xsd_errors=[f"Official NEMSIS Schematron assets not found at '{self._sch_path}'"],
                 asset_version=self.asset_version,
             )
@@ -284,11 +311,6 @@ class NemsisXSDValidator:
         schematron_errors: list[str] = []
         schematron_warnings: list[str] = []
 
-        if isinstance(xml_content, str):
-            xml_bytes = xml_content.encode("utf-8")
-        else:
-            xml_bytes = xml_content
-
         try:
             doc = lxml_etree.fromstring(xml_bytes)
         except lxml_etree.XMLSyntaxError as exc:
@@ -296,6 +318,7 @@ class NemsisXSDValidator:
                 valid=False,
                 xsd_valid=False,
                 schematron_valid=False,
+                checksum_sha256=checksum_sha256,
                 xsd_errors=[f"XML parse error: {exc}"],
                 asset_version=self.asset_version,
             )
@@ -307,6 +330,7 @@ class NemsisXSDValidator:
                 valid=False,
                 xsd_valid=False,
                 schematron_valid=False,
+                checksum_sha256=checksum_sha256,
                 xsd_errors=[f"No official XSD asset found for dataset '{dataset_name}' under '{self._xsd_path}'"],
                 asset_version=self.asset_version,
             )
@@ -347,6 +371,7 @@ class NemsisXSDValidator:
             valid=xsd_valid and schematron_valid,
             xsd_valid=xsd_valid,
             schematron_valid=schematron_valid,
+            checksum_sha256=checksum_sha256,
             xsd_errors=xsd_errors,
             schematron_errors=schematron_errors,
             schematron_warnings=schematron_warnings,
