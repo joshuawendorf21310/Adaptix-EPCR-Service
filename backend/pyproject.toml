@@ -7,7 +7,7 @@ name = "epcr-app"
 version = "0.1.0"
 requires-python = ">=3.11"
 dependencies = [
-    "adaptix-contracts>=1.0.0",
+    "adaptix-contracts @ git+https://github.com/joshuawendorf21310/Adaptix-Contracts.git",
     "fastapi>=0.110.0",
     "uvicorn[standard]>=0.29.0",
     "sqlalchemy>=2.0.0",
