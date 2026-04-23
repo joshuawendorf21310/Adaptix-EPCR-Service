@@ -12,7 +12,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip install --upgrade pip setuptools wheel
+RUN pip install --upgrade pip setuptools wheel alembic
 
 COPY contracts/ /contracts/
 RUN pip install /contracts
@@ -20,6 +20,8 @@ RUN pip install /contracts
 COPY epcr/backend/pyproject.toml /app/pyproject.toml
 COPY epcr/backend/README.md /app/README.md
 COPY epcr/backend/epcr_app /app/epcr_app
+COPY epcr/backend/migrations /app/migrations
+COPY epcr/backend/alembic.ini /app/alembic.ini
 
 RUN pip install .
 
@@ -33,4 +35,4 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:' + __import__('os').environ.get('PORT', '8000') + '/healthz').read()" || exit 1
 
-CMD ["sh", "-c", "uvicorn epcr_app.main:app --host 0.0.0.0 --port ${PORT} --workers 1"]
+CMD ["sh", "-c", "alembic upgrade head && uvicorn epcr_app.main:app --host 0.0.0.0 --port ${PORT} --workers 1"]
