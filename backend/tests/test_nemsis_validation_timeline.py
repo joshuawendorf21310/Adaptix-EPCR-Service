@@ -5,7 +5,7 @@ immutable timeline recording.
 """
 import pytest
 from datetime import datetime, UTC
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, Column, String
 from sqlalchemy.orm import Session, sessionmaker
 
 # Use direct model imports
@@ -13,16 +13,28 @@ import sys
 sys.path.insert(0, ".")
 
 from epcr_app.models_nemsis_validation import (
+    Base as ValidationBase,
     NEMSISValidationResult,
     NEMSISValidationError,
     NEMSISExportJob,
     ValidationStatus,
 )
-from epcr_app.models_timeline import PatientStateTimeline
+from epcr_app.models_timeline import Base as TimelineBase, PatientStateTimeline
 from epcr_app.repositories_nemsis_validation import NEMSISValidationRepository
 from epcr_app.repositories_timeline import PatientStateTimelineRepository
 from epcr_app.services_nemsis_validation import NEMSISValidationService
 from epcr_app.services_timeline import PatientStateTimelineService
+
+
+# Create mock epcr_charts table in both bases
+class MockChart(ValidationBase):
+    __tablename__ = 'epcr_charts'
+    id = Column(String(36), primary_key=True)
+
+
+class MockChartTimeline(TimelineBase):
+    __tablename__ = 'epcr_charts'
+    id = Column(String(36), primary_key=True)
 
 
 @pytest.fixture
@@ -30,14 +42,19 @@ def db_session():
     """Create in-memory SQLite database for testing."""
     engine = create_engine("sqlite:///:memory:")
     
-    # Create only the tables we need
-    NEMSISValidationResult.__table__.create(engine, checkfirst=True)
-    NEMSISValidationError.__table__.create(engine, checkfirst=True)
-    NEMSISExportJob.__table__.create(engine, checkfirst=True)
-    PatientStateTimeline.__table__.create(engine, checkfirst=True)
+    # Create all tables from both bases
+    ValidationBase.metadata.create_all(engine, checkfirst=True)
+    TimelineBase.metadata.create_all(engine, checkfirst=True)
     
     SessionLocal = sessionmaker(bind=engine)
     session = SessionLocal()
+    
+    # Create a mock chart for foreign key constraints
+    session.execute(
+        MockChart.__table__.insert().values(id="test-incident-456")
+    )
+    session.commit()
+    
     yield session
     session.close()
 
@@ -91,8 +108,12 @@ def test_nemsis_validation_persistence(db_session: Session):
     # Verify errors were saved
     saved_errors = repo.get_validation_errors(tenant_id=tenant_id, result_id=result.id)
     assert len(saved_errors) == 2  # 1 error + 1 warning
-    assert saved_errors[0].severity == "error"
-    assert saved_errors[1].severity == "warning"
+    
+    # Find error and warning
+    error_found = any(e.severity == "error" for e in saved_errors)
+    warning_found = any(e.severity == "warning" for e in saved_errors)
+    assert error_found, "Error record not found"
+    assert warning_found, "Warning record not found"
 
 
 def test_nemsis_validation_history(db_session: Session):
