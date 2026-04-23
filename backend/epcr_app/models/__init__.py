@@ -1,64 +1,63 @@
-"""Gravity-level shared ORM model exports.
+"""Stable ORM export boundary for the EPCR service.
 
-Authoritative aggregation layer for all ORM models used across:
-- core clinical domain
-- OCR ingestion and review
-- structured extraction
-- transport-link artifacts
-- NEMSIS binding and export readiness
-
-This module enforces:
-- explicit export surface (no wildcard leakage)
-- zero duplicate symbol exposure
-- stable import boundary for all downstream services
+The repository contains both a legacy flat module at `epcr_app/models.py` and a
+package at `epcr_app/models/`. This package intentionally re-exports the real
+ORM symbols from the legacy module file so downstream imports from
+`epcr_app.models` continue to work even when the package shadows the module.
 """
 
 from __future__ import annotations
 
-# -------------------------
-# Core Models
-# -------------------------
+import importlib.util
+from pathlib import Path
 
-from epcr_app.models.core import (
-    Base,
-    Chart,
-    ChartStatus,
-    ComplianceStatus,
-    FieldSource,
-    ReviewState,
-    FindingEvolution,
-    ArSessionStatus,
-    AddressValidationState,
-    ProtocolFamily,
-    InterventionExportState,
-    ClinicalNoteReviewState,
-    ProtocolRecommendationState,
-    DerivedOutputType,
-    Vitals,
-    Assessment,
-    PatientProfile,
-    AssessmentFinding,
-    VisualOverlay,
-    ArSession,
-    ArAnchor,
-    ChartAddress,
-    MedicationAdministration,
-    EpcrSignatureArtifact,
-    ClinicalIntervention,
-    ClinicalNote,
-    ProtocolRecommendation,
-    DerivedChartOutput,
-    NemsisMappingRecord,
-    NemsisCompliance,
-    NemsisExportHistory,
-    EpcrAuditLog,
-)
 
-# -------------------------
-# OCR Models
-# -------------------------
+def _load_legacy_models_module():
+    module_path = Path(__file__).resolve().parents[1] / "models.py"
+    spec = importlib.util.spec_from_file_location("epcr_app._legacy_models", module_path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"Unable to load legacy models module from {module_path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
-from epcr_app.models.ocr import (
+
+_legacy_models = _load_legacy_models_module()
+
+Base = _legacy_models.Base
+Chart = _legacy_models.Chart
+ChartStatus = _legacy_models.ChartStatus
+ComplianceStatus = _legacy_models.ComplianceStatus
+FieldSource = _legacy_models.FieldSource
+ReviewState = _legacy_models.ReviewState
+FindingEvolution = _legacy_models.FindingEvolution
+ArSessionStatus = _legacy_models.ArSessionStatus
+AddressValidationState = _legacy_models.AddressValidationState
+ProtocolFamily = _legacy_models.ProtocolFamily
+InterventionExportState = _legacy_models.InterventionExportState
+ClinicalNoteReviewState = _legacy_models.ClinicalNoteReviewState
+ProtocolRecommendationState = _legacy_models.ProtocolRecommendationState
+DerivedOutputType = _legacy_models.DerivedOutputType
+Vitals = _legacy_models.Vitals
+Assessment = _legacy_models.Assessment
+PatientProfile = _legacy_models.PatientProfile
+AssessmentFinding = _legacy_models.AssessmentFinding
+VisualOverlay = _legacy_models.VisualOverlay
+ArSession = _legacy_models.ArSession
+ArAnchor = _legacy_models.ArAnchor
+ChartAddress = _legacy_models.ChartAddress
+MedicationAdministration = _legacy_models.MedicationAdministration
+EpcrSignatureArtifact = _legacy_models.EpcrSignatureArtifact
+ClinicalIntervention = _legacy_models.ClinicalIntervention
+ClinicalNote = _legacy_models.ClinicalNote
+ProtocolRecommendation = _legacy_models.ProtocolRecommendation
+DerivedChartOutput = _legacy_models.DerivedChartOutput
+NemsisMappingRecord = _legacy_models.NemsisMappingRecord
+NemsisCompliance = _legacy_models.NemsisCompliance
+NemsisExportHistory = _legacy_models.NemsisExportHistory
+EpcrAuditLog = _legacy_models.EpcrAuditLog
+
+from epcr_app.models.ocr import (  # noqa: E402
     OcrSourceType,
     OcrJobStatus,
     OcrFieldConfidence,
@@ -70,22 +69,12 @@ from epcr_app.models.ocr import (
     OcrFieldCandidate,
     OcrFieldReview,
 )
-
-# -------------------------
-# Transport Link Models
-# -------------------------
-
-from epcr_app.models.transport_link import (
+from epcr_app.models.transport_link import (  # noqa: E402
     CareTransportLink,
     CareEncounterArtifactLink,
     CareOcrReviewQueue,
 )
-
-# -------------------------
-# NEMSIS Binding Models
-# -------------------------
-
-from epcr_app.models.nemsis_binding import (
+from epcr_app.models.nemsis_binding import (  # noqa: E402
     NemsisBindingStatus,
     NemsisBindingReviewAction,
     NemsisFieldBinding,
@@ -93,23 +82,10 @@ from epcr_app.models.nemsis_binding import (
     NemsisExportReadinessSnapshot,
     NemsisBindingSourceLink,
 )
-
-# -------------------------
-# Structured Extraction
-# -------------------------
-
-from epcr_app.models.structured_extraction import StructuredExtraction
-
-
-# -------------------------
-# Explicit Export Surface
-# -------------------------
+from epcr_app.models.structured_extraction import StructuredExtraction  # noqa: E402
 
 __all__ = [
-    # Base
     "Base",
-
-    # Core
     "Chart",
     "ChartStatus",
     "ComplianceStatus",
@@ -141,8 +117,6 @@ __all__ = [
     "NemsisCompliance",
     "NemsisExportHistory",
     "EpcrAuditLog",
-
-    # OCR
     "OcrSourceType",
     "OcrJobStatus",
     "OcrFieldConfidence",
@@ -153,52 +127,14 @@ __all__ = [
     "OcrResult",
     "OcrFieldCandidate",
     "OcrFieldReview",
-
-    # Transport
     "CareTransportLink",
     "CareEncounterArtifactLink",
     "CareOcrReviewQueue",
-
-    # NEMSIS Binding
     "NemsisBindingStatus",
     "NemsisBindingReviewAction",
     "NemsisFieldBinding",
     "NemsisBindingReview",
     "NemsisExportReadinessSnapshot",
     "NemsisBindingSourceLink",
-
-    # Structured Extraction
     "StructuredExtraction",
 ]
-
-
-# -------------------------
-# Integrity Enforcement
-# -------------------------
-
-def _validate_no_duplicates():
-    seen = set()
-    duplicates = set()
-
-    for name in __all__:
-        if name in seen:
-            duplicates.add(name)
-        seen.add(name)
-
-    if duplicates:
-        raise RuntimeError(f"Duplicate exports detected in models package: {duplicates}")
-
-
-def _validate_symbol_resolution():
-    missing = []
-
-    for name in __all__:
-        if name not in globals():
-            missing.append(name)
-
-    if missing:
-        raise RuntimeError(f"Missing model exports: {missing}")
-
-
-_validate_no_duplicates()
-_validate_symbol_resolution()

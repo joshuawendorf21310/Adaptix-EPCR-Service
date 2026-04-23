@@ -66,17 +66,43 @@ class NemsisXSDValidator:
         except ImportError:
             return False
 
-    def _fail(self, message: str, checksum: str) -> dict[str, Any]:
+    def _fail(
+        self,
+        message: str,
+        checksum: str,
+        *,
+        validation_skipped: bool = True,
+    ) -> dict[str, Any]:
         return {
             "valid": False,
             "xsd_valid": False,
             "schematron_valid": False,
+            "validation_skipped": validation_skipped,
+            "blocking_reason": f"Validation did not run: {message}" if validation_skipped else None,
+            "xsd_errors": [message],
+            "schematron_errors": [],
+            "schematron_warnings": [],
+            "cardinality_errors": [],
             "errors": [message],
             "warnings": [],
             "checksum_sha256": checksum,
             "validator_asset_version": self.asset_version,
             "execution_ms": 0,
         }
+
+    def get_xsd_asset_path(self, dataset: str) -> str | None:
+        try:
+            xsd_root = self._resolve_xsd_root()
+        except Exception:
+            return None
+        return self._find(xsd_root, (f"{dataset}_v3.xsd",))
+
+    def get_schematron_asset_path(self, dataset: str) -> str | None:
+        try:
+            sch_root = self._resolve_schematron_root()
+        except Exception:
+            return None
+        return self._find(sch_root, (f"{dataset}.sch", f"{dataset}_v3.sch"))
 
     def _resolve_xsd_root(self) -> str:
         if not self._xsd_path:
@@ -123,7 +149,7 @@ class NemsisXSDValidator:
         try:
             doc = ET.fromstring(xml_bytes)
         except Exception as exc:
-            return self._fail(f"XML parse error: {exc}", checksum)
+            return self._fail(f"XML parse error: {exc}", checksum, validation_skipped=False)
 
         try:
             xsd_root = self._resolve_xsd_root()
@@ -133,7 +159,7 @@ class NemsisXSDValidator:
 
         dataset = doc.tag.split("}")[-1]
 
-        xsd_file = self._find(xsd_root, (f"{dataset}_v3.xsd",))
+        xsd_file = self.get_xsd_asset_path(dataset)
         if not xsd_file:
             return self._fail(f"Missing XSD for dataset {dataset}", checksum)
 
@@ -150,11 +176,17 @@ class NemsisXSDValidator:
             xsd_errors.append(str(exc))
 
         if not xsd_errors:
-            sch_file = self._find(sch_root, (f"{dataset}.sch", f"{dataset}_v3.sch"))
+            sch_file = self.get_schematron_asset_path(dataset)
             if not sch_file:
                 schematron_errors.append("Missing Schematron file")
             else:
                 try:
+                    sch_text = Path(sch_file).read_text(encoding="utf-8", errors="ignore")
+                    if 'queryBinding="xslt2"' in sch_text and not self._saxon_available:
+                        return self._fail(
+                            f"Schematron {Path(sch_file).name} requires saxonche/XSLT2 support",
+                            checksum,
+                        )
                     from lxml.isoschematron import Schematron
 
                     schematron = Schematron(ET.parse(sch_file), store_report=True)
@@ -177,6 +209,12 @@ class NemsisXSDValidator:
             "valid": valid,
             "xsd_valid": not xsd_errors,
             "schematron_valid": not schematron_errors,
+            "validation_skipped": False,
+            "blocking_reason": None,
+            "xsd_errors": xsd_errors,
+            "schematron_errors": schematron_errors,
+            "schematron_warnings": schematron_warnings,
+            "cardinality_errors": [],
             "errors": [*xsd_errors, *schematron_errors],
             "warnings": schematron_warnings,
             "checksum_sha256": checksum,

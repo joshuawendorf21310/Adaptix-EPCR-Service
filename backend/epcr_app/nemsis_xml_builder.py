@@ -11,7 +11,13 @@ import logging
 import os
 from datetime import datetime, timezone
 from pathlib import Path
+import re
 from xml.etree.ElementTree import Element, SubElement, fromstring, register_namespace, tostring
+
+from epcr_app.nemsis_template_resolver import (
+    build_nemsis_xml_from_template,
+    resolve_test_case_id_for_response_number,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +31,10 @@ _STATE_TEMPLATE_PATH = Path(__file__).with_name("nemsis_pretesting_v351") / "ful
 
 register_namespace("", _NEMSIS_NS)
 register_namespace("xsi", _NEMSIS_XSI)
+
+
+class NemsisBuildError(ValueError):
+    """Raised when export XML cannot be built truthfully."""
 
 
 class NemsisXmlBuilder:
@@ -45,11 +55,19 @@ class NemsisXmlBuilder:
                 with nemsis_field_id and value attributes.
         """
         self._chart = chart
+        self._mapping_records = list(mapping_records)
         self._fields: dict[str, str] = {
             str(rec.nemsis_field): str(rec.nemsis_value)
             for rec in mapping_records
             if getattr(rec, "nemsis_value", None) is not None and getattr(rec, "nemsis_field", None)
         }
+        self._field_values: dict[str, list[str]] = {}
+        for rec in self._mapping_records:
+            field = getattr(rec, "nemsis_field", None)
+            value = getattr(rec, "nemsis_value", None)
+            if field is None or value is None:
+                continue
+            self._field_values.setdefault(str(field), []).append(str(value))
         self._warnings: list[str] = []
         self._asset_version = (asset_version or os.environ.get("NEMSIS_VALIDATOR_ASSET_VERSION") or _NEMSIS_VERSION).strip()
 
@@ -130,6 +148,71 @@ class NemsisXmlBuilder:
             return ["dAgency.01"]
         return elements
 
+    def _require_report_identifier(self) -> str:
+        identifier = (
+            getattr(self._chart, "call_number", None)
+            or getattr(self._chart, "report_number", None)
+            or self._fields.get("eRecord.01")
+            or getattr(self._chart, "id", None)
+        )
+        if not identifier:
+            raise NemsisBuildError("Missing legal patient care report identifier for NEMSIS export")
+        return str(identifier)
+
+    def _validate_coded_fields(self) -> None:
+        coded_fields = {"eResponse.05"}
+        for field_name in coded_fields:
+            value = self._fields.get(field_name)
+            if value and not re.fullmatch(r"\d+", value):
+                raise NemsisBuildError(
+                    f"coded field {field_name} contains non-numeric validation value: {value}"
+                )
+
+    def _resolve_template_test_case_id(self) -> str | None:
+        for attr_name in ("nemsis_template_id", "nemsis_test_case_id", "test_case_id", "scenario_code"):
+            attr_value = getattr(self._chart, attr_name, None)
+            if attr_value:
+                try:
+                    return resolve_test_case_id_for_response_number(str(attr_value)) or str(attr_value)
+                except Exception:
+                    continue
+        return resolve_test_case_id_for_response_number(self._fields.get("eResponse.04"))
+
+    def _template_field_overrides(self) -> dict[str, str]:
+        overrides: dict[str, str] = {}
+        for field_name, values in self._field_values.items():
+            if not values:
+                continue
+            if field_name == "eResponse.04":
+                continue
+            if field_name == "eVitals.901":
+                continue
+            overrides[field_name] = values[0]
+        return overrides
+
+    def _template_custom_elements(self, test_case_id: str) -> dict[str, list[dict[str, object]]]:
+        custom_elements: dict[str, list[dict[str, object]]] = {}
+        if test_case_id == "2025-EMS-5-MentalHealthCrisis_v351":
+            values = self._field_values.get("eVitals.901", [])
+            if values:
+                custom_elements["eVitals.901"] = [
+                    {"group_index": index, "value": value}
+                    for index, value in enumerate(values)
+                ]
+        return custom_elements
+
+    def _build_template_xml(self, test_case_id: str) -> tuple[bytes, list[str]]:
+        chart_payload = {
+            "patient_care_report_number": self._require_report_identifier(),
+            "software_creator": os.environ.get("NEMSIS_SOFTWARE_CREATOR", _SOFTWARE_CREATOR),
+            "software_name": os.environ.get("NEMSIS_SOFTWARE_NAME", _SOFTWARE_NAME),
+            "software_version": os.environ.get("NEMSIS_SOFTWARE_VERSION", _SOFTWARE_VERSION),
+            "field_overrides": self._template_field_overrides(),
+            "custom_elements": self._template_custom_elements(test_case_id),
+        }
+        xml_bytes, _ = build_nemsis_xml_from_template(test_case_id, chart=chart_payload)
+        return xml_bytes, list(self._warnings)
+
     def build(self) -> tuple[bytes, list[str]]:
         """Build NEMSIS 3.5.1 ``StateDataSet`` XML bytes.
 
@@ -138,6 +221,14 @@ class NemsisXmlBuilder:
                 xml_bytes — UTF-8 encoded NEMSIS 3.5.1 XML.
                 warnings — List of fields that fell back to NOT_RECORDED.
         """
+        self._validate_coded_fields()
+
+        test_case_id = self._resolve_template_test_case_id()
+        if test_case_id:
+            return self._build_template_xml(test_case_id)
+
+        self._require_report_identifier()
+
         root = self._load_state_template()
         root.set(f"{{{_NEMSIS_XSI}}}schemaLocation", self._schema_location())
 

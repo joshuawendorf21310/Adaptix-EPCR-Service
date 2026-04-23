@@ -65,9 +65,10 @@ def test_validator_reports_missing_assets_as_deterministic_failure(
     )
 
     assert result["valid"] is False
-    assert result["validation_skipped"] is False
+    assert result["validation_skipped"] is True
     assert result["xsd_valid"] is False
     assert result["schematron_valid"] is False
+    assert result["blocking_reason"]
     assert result["checksum_sha256"]
     assert result["errors"]
 
