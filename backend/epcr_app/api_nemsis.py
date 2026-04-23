@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from epcr_app.db import get_session
 from epcr_app.models import NemsisMappingRecord
+from epcr_app.nemsis.service import AllergyVerticalSliceService
 from epcr_app.services import ChartService
 
 logger = logging.getLogger(__name__)
@@ -75,6 +76,34 @@ class ExportPreviewResponse(BaseModel):
     warnings: list[BlockerDetail]
     can_export: bool
     estimated_xml_size_bytes: int
+
+
+class AllergyVerticalSliceRequest(BaseModel):
+    case_id: str = "2025-EMS-1-Allergy_v351"
+    integration_enabled: bool = False
+    patient_care_report_number: str = "PCR-ALLERGY-2025-0001"
+    software_creator: str = "Adaptix EPCR Service"
+    software_name: str = "Adaptix EPCR Allergy CTA Slice"
+    software_version: str = "3.5.1"
+
+
+class AllergyVerticalSliceResponse(BaseModel):
+    case_id: str
+    tactical_test_key: str
+    demographic_values: dict[str, object]
+    artifact_path: str
+    unresolved_placeholders: list[str]
+    repeated_group_counts_before: dict[str, int]
+    repeated_group_counts_after: dict[str, int]
+    xsd_validation: dict[str, object]
+    schematron_validation: dict[str, object]
+    cta_submission: dict[str, object]
+    xsd_result_path: str
+    schematron_result_path: str
+    fidelity_result_path: str
+    cta_request_path: str
+    cta_response_path: str
+    cta_parsed_result_path: str
 
 
 def _require_header(value: str | None, name: str) -> str:
@@ -246,3 +275,45 @@ async def get_export_preview(
         can_export=can_export,
         estimated_xml_size_bytes=0,
     )
+
+
+@router.post("/vertical-slice/allergy", response_model=AllergyVerticalSliceResponse)
+async def build_allergy_vertical_slice(
+    payload: AllergyVerticalSliceRequest,
+    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
+):
+    """Build the locked official Allergy CTA vertical slice end to end.
+
+    Args:
+        payload: Runtime settings for the single supported Allergy case.
+        x_tenant_id: Tenant header required for governance/audit consistency.
+
+    Returns:
+        AllergyVerticalSliceResponse: Full artifact, validation, and CTA evidence payload.
+
+    Raises:
+        HTTPException: If the tenant header is missing or the vertical slice fails.
+    """
+
+    _require_header(x_tenant_id, "X-Tenant-ID")
+    service = AllergyVerticalSliceService()
+    try:
+        result = await service.run(
+            case_id=payload.case_id,
+            integration_enabled=payload.integration_enabled,
+            patient_care_report_number=payload.patient_care_report_number,
+            software_creator=payload.software_creator,
+            software_name=payload.software_name,
+            software_version=payload.software_version,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)) from exc
+    except RuntimeError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+    except Exception as exc:  # pragma: no cover - surfaced truthfully to caller
+        logger.exception("Allergy vertical slice execution failed")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Allergy vertical slice failed: {exc}",
+        ) from exc
+    return AllergyVerticalSliceResponse(**result.to_dict())
