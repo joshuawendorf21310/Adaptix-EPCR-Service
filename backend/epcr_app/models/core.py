@@ -1,4 +1,3 @@
-```python
 """Gravity-level CTA harness — fully aligned with ORM truth, compliance engine, and export lifecycle.
 
 Enforces:
@@ -272,4 +271,3 @@ def _report(checks: list[Check]) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(asyncio.run(run()))
-```

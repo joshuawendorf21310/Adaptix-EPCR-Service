@@ -10,6 +10,8 @@ Routers included:
 - api_nemsis: NEMSIS validation, readiness, mapping, and preview (4 routes)
 - api_nemsis_packs: NEMSIS resource pack lifecycle (9 routes)
 - api_nemsis_submissions: NEMSIS state submission lifecycle (8 routes)
+- api_nemsis_validation: NEMSIS validation persistence and history (3 routes)
+- api_timeline: Patient state timeline tracking (3 routes)
 """
 import logging
 from contextlib import asynccontextmanager
@@ -19,6 +21,8 @@ from epcr_app.api_export import router as export_router
 from epcr_app.api_nemsis import router as nemsis_router
 from epcr_app.api_nemsis_packs import router as nemsis_packs_router
 from epcr_app.api_nemsis_submissions import router as nemsis_submissions_router
+from epcr_app.api_nemsis_validation import router as nemsis_validation_router
+from epcr_app.api_timeline import router as timeline_router
 from epcr_app.db import init_db
 
 logger = logging.getLogger(__name__)
@@ -59,6 +63,8 @@ app.include_router(export_router)
 app.include_router(nemsis_router)
 app.include_router(nemsis_packs_router)
 app.include_router(nemsis_submissions_router)
+app.include_router(nemsis_validation_router)
+app.include_router(timeline_router)
 
 logger.info("Care service configured")
 
