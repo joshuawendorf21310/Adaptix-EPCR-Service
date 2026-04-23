@@ -1,27 +1,36 @@
 FROM python:3.11-slim
 
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONPATH=/app \
+    PIP_NO_CACHE_DIR=1 \
+    PORT=8000
+
 WORKDIR /app
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl \
+    && apt-get install -y --no-install-recommends build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip install --no-cache-dir --upgrade pip
+RUN pip install --upgrade pip setuptools wheel
 
 COPY contracts/ /contracts/
-RUN pip install --no-cache-dir /contracts
+RUN pip install /contracts
 
-COPY epcr/backend/pyproject.toml ./
-COPY epcr/backend/epcr_app/ ./epcr_app/
+COPY epcr/backend/pyproject.toml /app/pyproject.toml
+COPY epcr/backend/README.md /app/README.md
+COPY epcr/backend/epcr_app /app/epcr_app
 
-RUN pip install --no-cache-dir .
+RUN pip install .
 
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONPATH=/app
+RUN adduser --disabled-password --gecos "" appuser \
+    && chown -R appuser:appuser /app
+
+USER appuser
 
 EXPOSE 8000
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:8000/healthz || exit 1
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:' + __import__('os').environ.get('PORT', '8000') + '/healthz').read()" || exit 1
 
-CMD ["uvicorn", "epcr_app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+CMD ["sh", "-c", "uvicorn epcr_app.main:app --host 0.0.0.0 --port ${PORT} --workers 1"]

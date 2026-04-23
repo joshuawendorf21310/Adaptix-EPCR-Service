@@ -4,16 +4,21 @@ These models link care encounters to TransportLink records and signed
 artifacts. The care domain does not own transport data; it maintains
 links by cross-domain ID reference only, preserving the polyrepo boundary.
 """
+
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
-from typing import Optional
+from datetime import datetime, timezone
 
-from sqlalchemy import Boolean, DateTime, String, Text
+from sqlalchemy import Boolean, DateTime, Index, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from epcr_app.models import Base
+
+
+def utc_now() -> datetime:
+    """Return the current UTC time as a timezone-aware datetime."""
+    return datetime.now(timezone.utc)
 
 
 class CareTransportLink(Base):
@@ -33,19 +38,49 @@ class CareTransportLink(Base):
     """
 
     __tablename__ = "epcr_transport_links"
+    __table_args__ = (
+        UniqueConstraint(
+            "tenant_id",
+            "transport_request_id",
+            name="uq_epcr_transport_links_tenant_transport_request_id",
+        ),
+        Index(
+            "ix_epcr_transport_links_tenant_chart_id",
+            "tenant_id",
+            "chart_id",
+        ),
+    )
 
     id: Mapped[str] = mapped_column(
-        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
+        String(36),
+        primary_key=True,
+        default=lambda: str(uuid.uuid4()),
     )
     tenant_id: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
     chart_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
-    transport_request_id: Mapped[str] = mapped_column(String(36), nullable=False, unique=True, index=True)
+    transport_request_id: Mapped[str] = mapped_column(
+        String(36),
+        nullable=False,
+        index=True,
+    )
     linked_by_user_id: Mapped[str] = mapped_column(String(255), nullable=False)
-    linked_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow, index=True)
-    pcs_artifact_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True)
-    aob_artifact_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True)
-    encounter_fields_mapped: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
-    mapped_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    linked_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=utc_now,
+        index=True,
+    )
+    pcs_artifact_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    aob_artifact_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    encounter_fields_mapped: Mapped[bool] = mapped_column(
+        Boolean,
+        nullable=False,
+        default=False,
+    )
+    mapped_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
 
 
 class CareEncounterArtifactLink(Base):
@@ -58,7 +93,7 @@ class CareEncounterArtifactLink(Base):
         id: UUID primary key.
         tenant_id: Tenant identifier.
         chart_id: Care chart ID.
-        transport_link_id: FK to CareTransportLink.
+        transport_link_id: ID of the related CareTransportLink record.
         artifact_type: Type classification (pcs, aob, consent, etc.).
         signed_artifact_id: TransportLink signed artifact ID.
         s3_key: S3 key for the signed PDF.
@@ -66,17 +101,41 @@ class CareEncounterArtifactLink(Base):
     """
 
     __tablename__ = "epcr_encounter_artifact_links"
+    __table_args__ = (
+        UniqueConstraint(
+            "tenant_id",
+            "signed_artifact_id",
+            name="uq_epcr_encounter_artifact_links_tenant_signed_artifact_id",
+        ),
+        Index(
+            "ix_epcr_encounter_artifact_links_tenant_chart_id",
+            "tenant_id",
+            "chart_id",
+        ),
+        Index(
+            "ix_epcr_encounter_artifact_links_tenant_transport_link_id",
+            "tenant_id",
+            "transport_link_id",
+        ),
+    )
 
     id: Mapped[str] = mapped_column(
-        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
+        String(36),
+        primary_key=True,
+        default=lambda: str(uuid.uuid4()),
     )
     tenant_id: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
     chart_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
     transport_link_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
-    artifact_type: Mapped[str] = mapped_column(String(50), nullable=False)
-    signed_artifact_id: Mapped[str] = mapped_column(String(36), nullable=False)
+    artifact_type: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
+    signed_artifact_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
     s3_key: Mapped[str] = mapped_column(String(500), nullable=False)
-    linked_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow, index=True)
+    linked_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=utc_now,
+        index=True,
+    )
 
 
 class CareOcrReviewQueue(Base):
@@ -89,7 +148,7 @@ class CareOcrReviewQueue(Base):
     Attributes:
         id: UUID primary key.
         tenant_id: Tenant identifier.
-        ocr_job_id: FK to the OcrJob requiring review.
+        ocr_job_id: ID of the OCR job requiring review.
         chart_id: Care chart the review is linked to.
         transport_request_id: Optional transport request reference.
         assigned_to_user_id: Reviewer assigned to this entry.
@@ -101,17 +160,60 @@ class CareOcrReviewQueue(Base):
     """
 
     __tablename__ = "epcr_ocr_review_queue"
+    __table_args__ = (
+        UniqueConstraint(
+            "tenant_id",
+            "ocr_job_id",
+            name="uq_epcr_ocr_review_queue_tenant_ocr_job_id",
+        ),
+        Index(
+            "ix_epcr_ocr_review_queue_tenant_removed_priority",
+            "tenant_id",
+            "removed",
+            "priority",
+        ),
+    )
 
     id: Mapped[str] = mapped_column(
-        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
+        String(36),
+        primary_key=True,
+        default=lambda: str(uuid.uuid4()),
     )
     tenant_id: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
-    ocr_job_id: Mapped[str] = mapped_column(String(36), nullable=False, unique=True, index=True)
-    chart_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True, index=True)
-    transport_request_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True, index=True)
-    assigned_to_user_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
-    priority: Mapped[str] = mapped_column(String(20), nullable=False, default="normal", index=True)
-    queued_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow, index=True)
-    review_started_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
-    review_completed_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
-    removed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, index=True)
+    ocr_job_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
+    chart_id: Mapped[str | None] = mapped_column(String(36), nullable=True, index=True)
+    transport_request_id: Mapped[str | None] = mapped_column(
+        String(36),
+        nullable=True,
+        index=True,
+    )
+    assigned_to_user_id: Mapped[str | None] = mapped_column(
+        String(255),
+        nullable=True,
+    )
+    priority: Mapped[str] = mapped_column(
+        String(20),
+        nullable=False,
+        default="normal",
+        index=True,
+    )
+    queued_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=utc_now,
+        index=True,
+    )
+    review_started_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+    review_completed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+    removed: Mapped[bool] = mapped_column(
+        Boolean,
+        nullable=False,
+        default=False,
+        index=True,
+    )

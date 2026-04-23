@@ -1,22 +1,25 @@
-"""epcr models sub-package init.
+"""Gravity-level shared ORM model exports.
 
-Exposes all new OCR, transport link, NEMSIS binding, and structured
-extraction models. Defines Base inline and re-exports core models
-from epcr_app.models_core so callers can import from this package.
+Authoritative aggregation layer for all ORM models used across:
+- core clinical domain
+- OCR ingestion and review
+- structured extraction
+- transport-link artifacts
+- NEMSIS binding and export readiness
+
+This module enforces:
+- explicit export surface (no wildcard leakage)
+- zero duplicate symbol exposure
+- stable import boundary for all downstream services
 """
-import importlib
-import sys
-from pathlib import Path
 
-# Load the sibling models.py file directly since the package shadows it.
-_models_file = Path(__file__).resolve().parent.parent / "models.py"
-_spec = importlib.util.spec_from_file_location("epcr_app._models_core", str(_models_file))
-_models_core = importlib.util.module_from_spec(_spec)
-sys.modules["epcr_app._models_core"] = _models_core
-_spec.loader.exec_module(_models_core)
+from __future__ import annotations
 
-# Re-export everything from the core models file
-from epcr_app._models_core import (
+# -------------------------
+# Core Models
+# -------------------------
+
+from epcr_app.models.core import (
     Base,
     Chart,
     ChartStatus,
@@ -50,32 +53,63 @@ from epcr_app._models_core import (
     NemsisExportHistory,
     EpcrAuditLog,
 )
+
+# -------------------------
+# OCR Models
+# -------------------------
+
 from epcr_app.models.ocr import (
     OcrSourceType,
     OcrJobStatus,
     OcrFieldConfidence,
+    OcrFieldReviewAction,
+    OcrFieldReviewStatus,
     OcrJob,
     OcrSource,
     OcrResult,
     OcrFieldCandidate,
     OcrFieldReview,
 )
+
+# -------------------------
+# Transport Link Models
+# -------------------------
+
 from epcr_app.models.transport_link import (
     CareTransportLink,
     CareEncounterArtifactLink,
     CareOcrReviewQueue,
 )
+
+# -------------------------
+# NEMSIS Binding Models
+# -------------------------
+
 from epcr_app.models.nemsis_binding import (
-    NemsisBidingStatus,
+    NemsisBindingStatus,
+    NemsisBindingReviewAction,
     NemsisFieldBinding,
     NemsisBindingReview,
     NemsisExportReadinessSnapshot,
-    CareNemsisTransportBindingLink,
+    NemsisBindingSourceLink,
 )
-from epcr_app.models.extract import TransportStructuredExtraction
+
+# -------------------------
+# Structured Extraction
+# -------------------------
+
+from epcr_app.models.structured_extraction import StructuredExtraction
+
+
+# -------------------------
+# Explicit Export Surface
+# -------------------------
 
 __all__ = [
+    # Base
     "Base",
+
+    # Core
     "Chart",
     "ChartStatus",
     "ComplianceStatus",
@@ -107,21 +141,64 @@ __all__ = [
     "NemsisCompliance",
     "NemsisExportHistory",
     "EpcrAuditLog",
+
+    # OCR
     "OcrSourceType",
     "OcrJobStatus",
     "OcrFieldConfidence",
+    "OcrFieldReviewAction",
+    "OcrFieldReviewStatus",
     "OcrJob",
     "OcrSource",
     "OcrResult",
     "OcrFieldCandidate",
     "OcrFieldReview",
+
+    # Transport
     "CareTransportLink",
     "CareEncounterArtifactLink",
     "CareOcrReviewQueue",
-    "NemsisBidingStatus",
+
+    # NEMSIS Binding
+    "NemsisBindingStatus",
+    "NemsisBindingReviewAction",
     "NemsisFieldBinding",
     "NemsisBindingReview",
     "NemsisExportReadinessSnapshot",
-    "CareNemsisTransportBindingLink",
-    "TransportStructuredExtraction",
+    "NemsisBindingSourceLink",
+
+    # Structured Extraction
+    "StructuredExtraction",
 ]
+
+
+# -------------------------
+# Integrity Enforcement
+# -------------------------
+
+def _validate_no_duplicates():
+    seen = set()
+    duplicates = set()
+
+    for name in __all__:
+        if name in seen:
+            duplicates.add(name)
+        seen.add(name)
+
+    if duplicates:
+        raise RuntimeError(f"Duplicate exports detected in models package: {duplicates}")
+
+
+def _validate_symbol_resolution():
+    missing = []
+
+    for name in __all__:
+        if name not in globals():
+            missing.append(name)
+
+    if missing:
+        raise RuntimeError(f"Missing model exports: {missing}")
+
+
+_validate_no_duplicates()
+_validate_symbol_resolution()

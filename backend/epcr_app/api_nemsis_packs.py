@@ -1,21 +1,21 @@
-"""NEMSIS resource pack management API routes.
+"""NEMSIS 3.5.1 gravity-level resource pack management API.
 
-Provides routes for creating, uploading files to, activating, staging,
-archiving, and querying NEMSIS resource packs. All state transitions are
-persisted. S3 upload occurs on file ingest when configured.
+Authoritative control plane for:
+- pack lifecycle (strict state machine)
+- file ingestion with integrity enforcement
+- validation gating before activation
+- immutability after activation
+- audit-safe transitions
 
-Routes:
-- POST   /api/v1/epcr/nemsis/packs                     — create pack
-- GET    /api/v1/epcr/nemsis/packs                     — list packs
-- GET    /api/v1/epcr/nemsis/packs/{pack_id}           — get pack
-- POST   /api/v1/epcr/nemsis/packs/{pack_id}/activate  — activate pack
-- POST   /api/v1/epcr/nemsis/packs/{pack_id}/archive   — archive pack
-- POST   /api/v1/epcr/nemsis/packs/{pack_id}/stage     — stage pack
-- POST   /api/v1/epcr/nemsis/packs/{pack_id}/files     — upload file to pack
-- GET    /api/v1/epcr/nemsis/packs/{pack_id}/files     — list pack files
-- GET    /api/v1/epcr/nemsis/packs/{pack_id}/completeness — completeness check
+All transitions are enforced at the API boundary.
 """
+
+from __future__ import annotations
+
+import hashlib
 import logging
+from enum import Enum
+from typing import Any
 
 from fastapi import APIRouter, Depends, File, Header, HTTPException, UploadFile, status
 from pydantic import BaseModel
@@ -29,27 +29,59 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/epcr/nemsis/packs", tags=["nemsis-packs"])
 
 
-class CreatePackRequest(BaseModel):
-    """Request body for creating a new NEMSIS resource pack."""
+# -------------------------
+# Lifecycle
+# -------------------------
 
+class PackLifecycleStatus(str, Enum):
+    DRAFT = "draft"
+    STAGED = "staged"
+    VALIDATION_FAILED = "validation_failed"
+    READY = "ready"
+    ACTIVE = "active"
+    ARCHIVED = "archived"
+
+
+_ALLOWED_TRANSITIONS = {
+    PackLifecycleStatus.DRAFT: {PackLifecycleStatus.STAGED},
+    PackLifecycleStatus.STAGED: {
+        PackLifecycleStatus.READY,
+        PackLifecycleStatus.VALIDATION_FAILED,
+    },
+    PackLifecycleStatus.VALIDATION_FAILED: {PackLifecycleStatus.STAGED},
+    PackLifecycleStatus.READY: {PackLifecycleStatus.ACTIVE},
+    PackLifecycleStatus.ACTIVE: {PackLifecycleStatus.ARCHIVED},
+}
+
+
+def _enforce_transition(current: str, target: PackLifecycleStatus) -> None:
+    try:
+        current_enum = PackLifecycleStatus(current)
+    except Exception:
+        raise HTTPException(status_code=500, detail="Invalid current pack state")
+
+    if target not in _ALLOWED_TRANSITIONS.get(current_enum, set()):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Illegal state transition {current_enum.value} -> {target.value}",
+        )
+
+
+# -------------------------
+# Models
+# -------------------------
+
+class CreatePackRequest(BaseModel):
     name: str
     pack_type: str
     nemsis_version: str = "3.5.1"
 
 
-def _require_header(value: str | None, name: str) -> str:
-    """Validate that a required HTTP header is present and non-empty.
+# -------------------------
+# Helpers
+# -------------------------
 
-    Args:
-        value: Raw header value from the request.
-        name: Header name used in the error message.
-
-    Returns:
-        Stripped header value.
-
-    Raises:
-        HTTPException: 400 if the header is absent or blank.
-    """
+def _require_non_empty_header(value: str | None, name: str) -> str:
     if not value or not value.strip():
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -58,26 +90,25 @@ def _require_header(value: str | None, name: str) -> str:
     return value.strip()
 
 
-def _require_user_id(value: str | None, name: str) -> str:
-    """Validate that a required user identifier header is present and non-empty.
+def _value_error_status(exc: ValueError) -> int:
+    message = str(exc).lower()
+    if "not found" in message:
+        return status.HTTP_404_NOT_FOUND
+    return status.HTTP_400_BAD_REQUEST
 
-    Args:
-        value: Raw header value from the request.
-        name: Header name used in the error message.
 
-    Returns:
-        Stripped header value.
-
-    Raises:
-        HTTPException: 400 if the header is absent or blank.
-    """
-    if not value or not value.strip():
+def _validate_file_type(file_name: str) -> None:
+    allowed = (".xsd", ".xml", ".sch", ".json")
+    if not file_name.lower().endswith(allowed):
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"{name} header required",
+            status_code=400,
+            detail=f"Unsupported file type: {file_name}",
         )
-    return value.strip()
 
+
+# -------------------------
+# Routes
+# -------------------------
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_pack(
@@ -85,24 +116,9 @@ async def create_pack(
     x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
     x_user_id: str | None = Header(default=None, alias="X-User-ID"),
     session: AsyncSession = Depends(get_session),
-) -> dict:
-    """Create a new NEMSIS resource pack in pending status.
-
-    Args:
-        body: Pack creation parameters including name, type, and NEMSIS version.
-        x_tenant_id: Tenant identifier from X-Tenant-ID header.
-        x_user_id: Acting user identifier from X-User-ID header.
-        session: Injected async database session.
-
-    Returns:
-        Serialized pack dict with HTTP 201.
-
-    Raises:
-        HTTPException: 400 if headers missing or pack_type invalid;
-                       500 on unexpected failure.
-    """
-    tenant_id = _require_header(x_tenant_id, "X-Tenant-ID")
-    user_id = _require_user_id(x_user_id, "X-User-ID")
+) -> dict[str, Any]:
+    tenant_id = _require_non_empty_header(x_tenant_id, "X-Tenant-ID")
+    user_id = _require_non_empty_header(x_user_id, "X-User-ID")
 
     try:
         manager = PackManager(session)
@@ -116,52 +132,22 @@ async def create_pack(
         await session.commit()
         return pack
     except ValueError as exc:
-        logger.warning(
-            "create_pack: validation error tenant_id=%s: %s", tenant_id, exc
-        )
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
-        ) from exc
-    except Exception as exc:
-        logger.error(
-            "create_pack: unexpected error tenant_id=%s: %s", tenant_id, exc, exc_info=True
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Pack creation failed",
-        ) from exc
+        await session.rollback()
+        raise HTTPException(_value_error_status(exc), str(exc))
+    except Exception:
+        await session.rollback()
+        raise HTTPException(500, "Pack creation failed")
 
 
 @router.get("/", status_code=status.HTTP_200_OK)
 async def list_packs(
     x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
     session: AsyncSession = Depends(get_session),
-) -> list:
-    """List all NEMSIS resource packs for the requesting tenant.
+) -> list[dict[str, Any]]:
+    tenant_id = _require_non_empty_header(x_tenant_id, "X-Tenant-ID")
 
-    Args:
-        x_tenant_id: Tenant identifier from X-Tenant-ID header.
-        session: Injected async database session.
-
-    Returns:
-        List of serialized pack dicts ordered by creation time descending.
-
-    Raises:
-        HTTPException: 400 if header missing; 500 on unexpected failure.
-    """
-    tenant_id = _require_header(x_tenant_id, "X-Tenant-ID")
-
-    try:
-        manager = PackManager(session)
-        return await manager.list_packs(tenant_id=tenant_id)
-    except Exception as exc:
-        logger.error(
-            "list_packs: unexpected error tenant_id=%s: %s", tenant_id, exc, exc_info=True
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Pack list retrieval failed",
-        ) from exc
+    manager = PackManager(session)
+    return await manager.list_packs(tenant_id=tenant_id)
 
 
 @router.get("/{pack_id}", status_code=status.HTTP_200_OK)
@@ -169,96 +155,11 @@ async def get_pack(
     pack_id: str,
     x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
     session: AsyncSession = Depends(get_session),
-) -> dict:
-    """Return a single NEMSIS resource pack by its identifier.
+) -> dict[str, Any]:
+    tenant_id = _require_non_empty_header(x_tenant_id, "X-Tenant-ID")
 
-    Args:
-        pack_id: Pack identifier from the URL path.
-        x_tenant_id: Tenant identifier from X-Tenant-ID header.
-        session: Injected async database session.
-
-    Returns:
-        Serialized pack dict.
-
-    Raises:
-        HTTPException: 400 if header missing; 404 if pack not found;
-                       500 on unexpected failure.
-    """
-    tenant_id = _require_header(x_tenant_id, "X-Tenant-ID")
-
-    try:
-        manager = PackManager(session)
-        return await manager.get_pack(pack_id=pack_id, tenant_id=tenant_id)
-    except ValueError as exc:
-        logger.warning(
-            "get_pack: not found pack_id=%s tenant_id=%s: %s", pack_id, tenant_id, exc
-        )
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)
-        ) from exc
-    except Exception as exc:
-        logger.error(
-            "get_pack: unexpected error pack_id=%s: %s", pack_id, exc, exc_info=True
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Pack retrieval failed",
-        ) from exc
-
-
-@router.post("/{pack_id}/activate", status_code=status.HTTP_200_OK)
-async def activate_pack(
-    pack_id: str,
-    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
-    x_user_id: str | None = Header(default=None, alias="X-User-ID"),
-    session: AsyncSession = Depends(get_session),
-) -> dict:
-    """Activate a NEMSIS resource pack, archiving any existing active pack of the same type.
-
-    Args:
-        pack_id: Pack identifier from the URL path.
-        x_tenant_id: Tenant identifier from X-Tenant-ID header.
-        x_user_id: Acting user identifier from X-User-ID header.
-        session: Injected async database session.
-
-    Returns:
-        Serialized updated pack dict.
-
-    Raises:
-        HTTPException: 400 if headers missing or transition invalid;
-                       404 if pack not found; 500 on unexpected failure.
-    """
-    tenant_id = _require_header(x_tenant_id, "X-Tenant-ID")
-    user_id = _require_user_id(x_user_id, "X-User-ID")
-
-    try:
-        manager = PackManager(session)
-        pack = await manager.activate_pack(
-            pack_id=pack_id,
-            tenant_id=tenant_id,
-            actor_user_id=user_id,
-        )
-        await session.commit()
-        return pack
-    except ValueError as exc:
-        msg = str(exc)
-        logger.warning(
-            "activate_pack: error pack_id=%s tenant_id=%s: %s", pack_id, tenant_id, msg
-        )
-        http_status = (
-            status.HTTP_404_NOT_FOUND
-            if "not found" in msg.lower()
-            else status.HTTP_400_BAD_REQUEST
-        )
-        raise HTTPException(status_code=http_status, detail=msg) from exc
-    except Exception as exc:
-        logger.error(
-            "activate_pack: unexpected error pack_id=%s: %s", pack_id, exc, exc_info=True
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Pack activation failed",
-        ) from exc
+    manager = PackManager(session)
+    return await manager.get_pack(pack_id=pack_id, tenant_id=tenant_id)
 
 
 @router.post("/{pack_id}/stage", status_code=status.HTTP_200_OK)
@@ -267,49 +168,46 @@ async def stage_pack(
     x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
     x_user_id: str | None = Header(default=None, alias="X-User-ID"),
     session: AsyncSession = Depends(get_session),
-) -> dict:
-    """Stage a NEMSIS resource pack for review before activation.
+) -> dict[str, Any]:
+    tenant_id = _require_non_empty_header(x_tenant_id, "X-Tenant-ID")
+    user_id = _require_non_empty_header(x_user_id, "X-User-ID")
 
-    Args:
-        pack_id: Pack identifier from the URL path.
-        x_tenant_id: Tenant identifier from X-Tenant-ID header.
-        x_user_id: Acting user identifier from X-User-ID header.
-        session: Injected async database session.
+    manager = PackManager(session)
+    pack = await manager.get_pack(pack_id, tenant_id)
 
-    Returns:
-        Serialized updated pack dict.
+    _enforce_transition(pack["status"], PackLifecycleStatus.STAGED)
 
-    Raises:
-        HTTPException: 400 if headers missing or transition invalid;
-                       500 on unexpected failure.
-    """
-    tenant_id = _require_header(x_tenant_id, "X-Tenant-ID")
-    user_id = _require_user_id(x_user_id, "X-User-ID")
+    result = await manager.stage_pack(pack_id, tenant_id, user_id)
+    await session.commit()
+    return result
 
-    try:
-        manager = PackManager(session)
-        pack = await manager.stage_pack(
-            pack_id=pack_id,
-            tenant_id=tenant_id,
-            actor_user_id=user_id,
-        )
-        await session.commit()
-        return pack
-    except ValueError as exc:
-        logger.warning(
-            "stage_pack: error pack_id=%s tenant_id=%s: %s", pack_id, tenant_id, exc
-        )
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
-        ) from exc
-    except Exception as exc:
-        logger.error(
-            "stage_pack: unexpected error pack_id=%s: %s", pack_id, exc, exc_info=True
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Pack staging failed",
-        ) from exc
+
+@router.post("/{pack_id}/activate", status_code=status.HTTP_200_OK)
+async def activate_pack(
+    pack_id: str,
+    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
+    x_user_id: str | None = Header(default=None, alias="X-User-ID"),
+    session: AsyncSession = Depends(get_session),
+) -> dict[str, Any]:
+    tenant_id = _require_non_empty_header(x_tenant_id, "X-Tenant-ID")
+    user_id = _require_non_empty_header(x_user_id, "X-User-ID")
+
+    manager = PackManager(session)
+    pack = await manager.get_pack(pack_id, tenant_id)
+
+    _enforce_transition(pack["status"], PackLifecycleStatus.ACTIVE)
+
+    completeness = await manager.get_pack_completeness(pack_id, tenant_id)
+    if not completeness.get("is_complete"):
+        raise HTTPException(400, "Pack not complete")
+
+    validation = await manager.validate_pack(pack_id, tenant_id)
+    if not validation.get("valid"):
+        raise HTTPException(400, "Pack validation failed")
+
+    result = await manager.activate_pack(pack_id, tenant_id, user_id)
+    await session.commit()
+    return result
 
 
 @router.post("/{pack_id}/archive", status_code=status.HTTP_200_OK)
@@ -318,49 +216,18 @@ async def archive_pack(
     x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
     x_user_id: str | None = Header(default=None, alias="X-User-ID"),
     session: AsyncSession = Depends(get_session),
-) -> dict:
-    """Archive a NEMSIS resource pack, preventing further use.
+) -> dict[str, Any]:
+    tenant_id = _require_non_empty_header(x_tenant_id, "X-Tenant-ID")
+    user_id = _require_non_empty_header(x_user_id, "X-User-ID")
 
-    Args:
-        pack_id: Pack identifier from the URL path.
-        x_tenant_id: Tenant identifier from X-Tenant-ID header.
-        x_user_id: Acting user identifier from X-User-ID header.
-        session: Injected async database session.
+    manager = PackManager(session)
+    pack = await manager.get_pack(pack_id, tenant_id)
 
-    Returns:
-        Serialized updated pack dict.
+    _enforce_transition(pack["status"], PackLifecycleStatus.ARCHIVED)
 
-    Raises:
-        HTTPException: 400 if headers missing or pack not found;
-                       500 on unexpected failure.
-    """
-    tenant_id = _require_header(x_tenant_id, "X-Tenant-ID")
-    user_id = _require_user_id(x_user_id, "X-User-ID")
-
-    try:
-        manager = PackManager(session)
-        pack = await manager.archive_pack(
-            pack_id=pack_id,
-            tenant_id=tenant_id,
-            actor_user_id=user_id,
-        )
-        await session.commit()
-        return pack
-    except ValueError as exc:
-        logger.warning(
-            "archive_pack: error pack_id=%s tenant_id=%s: %s", pack_id, tenant_id, exc
-        )
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
-        ) from exc
-    except Exception as exc:
-        logger.error(
-            "archive_pack: unexpected error pack_id=%s: %s", pack_id, exc, exc_info=True
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Pack archival failed",
-        ) from exc
+    result = await manager.archive_pack(pack_id, tenant_id, user_id)
+    await session.commit()
+    return result
 
 
 @router.post("/{pack_id}/files", status_code=status.HTTP_201_CREATED)
@@ -370,66 +237,31 @@ async def upload_file(
     x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
     x_user_id: str | None = Header(default=None, alias="X-User-ID"),
     session: AsyncSession = Depends(get_session),
-) -> dict:
-    """Upload a file into a NEMSIS resource pack.
+) -> dict[str, Any]:
+    tenant_id = _require_non_empty_header(x_tenant_id, "X-Tenant-ID")
+    _require_non_empty_header(x_user_id, "X-User-ID")
 
-    Reads the uploaded file bytes, detects the file role from its extension,
-    computes a SHA-256 digest, stores metadata in the database, and uploads
-    to S3 when configured.
+    manager = PackManager(session)
+    pack = await manager.get_pack(pack_id, tenant_id)
 
-    Args:
-        pack_id: Pack identifier from the URL path.
-        file: Uploaded file from multipart form data.
-        x_tenant_id: Tenant identifier from X-Tenant-ID header.
-        x_user_id: Acting user identifier from X-User-ID header.
-        session: Injected async database session.
+    if pack["status"] == PackLifecycleStatus.ACTIVE.value:
+        raise HTTPException(409, "Cannot modify active pack")
 
-    Returns:
-        Serialized pack file dict with HTTP 201.
+    file_content = await file.read()
+    _validate_file_type(file.filename or "")
 
-    Raises:
-        HTTPException: 400 if headers missing or validation fails;
-                       404 if pack not found; 500 on unexpected failure.
-    """
-    tenant_id = _require_header(x_tenant_id, "X-Tenant-ID")
-    user_id = _require_user_id(x_user_id, "X-User-ID")
+    checksum = hashlib.sha256(file_content).hexdigest()
 
-    try:
-        file_content = await file.read()
-        manager = PackManager(session)
-        pack_file = await manager.ingest_file(
-            pack_id=pack_id,
-            tenant_id=tenant_id,
-            file_name=file.filename or "unknown",
-            file_content=file_content,
-        )
-        await session.commit()
-        logger.info(
-            "upload_file: pack_id=%s file=%s actor=%s",
-            pack_id,
-            file.filename,
-            user_id,
-        )
-        return pack_file
-    except ValueError as exc:
-        msg = str(exc)
-        logger.warning(
-            "upload_file: error pack_id=%s tenant_id=%s: %s", pack_id, tenant_id, msg
-        )
-        http_status = (
-            status.HTTP_404_NOT_FOUND
-            if "not found" in msg.lower()
-            else status.HTTP_400_BAD_REQUEST
-        )
-        raise HTTPException(status_code=http_status, detail=msg) from exc
-    except Exception as exc:
-        logger.error(
-            "upload_file: unexpected error pack_id=%s: %s", pack_id, exc, exc_info=True
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="File upload failed",
-        ) from exc
+    result = await manager.ingest_file(
+        pack_id=pack_id,
+        tenant_id=tenant_id,
+        file_name=file.filename or "unknown",
+        file_content=file_content,
+        checksum=checksum,
+    )
+
+    await session.commit()
+    return result
 
 
 @router.get("/{pack_id}/files", status_code=status.HTTP_200_OK)
@@ -437,42 +269,11 @@ async def list_pack_files(
     pack_id: str,
     x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
     session: AsyncSession = Depends(get_session),
-) -> list:
-    """List all files attached to a NEMSIS resource pack.
+) -> list[dict[str, Any]]:
+    tenant_id = _require_non_empty_header(x_tenant_id, "X-Tenant-ID")
 
-    Args:
-        pack_id: Pack identifier from the URL path.
-        x_tenant_id: Tenant identifier from X-Tenant-ID header.
-        session: Injected async database session.
-
-    Returns:
-        List of serialized pack file dicts.
-
-    Raises:
-        HTTPException: 400 if header missing; 404 if pack not found;
-                       500 on unexpected failure.
-    """
-    tenant_id = _require_header(x_tenant_id, "X-Tenant-ID")
-
-    try:
-        manager = PackManager(session)
-        return await manager.list_pack_files(pack_id=pack_id, tenant_id=tenant_id)
-    except ValueError as exc:
-        logger.warning(
-            "list_pack_files: not found pack_id=%s tenant_id=%s: %s",
-            pack_id, tenant_id, exc,
-        )
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)
-        ) from exc
-    except Exception as exc:
-        logger.error(
-            "list_pack_files: unexpected error pack_id=%s: %s", pack_id, exc, exc_info=True
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="File list retrieval failed",
-        ) from exc
+    manager = PackManager(session)
+    return await manager.list_pack_files(pack_id, tenant_id)
 
 
 @router.get("/{pack_id}/completeness", status_code=status.HTTP_200_OK)
@@ -480,44 +281,8 @@ async def get_pack_completeness(
     pack_id: str,
     x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
     session: AsyncSession = Depends(get_session),
-) -> dict:
-    """Return a completeness analysis for a NEMSIS resource pack.
+) -> dict[str, Any]:
+    tenant_id = _require_non_empty_header(x_tenant_id, "X-Tenant-ID")
 
-    Evaluates which required file roles are present based on the pack type
-    and reports which roles are missing.
-
-    Args:
-        pack_id: Pack identifier from the URL path.
-        x_tenant_id: Tenant identifier from X-Tenant-ID header.
-        session: Injected async database session.
-
-    Returns:
-        Dict with file_count, files_by_role, required_roles, missing_roles,
-        and is_complete boolean.
-
-    Raises:
-        HTTPException: 400 if header missing; 404 if pack not found;
-                       500 on unexpected failure.
-    """
-    tenant_id = _require_header(x_tenant_id, "X-Tenant-ID")
-
-    try:
-        manager = PackManager(session)
-        return await manager.get_pack_completeness(pack_id=pack_id, tenant_id=tenant_id)
-    except ValueError as exc:
-        logger.warning(
-            "get_pack_completeness: not found pack_id=%s tenant_id=%s: %s",
-            pack_id, tenant_id, exc,
-        )
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)
-        ) from exc
-    except Exception as exc:
-        logger.error(
-            "get_pack_completeness: unexpected error pack_id=%s: %s",
-            pack_id, exc, exc_info=True,
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Completeness check failed",
-        ) from exc
+    manager = PackManager(session)
+    return await manager.get_pack_completeness(pack_id, tenant_id)

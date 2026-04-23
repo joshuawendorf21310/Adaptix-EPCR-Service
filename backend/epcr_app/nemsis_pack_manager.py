@@ -43,7 +43,6 @@ _ROLE_HINTS: dict[str, str] = {
     ".wsdl": "wsdl",
     ".xml": "sample",
     ".json": "scenario",
-    ".zip": "bundle",
     ".rnc": "schematron",
 }
 
@@ -71,6 +70,7 @@ def _required_roles_for_pack_type(pack_type: str) -> set[str]:
     Returns:
         Set of required file-role names.
     """
+    normalized = (pack_type or "").strip().lower()
     required_by_type: dict[str, set[str]] = {
         "national_xsd": {"xsd"},
         "national_schematron": {"schematron"},
@@ -87,10 +87,11 @@ def _required_roles_for_pack_type(pack_type: str) -> set[str]:
         "cs_scenarios": {"scenario"},
         "bundle": {"xsd", "schematron"},
     }
-    return required_by_type.get(pack_type, set())
+    # Return a fresh set so callers cannot mutate module-level definitions.
+    return set(required_by_type.get(normalized, set()))
 
 
-def _detect_role(file_name: str, content_prefix: bytes | None = None) -> str:
+def _detect_role(file_name: str, content_prefix: bytes | None = None) -> str | None:
     """Infer a pack file role from its filename extension.
 
     Args:
@@ -98,7 +99,7 @@ def _detect_role(file_name: str, content_prefix: bytes | None = None) -> str:
         content_prefix: First bytes of file content for sniffing (optional).
 
     Returns:
-        Role string such as 'xsd', 'schematron', 'scenario', 'sample', or 'unknown'.
+        Role string such as 'xsd', 'schematron', 'scenario', 'sample', or None.
     """
     lowered_name = file_name.lower()
     base_name = os.path.basename(lowered_name)
@@ -116,7 +117,7 @@ def _detect_role(file_name: str, content_prefix: bytes | None = None) -> str:
             return "schematron"
         if "<definitions" in text or "wsdl" in text.lower():
             return "wsdl"
-    return "unknown"
+    return None
 
 
 class PackManager:

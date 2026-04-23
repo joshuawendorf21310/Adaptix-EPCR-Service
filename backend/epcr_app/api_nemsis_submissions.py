@@ -31,8 +31,10 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from epcr_app.db import get_session
+from epcr_app.models import Chart, NemsisMappingRecord
 from epcr_app.models_nemsis_core import NemsisSubmissionResult, NemsisSubmissionStatusHistory
-from epcr_app.nemsis_exporter import NEMSISExporter
+from epcr_app.nemsis_xml_builder import NemsisBuildError, NemsisXmlBuilder
+from epcr_app.nemsis_xsd_validator import NemsisXSDValidator
 
 logger = logging.getLogger(__name__)
 
@@ -74,18 +76,6 @@ class AcceptSubmissionRequest(BaseModel):
 
 
 def _require_header(value: str | None, name: str) -> str:
-    """Validate that a required HTTP header is present and non-empty.
-
-    Args:
-        value: Raw header value from the request.
-        name: Header name used in the error message.
-
-    Returns:
-        Stripped header value.
-
-    Raises:
-        HTTPException: 400 if the header is absent or blank.
-    """
     if not value or not value.strip():
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -95,18 +85,6 @@ def _require_header(value: str | None, name: str) -> str:
 
 
 def _require_user_id(value: str | None, name: str) -> str:
-    """Validate that a required user identifier header is present and non-empty.
-
-    Args:
-        value: Raw header value from the request.
-        name: Header name used in the error message.
-
-    Returns:
-        Stripped header value.
-
-    Raises:
-        HTTPException: 400 if the header is absent or blank.
-    """
     if not value or not value.strip():
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -124,17 +102,6 @@ async def _write_history(
     actor_user_id: str | None,
     note: str | None = None,
 ) -> None:
-    """Append a status transition row to nemsis_submission_status_history.
-
-    Args:
-        session: Async SQLAlchemy session.
-        submission_id: Owning submission identifier.
-        tenant_id: Tenant identifier.
-        from_status: Status before the transition, or None for the initial row.
-        to_status: Status after the transition.
-        actor_user_id: User who caused the transition, or None for system events.
-        note: Optional operator note to record with the transition.
-    """
     row = NemsisSubmissionStatusHistory(
         id=str(uuid.uuid4()),
         submission_id=submission_id,
@@ -143,33 +110,27 @@ async def _write_history(
         to_status=to_status,
         actor_user_id=actor_user_id,
         note=note,
-        transitioned_at=datetime.now(UTC).replace(tzinfo=None),
+        transitioned_at=datetime.now(UTC),
     )
     session.add(row)
 
 
 def _upload_xml_to_s3(xml_bytes: bytes, s3_key: str) -> bool:
-    """Upload XML bytes to S3. Returns True on success, False on failure.
-
-    If NEMSIS_SUBMISSION_S3_BUCKET or FILES_S3_BUCKET is not configured,
-    the upload is skipped and False is returned without raising an error.
-
-    Args:
-        xml_bytes: Raw XML content to store.
-        s3_key: Full S3 object key for the uploaded file.
-
-    Returns:
-        True if the upload succeeded, False otherwise.
-    """
     if not _S3_BUCKET:
         return False
     try:
         import boto3
 
-        boto3.client("s3").put_object(Bucket=_S3_BUCKET, Key=s3_key, Body=xml_bytes)
+        boto3.client("s3").put_object(
+            Bucket=_S3_BUCKET,
+            Key=s3_key,
+            Body=xml_bytes,
+            ContentType="application/xml",
+            ServerSideEncryption="AES256",
+        )
         return True
     except Exception as exc:
-        logger.error("S3 upload failed key=%s: %s", s3_key, exc)
+        logger.error("S3 upload failed key=%s: %s", s3_key, exc, exc_info=True)
         return False
 
 
@@ -180,24 +141,6 @@ def _submit_via_soap(
     password: str,
     submission_number: str,
 ) -> dict[str, Any]:
-    """Attempt SOAP submission to a NEMSIS state endpoint.
-
-    Returns a dict with keys: submitted (bool), message_id (str|None),
-    response_code (str|None), error (str|None).
-
-    If credentials or endpoint URL are absent, the function returns
-    submitted=False with an explicit error message. It never fakes success.
-
-    Args:
-        xml_content: UTF-8 XML string to submit.
-        endpoint_url: WSDL URL of the state NEMSIS endpoint.
-        username: SOAP WS-Security username.
-        password: SOAP WS-Security password.
-        submission_number: Unique submission tracking number sent with the payload.
-
-    Returns:
-        Dict with submitted, message_id, response_code, and error keys.
-    """
     if not endpoint_url or not username or not password:
         return {
             "submitted": False,
@@ -208,6 +151,7 @@ def _submit_via_soap(
                 "NEMSIS_SOAP_USERNAME, or NEMSIS_SOAP_PASSWORD not configured"
             ),
         }
+
     try:
         from zeep import Client
         from zeep.wsse.username import UsernameToken
@@ -245,14 +189,6 @@ def _submit_via_soap(
 
 
 def _serialize_submission(s: NemsisSubmissionResult) -> dict[str, Any]:
-    """Serialize a NemsisSubmissionResult ORM object to a plain dict.
-
-    Args:
-        s: NemsisSubmissionResult ORM instance.
-
-    Returns:
-        Dict representation of the submission record.
-    """
     return {
         "id": s.id,
         "tenant_id": s.tenant_id,
@@ -281,14 +217,6 @@ def _serialize_submission(s: NemsisSubmissionResult) -> dict[str, Any]:
 
 
 def _serialize_history(h: NemsisSubmissionStatusHistory) -> dict[str, Any]:
-    """Serialize a NemsisSubmissionStatusHistory ORM object to a plain dict.
-
-    Args:
-        h: NemsisSubmissionStatusHistory ORM instance.
-
-    Returns:
-        Dict representation of the history row.
-    """
     return {
         "id": h.id,
         "submission_id": h.submission_id,
@@ -302,38 +230,93 @@ def _serialize_history(h: NemsisSubmissionStatusHistory) -> dict[str, Any]:
     }
 
 
+async def _load_chart_and_mappings(
+    session: AsyncSession,
+    *,
+    tenant_id: str,
+    chart_id: str,
+) -> tuple[Chart, list[NemsisMappingRecord]]:
+    chart_result = await session.execute(
+        select(Chart).where(
+            Chart.id == chart_id,
+            Chart.tenant_id == tenant_id,
+            Chart.deleted_at.is_(None),
+        )
+    )
+    chart = chart_result.scalars().first()
+    if not chart:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Chart {chart_id} not found",
+        )
+
+    mapping_result = await session.execute(
+        select(NemsisMappingRecord).where(
+            NemsisMappingRecord.chart_id == chart_id,
+        )
+    )
+    mappings = list(mapping_result.scalars().all())
+    return chart, mappings
+
+
+async def _build_validated_xml(
+    session: AsyncSession,
+    *,
+    tenant_id: str,
+    chart_id: str,
+) -> tuple[bytes, list[str], dict[str, Any]]:
+    chart, mappings = await _load_chart_and_mappings(
+        session,
+        tenant_id=tenant_id,
+        chart_id=chart_id,
+    )
+
+    try:
+        builder = NemsisXmlBuilder(chart=chart, mapping_records=mappings)
+        xml_bytes, warnings = builder.build()
+    except NemsisBuildError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"NEMSIS XML build failed: {exc}",
+        ) from exc
+
+    validator = NemsisXSDValidator()
+    validation = validator.validate_xml(xml_bytes)
+
+    if validation.get("validation_skipped", False):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={
+                "error": "NEMSIS validation did not run",
+                "blocking_reason": validation.get("blocking_reason"),
+                "xsd_errors": validation.get("xsd_errors", []),
+                "schematron_errors": validation.get("schematron_errors", []),
+                "schematron_warnings": validation.get("schematron_warnings", []),
+            },
+        )
+
+    if not validation.get("valid", False):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={
+                "error": "NEMSIS validation failed",
+                "xsd_errors": validation.get("xsd_errors", []),
+                "schematron_errors": validation.get("schematron_errors", []),
+                "schematron_warnings": validation.get("schematron_warnings", []),
+                "cardinality_errors": validation.get("cardinality_errors", []),
+            },
+        )
+
+    return xml_bytes, warnings, validation
+
+
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_submission(
     body: CreateSubmissionRequest,
     x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
     x_user_id: str | None = Header(default=None, alias="X-User-ID"),
     session: AsyncSession = Depends(get_session),
-) -> dict:
-    """Create a NEMSIS state submission for a chart.
-
-    Generates chart XML via NEMSISExporter, computes a SHA-256 payload
-    digest, uploads the XML to S3 when configured, attempts SOAP submission
-    to the state endpoint when credentials are configured, persists the
-    NemsisSubmissionResult, and writes the initial status history row.
-
-    Note: Full chart materialization from the database is not yet wired into
-    this route. The chart_id is passed to NEMSISExporter as a minimal dict.
-    The resulting XML is structurally valid NEMSIS 3.5.1 but contains
-    NV_NOT_RECORDED sentinels for fields that require a fully-loaded chart.
-    This is logged as a warning; the response truthfully reflects this state.
-
-    Args:
-        body: Submission creation parameters.
-        x_tenant_id: Tenant identifier from X-Tenant-ID header.
-        x_user_id: Acting user identifier from X-User-ID header.
-        session: Injected async database session.
-
-    Returns:
-        Serialized submission dict including soap_result detail, HTTP 201.
-
-    Raises:
-        HTTPException: 400 if headers missing; 500 on unexpected failure.
-    """
+) -> dict[str, Any]:
     tenant_id = _require_header(x_tenant_id, "X-Tenant-ID")
     user_id = _require_user_id(x_user_id, "X-User-ID")
 
@@ -343,22 +326,20 @@ async def create_submission(
         )
         endpoint_url = body.state_endpoint_url or _STATE_ENDPOINT_URL
 
-        logger.warning(
-            "create_submission: full chart materialization not yet wired; "
-            "chart_id=%s will export with NV_NOT_RECORDED sentinels for "
-            "unresolved fields",
-            body.chart_id,
+        xml_bytes, warnings, validation = await _build_validated_xml(
+            session,
+            tenant_id=tenant_id,
+            chart_id=body.chart_id,
         )
-        xml_bytes = NEMSISExporter().export_chart({"id": body.chart_id}, {})
-        xml_content = xml_bytes.decode("utf-8", errors="replace")
+
+        xml_content = xml_bytes.decode("utf-8", errors="strict")
         payload_sha256 = hashlib.sha256(xml_bytes).hexdigest()
 
         s3_key = f"{_S3_PREFIX}/{tenant_id}/{submission_number}.xml"
         s3_uploaded = _upload_xml_to_s3(xml_bytes, s3_key)
         if not s3_uploaded:
             logger.warning(
-                "create_submission: XML not stored to S3 for submission_number=%s "
-                "(bucket unconfigured or upload failed)",
+                "create_submission: XML not stored to S3 for submission_number=%s",
                 submission_number,
             )
 
@@ -370,8 +351,8 @@ async def create_submission(
             submission_number=submission_number,
         )
 
-        now = datetime.now(UTC).replace(tzinfo=None)
-        initial_status = "submitted" if soap_result["submitted"] else "pending"
+        now = datetime.now(UTC)
+        initial_status = "submitted" if soap_result["submitted"] else "error"
 
         record = NemsisSubmissionResult(
             id=str(uuid.uuid4()),
@@ -408,6 +389,8 @@ async def create_submission(
 
         result = _serialize_submission(record)
         result["soap_result"] = soap_result
+        result["validation"] = validation
+        result["warnings"] = warnings
         logger.info(
             "create_submission: submission_id=%s submission_number=%s status=%s",
             record.id,
@@ -416,7 +399,11 @@ async def create_submission(
         )
         return result
 
+    except HTTPException:
+        await session.rollback()
+        raise
     except Exception as exc:
+        await session.rollback()
         logger.error(
             "create_submission: unexpected error tenant_id=%s chart_id=%s: %s",
             tenant_id,
@@ -435,20 +422,7 @@ async def list_submissions(
     x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
     chart_id: str | None = Query(default=None, description="Filter by chart identifier"),
     session: AsyncSession = Depends(get_session),
-) -> list:
-    """List NEMSIS state submissions for the requesting tenant.
-
-    Args:
-        x_tenant_id: Tenant identifier from X-Tenant-ID header.
-        chart_id: Optional chart identifier to filter results.
-        session: Injected async database session.
-
-    Returns:
-        List of serialized submission dicts ordered by creation time descending.
-
-    Raises:
-        HTTPException: 400 if header missing; 500 on unexpected failure.
-    """
+) -> list[dict[str, Any]]:
     tenant_id = _require_header(x_tenant_id, "X-Tenant-ID")
 
     try:
@@ -481,21 +455,7 @@ async def get_submission(
     submission_id: str,
     x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
     session: AsyncSession = Depends(get_session),
-) -> dict:
-    """Return a single NEMSIS state submission by its identifier.
-
-    Args:
-        submission_id: Submission identifier from the URL path.
-        x_tenant_id: Tenant identifier from X-Tenant-ID header.
-        session: Injected async database session.
-
-    Returns:
-        Serialized submission dict.
-
-    Raises:
-        HTTPException: 400 if header missing; 404 if not found;
-                       500 on unexpected failure.
-    """
+) -> dict[str, Any]:
     tenant_id = _require_header(x_tenant_id, "X-Tenant-ID")
 
     try:
@@ -534,25 +494,7 @@ async def retry_submission(
     x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
     x_user_id: str | None = Header(default=None, alias="X-User-ID"),
     session: AsyncSession = Depends(get_session),
-) -> dict:
-    """Retry a NEMSIS state submission that is in pending or error status.
-
-    Re-attempts SOAP submission using the stored endpoint URL and configured
-    credentials. Updates submission_status and writes a history row.
-
-    Args:
-        submission_id: Submission identifier from the URL path.
-        x_tenant_id: Tenant identifier from X-Tenant-ID header.
-        x_user_id: Acting user identifier from X-User-ID header.
-        session: Injected async database session.
-
-    Returns:
-        Serialized updated submission dict including soap_result detail.
-
-    Raises:
-        HTTPException: 400 if headers missing; 404 if not found;
-                       422 if status does not allow retry; 500 on failure.
-    """
+) -> dict[str, Any]:
     tenant_id = _require_header(x_tenant_id, "X-Tenant-ID")
     user_id = _require_user_id(x_user_id, "X-User-ID")
 
@@ -580,9 +522,20 @@ async def retry_submission(
                 ),
             )
 
+        xml_bytes, warnings, validation = await _build_validated_xml(
+            session,
+            tenant_id=tenant_id,
+            chart_id=record.chart_id,
+        )
+        xml_content = xml_bytes.decode("utf-8", errors="strict")
+        payload_sha256 = hashlib.sha256(xml_bytes).hexdigest()
+
+        s3_key = record.xml_s3_key or f"{_S3_PREFIX}/{tenant_id}/{record.submission_number}.xml"
+        s3_uploaded = _upload_xml_to_s3(xml_bytes, s3_key)
+
         endpoint_url = record.state_endpoint_url or _STATE_ENDPOINT_URL
         soap_result = _submit_via_soap(
-            xml_content="",
+            xml_content=xml_content,
             endpoint_url=endpoint_url,
             username=_SOAP_USERNAME,
             password=_SOAP_PASSWORD,
@@ -591,13 +544,18 @@ async def retry_submission(
 
         previous_status = record.submission_status
         new_status = "submitted" if soap_result["submitted"] else "error"
-        now = datetime.now(UTC).replace(tzinfo=None)
+        now = datetime.now(UTC)
 
         record.submission_status = new_status
+        record.payload_sha256 = payload_sha256
+        record.xml_s3_bucket = _S3_BUCKET if s3_uploaded else record.xml_s3_bucket
+        record.xml_s3_key = s3_key if s3_uploaded else record.xml_s3_key
+        record.state_endpoint_url = endpoint_url or None
+        record.soap_message_id = soap_result.get("message_id")
+        record.soap_response_code = soap_result.get("response_code")
+        record.rejection_reason = None
         if soap_result["submitted"]:
             record.submitted_at = now
-            record.soap_message_id = soap_result.get("message_id")
-            record.soap_response_code = soap_result.get("response_code")
 
         await _write_history(
             session=session,
@@ -614,6 +572,8 @@ async def retry_submission(
 
         serialized = _serialize_submission(record)
         serialized["soap_result"] = soap_result
+        serialized["validation"] = validation
+        serialized["warnings"] = warnings
         logger.info(
             "retry_submission: submission_id=%s new_status=%s actor=%s",
             submission_id,
@@ -623,8 +583,10 @@ async def retry_submission(
         return serialized
 
     except HTTPException:
+        await session.rollback()
         raise
     except Exception as exc:
+        await session.rollback()
         logger.error(
             "retry_submission: unexpected error submission_id=%s: %s",
             submission_id,
@@ -644,26 +606,7 @@ async def acknowledge_submission(
     x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
     x_user_id: str | None = Header(default=None, alias="X-User-ID"),
     session: AsyncSession = Depends(get_session),
-) -> dict:
-    """Acknowledge receipt of a NEMSIS state submission.
-
-    Sets submission_status to 'acknowledged' and records the transition
-    timestamp. Only submissions in 'submitted' status may be acknowledged.
-
-    Args:
-        submission_id: Submission identifier from the URL path.
-        body: Optional operator note to record with the transition.
-        x_tenant_id: Tenant identifier from X-Tenant-ID header.
-        x_user_id: Acting user identifier from X-User-ID header.
-        session: Injected async database session.
-
-    Returns:
-        Serialized updated submission dict.
-
-    Raises:
-        HTTPException: 400 if headers missing; 404 if not found;
-                       422 if status is not 'submitted'; 500 on failure.
-    """
+) -> dict[str, Any]:
     tenant_id = _require_header(x_tenant_id, "X-Tenant-ID")
     user_id = _require_user_id(x_user_id, "X-User-ID")
 
@@ -692,7 +635,7 @@ async def acknowledge_submission(
             )
 
         previous_status = record.submission_status
-        now = datetime.now(UTC).replace(tzinfo=None)
+        now = datetime.now(UTC)
         record.submission_status = "acknowledged"
         record.acknowledged_at = now
 
@@ -710,13 +653,17 @@ async def acknowledge_submission(
         await session.refresh(record)
 
         logger.info(
-            "acknowledge_submission: submission_id=%s actor=%s", submission_id, user_id
+            "acknowledge_submission: submission_id=%s actor=%s",
+            submission_id,
+            user_id,
         )
         return _serialize_submission(record)
 
     except HTTPException:
+        await session.rollback()
         raise
     except Exception as exc:
+        await session.rollback()
         logger.error(
             "acknowledge_submission: unexpected error submission_id=%s: %s",
             submission_id,
@@ -736,26 +683,7 @@ async def accept_submission(
     x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
     x_user_id: str | None = Header(default=None, alias="X-User-ID"),
     session: AsyncSession = Depends(get_session),
-) -> dict:
-    """Accept a NEMSIS state submission, marking it as fully resolved.
-
-    Sets submission_status to 'accepted' and records resolved_at. Only
-    submissions in 'acknowledged' status may be accepted.
-
-    Args:
-        submission_id: Submission identifier from the URL path.
-        body: Optional operator note to record with the transition.
-        x_tenant_id: Tenant identifier from X-Tenant-ID header.
-        x_user_id: Acting user identifier from X-User-ID header.
-        session: Injected async database session.
-
-    Returns:
-        Serialized updated submission dict.
-
-    Raises:
-        HTTPException: 400 if headers missing; 404 if not found;
-                       422 if status is not 'acknowledged'; 500 on failure.
-    """
+) -> dict[str, Any]:
     tenant_id = _require_header(x_tenant_id, "X-Tenant-ID")
     user_id = _require_user_id(x_user_id, "X-User-ID")
 
@@ -784,7 +712,7 @@ async def accept_submission(
             )
 
         previous_status = record.submission_status
-        now = datetime.now(UTC).replace(tzinfo=None)
+        now = datetime.now(UTC)
         record.submission_status = "accepted"
         record.resolved_at = now
 
@@ -802,13 +730,17 @@ async def accept_submission(
         await session.refresh(record)
 
         logger.info(
-            "accept_submission: submission_id=%s actor=%s", submission_id, user_id
+            "accept_submission: submission_id=%s actor=%s",
+            submission_id,
+            user_id,
         )
         return _serialize_submission(record)
 
     except HTTPException:
+        await session.rollback()
         raise
     except Exception as exc:
+        await session.rollback()
         logger.error(
             "accept_submission: unexpected error submission_id=%s: %s",
             submission_id,
@@ -828,27 +760,7 @@ async def reject_submission(
     x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
     x_user_id: str | None = Header(default=None, alias="X-User-ID"),
     session: AsyncSession = Depends(get_session),
-) -> dict:
-    """Reject a NEMSIS state submission, recording the rejection reason.
-
-    Sets submission_status to 'rejected', records resolved_at, and
-    persists the rejection_reason. Only submissions in 'submitted' or
-    'acknowledged' status may be rejected.
-
-    Args:
-        submission_id: Submission identifier from the URL path.
-        body: Rejection reason, required.
-        x_tenant_id: Tenant identifier from X-Tenant-ID header.
-        x_user_id: Acting user identifier from X-User-ID header.
-        session: Injected async database session.
-
-    Returns:
-        Serialized updated submission dict.
-
-    Raises:
-        HTTPException: 400 if headers missing; 404 if not found;
-                       422 if status does not allow rejection; 500 on failure.
-    """
+) -> dict[str, Any]:
     tenant_id = _require_header(x_tenant_id, "X-Tenant-ID")
     user_id = _require_user_id(x_user_id, "X-User-ID")
 
@@ -877,7 +789,7 @@ async def reject_submission(
             )
 
         previous_status = record.submission_status
-        now = datetime.now(UTC).replace(tzinfo=None)
+        now = datetime.now(UTC)
         record.submission_status = "rejected"
         record.resolved_at = now
         record.rejection_reason = body.rejection_reason
@@ -904,8 +816,10 @@ async def reject_submission(
         return _serialize_submission(record)
 
     except HTTPException:
+        await session.rollback()
         raise
     except Exception as exc:
+        await session.rollback()
         logger.error(
             "reject_submission: unexpected error submission_id=%s: %s",
             submission_id,
@@ -923,24 +837,7 @@ async def get_submission_history(
     submission_id: str,
     x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
     session: AsyncSession = Depends(get_session),
-) -> list:
-    """Return the status transition history for a NEMSIS state submission.
-
-    Verifies the submission exists for the tenant, then returns all history
-    rows ordered by transitioned_at ascending.
-
-    Args:
-        submission_id: Submission identifier from the URL path.
-        x_tenant_id: Tenant identifier from X-Tenant-ID header.
-        session: Injected async database session.
-
-    Returns:
-        List of serialized history dicts ordered by transitioned_at ascending.
-
-    Raises:
-        HTTPException: 400 if header missing; 404 if submission not found;
-                       500 on unexpected failure.
-    """
+) -> list[dict[str, Any]]:
     tenant_id = _require_header(x_tenant_id, "X-Tenant-ID")
 
     try:
