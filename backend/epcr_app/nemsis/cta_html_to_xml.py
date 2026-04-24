@@ -713,6 +713,14 @@ _CODE_NUMERIC_RE = re.compile(r"^\d+$")
 _ICD_SNOMED_RE = re.compile(r"^([A-Z\d][A-Z\d.\-]+)\s+-\s+.+$")
 _RXCUI_RE = re.compile(r"^(\d+)\s+-\s+.+$")
 
+# Mapping of coded element IDs to their "Other-Not Listed" NEMSIS enumeration
+# code.  When an HTML cell for a coded element carries ``[Custom Value] X``,
+# NEMSIS semantics say the element must hold the "Other" code and the free
+# text ``X`` must be captured via a ``dCustomResults.ResultsGroup``.
+_CUSTOM_VALUE_OTHER_CODES: dict[str, str] = {
+    "dPersonnel.18": "9910027",  # ImmunizationType → Other-Not Listed
+}
+
 _STATE_ELEMENT_IDS: frozenset[str] = frozenset({
     "dAgency.04",
     "dAgency.05",
@@ -899,11 +907,17 @@ class ValueTranslator:
         if iso is not None:
             return iso
 
-        # 3. Custom Value passthrough — only legal on non-enum elements.
-        # Coded (enum) elements reject "[Custom Value] ..." per XSD, so emit
-        # an empty value that the builder will convert to xsi:nil.
+        # 3. Custom Value passthrough / fallback-to-"Other".
+        # Coded (enum) elements reject "[Custom Value] ..." per XSD.  When the
+        # element defines an "Other-Not Listed" slot, emit that code so the
+        # value is preserved; the accompanying dCustomResults.ResultsGroup
+        # carries the custom free-text description.  Otherwise emit an empty
+        # value that the builder will convert to xsi:nil.
         if text.startswith("[Custom Value]"):
             if self._codes.has_element_specific(element_id):
+                fallback = _CUSTOM_VALUE_OTHER_CODES.get(element_id)
+                if fallback is not None:
+                    return fallback
                 return ""
             return text
 
@@ -1102,8 +1116,11 @@ class StateDataSetResolver:
             self._agency_values.setdefault(local_tag, []).append(text)
 
         # ── facility groups ───────────────────────────────────────────────────
-        # _facility_groups[facility_name][sFacility.NN] = [values]
-        self._facility_groups: dict[str, dict[str, list[str]]] = {}
+        # _facility_groups[facility_name][sFacility.NN] = [(value, attrs), ...]
+        # attrs carries element attributes from the state XML (e.g.
+        # ``{"PhoneNumberType": "9913009"}`` on sFacility.15) so the builder
+        # can propagate them to the generated dFacility.NN element.
+        self._facility_groups: dict[str, dict[str, list[tuple[str, dict[str, str]]]]] = {}
         # _facility_category[facility_name] = sFacility.01 code of parent
         self._facility_category: dict[str, str] = {}
 
@@ -1119,20 +1136,27 @@ class StateDataSetResolver:
                 facility_name = (name_el.text or "").strip()
                 if not facility_name:
                     continue
-                fields: dict[str, list[str]] = {}
+                fields: dict[str, list[tuple[str, dict[str, str]]]] = {}
                 for child in facility_fg:
                     local_tag = child.tag.split("}", 1)[-1]
                     if not local_tag.startswith("sFacility."):
                         continue
                     val = (child.text or "").strip()
-                    if val:
-                        fields.setdefault(local_tag, []).append(val)
+                    if not val:
+                        continue
+                    # Capture element attributes (e.g. PhoneNumberType) so
+                    # builder can emit them on the corresponding dFacility.NN.
+                    child_attrs: dict[str, str] = {}
+                    for attr_key, attr_val in child.attrib.items():
+                        local_attr = attr_key.split("}", 1)[-1]
+                        child_attrs[local_attr] = attr_val
+                    fields.setdefault(local_tag, []).append((val, child_attrs))
                 self._facility_groups[facility_name] = fields
                 self._facility_category[facility_name] = category_code
                 # Also index by sFacility.03 (Facility Location Code) for
                 # eDisposition references that key by code rather than name.
-                code_values = fields.get("sFacility.03", [])
-                for code_value in code_values:
+                code_entries = fields.get("sFacility.03", [])
+                for code_value, _ in code_entries:
                     self._facility_groups[code_value] = fields
                     self._facility_category[code_value] = category_code
 
@@ -1140,9 +1164,20 @@ class StateDataSetResolver:
         self._current_facility: str | None = None
         # Current destination facility context (set on eDisposition.01/.02)
         self._current_destination: str | None = None
+        # Per-facility occurrence counter for multi-valued fields.
+        # Keyed by (scope_key, state_key) where scope_key is the active
+        # facility/destination name.  Advances once per cell, read by every
+        # resolve call within that cell.
+        self._occurrence: dict[tuple[str, str], int] = {}
+        # Per-cell cache so _compose_element_attrs and _extract_value in
+        # the same builder cell see identical (value, attrs) tuples.
+        self._cell_cache: dict[tuple[str, str], tuple[str, dict[str, str]]] = {}
 
     def set_facility_context(self, facility_name: str | None) -> None:
         """Set the active facility for subsequent ``dFacility.NN`` resolution.
+
+        Also resets the per-facility multi-value occurrence counters so the
+        first ``dFacility.NN`` cell for the new facility yields ``values[0]``.
 
         Args:
             facility_name: The literal facility name value (e.g.
@@ -1154,6 +1189,13 @@ class StateDataSetResolver:
         """
 
         self._current_facility = facility_name
+        self._cell_cache.clear()
+        # Reset occurrence counters scoped to this facility so the first
+        # dFacility.05 / dFacility.15 cell in the new group starts at index 0.
+        if facility_name is not None:
+            self._occurrence = {
+                k: v for k, v in self._occurrence.items() if k[0] != facility_name
+            }
 
     def set_destination_context(self, destination_key: str | None) -> None:
         """Set the active destination facility for subsequent ``eDisposition.NN``
@@ -1162,25 +1204,81 @@ class StateDataSetResolver:
         """
 
         self._current_destination = destination_key
+        self._cell_cache.clear()
+        if destination_key is not None:
+            self._occurrence = {
+                k: v for k, v in self._occurrence.items() if k[0] != destination_key
+            }
+
+    def begin_cell(self) -> None:
+        """Signal the start of a new builder cell.
+
+        Clears the per-cell cache so that subsequent ``resolve`` /
+        ``resolve_attribute`` calls advance the multi-value occurrence
+        counter for that cell's element and resolve against a consistent
+        N-th state value for both body text and annotation attributes.
+        """
+
+        self._cell_cache.clear()
 
     def resolve(self, element_id: str) -> str:
-        """Resolve a ``[Value from StateDataSet]`` / ``[Value from DEMDataSet]``
-        reference.
+        """Resolve the text value of a ``[Value from StateDataSet]`` /
+        ``[Value from DEMDataSet]`` reference.
+
+        See :meth:`_resolve_with_attrs` for the resolution rules.  This
+        method discards the attribute dict returned by that helper.
+        """
+
+        value, _attrs = self._resolve_with_attrs(element_id)
+        return value
+
+    def resolve_attribute(self, element_id: str, attr_name: str) -> str | None:
+        """Resolve a state-sourced value for an annotation attribute.
+
+        When an HTML cell carries ``[PhoneNumberType = [Value from
+        StateDataSet]]`` on a ``dFacility.NN`` element, the attribute
+        value is the ``PhoneNumberType`` attribute on the N-th
+        ``sFacility.NN`` entry in the StateDataSet for the active
+        facility.
+
+        Args:
+            element_id: NEMSIS element identifier (e.g. ``"dFacility.15"``).
+            attr_name: Attribute name to look up (e.g. ``"PhoneNumberType"``).
+
+        Returns:
+            The attribute value for the N-th state occurrence, or ``None``
+            if the state element does not carry that attribute.
+        """
+
+        _value, attrs = self._resolve_with_attrs(element_id)
+        return attrs.get(attr_name)
+
+    def _resolve_with_attrs(self, element_id: str) -> tuple[str, dict[str, str]]:
+        """Resolve a cross-dataset reference to ``(value, attrs)``.
 
         Resolution rules
         ----------------
         * ``dAgency.NN`` / ``eResponse.NN`` → ``sAgency.NN`` of matched agency
-          group.
+          group (first value, no attrs).
         * ``dFacility.01`` → ``sFacility.01`` (category code) of the current
-          facility context group.
-        * ``dFacility.NN`` (N ≥ 2) → first value of ``sFacility.NN`` in the
-          current facility context group.
+          facility context group (no attrs).
+        * ``dFacility.NN`` (N ≥ 2) → the **N-th** value of ``sFacility.NN``
+          in the current facility context group, where N advances once per
+          builder cell.  The second element of the tuple carries the
+          source ``sFacility.NN`` element's attributes (e.g.
+          ``PhoneNumberType``).
+        * ``eDisposition.NN`` → mapped ``sFacility.NN`` of the current
+          destination facility (first value, no attrs).
+
+        Within a single builder cell (framed by :meth:`begin_cell`), every
+        call with the same ``element_id`` returns the same tuple; the
+        occurrence counter advances at most once per cell per element.
 
         Args:
             element_id: DEM or EMS element identifier.
 
         Returns:
-            The resolved value as a string.
+            ``(value, attrs)`` tuple.
 
         Raises:
             UnresolvedReferenceError: If the element id cannot be resolved
@@ -1196,7 +1294,7 @@ class StateDataSetResolver:
                 raise UnresolvedReferenceError(
                     f"StateDataSet has no {state_key} for agency {self._agency_key!r}"
                 )
-            return values[0]
+            return values[0], {}
 
         # dFacility.NN → facility group lookup
         if element_id.startswith("dFacility."):
@@ -1214,7 +1312,7 @@ class StateDataSetResolver:
                     raise UnresolvedReferenceError(
                         f"no sFacility.01 category for facility {facility_name!r}"
                     )
-                return code
+                return code, {}
             # dFacility.NN (N ≥ 2)
             state_key = f"sFacility.{suffix}"
             group = self._facility_groups.get(facility_name)
@@ -1222,12 +1320,12 @@ class StateDataSetResolver:
                 raise UnresolvedReferenceError(
                     f"facility {facility_name!r} not found in StateDataSet"
                 )
-            values = group.get(state_key)
-            if not values:
+            entries = group.get(state_key)
+            if not entries:
                 raise UnresolvedReferenceError(
                     f"StateDataSet has no {state_key} for facility {facility_name!r}"
                 )
-            return values[0]
+            return self._pick_occurrence(facility_name, state_key, entries)
 
         # eDisposition.NN → sFacility mapping via destination facility context
         if element_id.startswith("eDisposition."):
@@ -1258,17 +1356,51 @@ class StateDataSetResolver:
                 raise UnresolvedReferenceError(
                     f"destination facility {dest!r} not found in StateDataSet"
                 )
-            values = group.get(state_key)
-            if not values:
+            entries = group.get(state_key)
+            if not entries:
                 raise UnresolvedReferenceError(
                     f"StateDataSet has no {state_key} for destination {dest!r}"
                 )
-            return values[0]
+            return self._pick_occurrence(dest, state_key, entries)
 
         raise UnresolvedReferenceError(
             f"cannot resolve cross-dataset reference for {element_id!r}"
             " (only dAgency.NN, eResponse.NN, dFacility.NN and eDisposition.NN mappings are defined)"
         )
+
+    def _pick_occurrence(
+        self,
+        scope_key: str,
+        state_key: str,
+        entries: list[tuple[str, dict[str, str]]],
+    ) -> tuple[str, dict[str, str]]:
+        """Return the next ``(value, attrs)`` for this cell and advance the
+        occurrence counter on first access within the cell.
+
+        If the HTML emits more cells than the StateDataSet has values, the
+        index saturates at the last entry so no cell is ever unresolved.
+        Within a single cell, repeated lookups return the cached tuple.
+
+        Args:
+            scope_key: Active facility / destination identifier.
+            state_key: StateDataSet element tag (``"sFacility.05"`` …).
+            entries: Ordered list of ``(value, attrs)`` tuples from state.
+
+        Returns:
+            ``(value, attrs)`` for the current cell's occurrence.
+        """
+
+        cache_key = (scope_key, state_key)
+        cached = self._cell_cache.get(cache_key)
+        if cached is not None:
+            return cached
+        idx = self._occurrence.get(cache_key, 0)
+        if idx >= len(entries):
+            idx = len(entries) - 1
+        result = entries[idx]
+        self._cell_cache[cache_key] = result
+        self._occurrence[cache_key] = idx + 1
+        return result
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1396,7 +1528,26 @@ class NemsisXmlBuilder:
         for key, label in cell.annotations.items():
             if key in ("UUID", "timeStamp"):
                 continue
+            # Annotation values may themselves be ``[Value from StateDataSet]``
+            # — resolve those against the active facility context so
+            # attributes like ``PhoneNumberType`` on ``dFacility.15`` are
+            # emitted from the StateDataSet entry rather than being dropped.
             if label.startswith("[Value from"):
+                if key in (
+                    "PhoneNumberType",
+                    "EmailAddressType",
+                    "ETCO2Type",
+                    "DistanceUnit",
+                    "CodeType",
+                    "StreetAddress2",
+                ):
+                    state_val = self._state_resolver.resolve_attribute(
+                        cell.element_id, key
+                    )
+                    if state_val is not None and state_val.strip():
+                        attrs[key] = state_val.strip()
+                # NV/PN annotations sourced from StateDataSet are not in
+                # scope for this generator; skip silently.
                 continue
             if key == "NV":
                 attrs["NV"] = self._translator.translate_attribute("NV", label)
@@ -1472,6 +1623,12 @@ class NemsisXmlBuilder:
         Returns:
             None.
         """
+
+        # Start a new resolver cell so multi-valued state lookups
+        # (dFacility.05 / dFacility.15 with multiple sFacility.NN entries)
+        # advance their occurrence counter exactly once per cell and both
+        # the body value and annotation attributes see the same N-th tuple.
+        self._state_resolver.begin_cell()
 
         # Clear facility context when entering a new FacilityGroup container
         if cell.is_group and cell.element_id == "dFacility.FacilityGroup":

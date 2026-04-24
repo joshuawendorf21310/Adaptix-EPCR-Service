@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
-<DEMDataSet xmlns="http://www.nemsis.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.nemsis.org https://nemsis.org/media/nemsis_v3/3.5.1.250403CP1/XSDs/NEMSIS_XSDs/DEMDataSet_v3.xsd">
+<?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.nemsis.org/"><soapenv:Header/><soapenv:Body><ws:SubmitDataRequest><ws:username>fusion_quant2</ws:username><ws:password>Addyson123456!</ws:password><ws:organization>FusionEMSQuantum</ws:organization><ws:requestType>SubmitData</ws:requestType><ws:submitPayload><ws:payloadOfXmlElement><DEMDataSet xmlns="http://www.nemsis.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.nemsis.org https://nemsis.org/media/nemsis_v3/3.5.1.250403CP1/XSDs/NEMSIS_XSDs/DEMDataSet_v3.xsd">
   <DemographicReport timeStamp="2026-04-24T00:00:00-05:00">
     <dRecord>
       <dRecord.SoftwareApplicationGroup>
@@ -1190,7 +1189,6 @@
           <dPersonnel.19>2024</dPersonnel.19>
         </dPersonnel.ImmunizationsGroup>
         <dPersonnel.ImmunizationsGroup UUID="c8b1409c-0529-52df-af9f-e4e7ff0a8a18">
-          <dPersonnel.18>9910027</dPersonnel.18>
           <dPersonnel.19>2023</dPersonnel.19>
         </dPersonnel.ImmunizationsGroup>
         <dPersonnel.21>DE/5661</dPersonnel.21>
@@ -1268,13 +1266,13 @@
           <dFacility.02>Ascension Sacred Heart Pensacola</dFacility.02>
           <dFacility.03>231000254433</dFacility.03>
           <dFacility.04>9908007</dFacility.04>
-          <dFacility.04>9908011</dFacility.04>
-          <dFacility.04>9908021</dFacility.04>
-          <dFacility.04>9908023</dFacility.04>
-          <dFacility.04>9908033</dFacility.04>
-          <dFacility.04>9908043</dFacility.04>
-          <dFacility.04>9908045</dFacility.04>
-          <dFacility.04>9908047</dFacility.04>
+          <dFacility.04>9908007</dFacility.04>
+          <dFacility.04>9908007</dFacility.04>
+          <dFacility.04>9908007</dFacility.04>
+          <dFacility.04>9908007</dFacility.04>
+          <dFacility.04>9908007</dFacility.04>
+          <dFacility.04>9908007</dFacility.04>
+          <dFacility.04>9908007</dFacility.04>
           <dFacility.05>1922032424</dFacility.05>
           <dFacility.07>5151 North 9th Avenue</dFacility.07>
           <dFacility.08>2404503</dFacility.08>
@@ -1290,14 +1288,14 @@
           <dFacility.02>HCA Florida Fort Walton-Destin Hospital</dFacility.02>
           <dFacility.03>231002234363</dFacility.03>
           <dFacility.04>9908001</dFacility.04>
-          <dFacility.04>9908007</dFacility.04>
-          <dFacility.04>9908023</dFacility.04>
-          <dFacility.04>9908033</dFacility.04>
-          <dFacility.04>9908039</dFacility.04>
-          <dFacility.04>9908045</dFacility.04>
+          <dFacility.04>9908001</dFacility.04>
+          <dFacility.04>9908001</dFacility.04>
+          <dFacility.04>9908001</dFacility.04>
+          <dFacility.04>9908001</dFacility.04>
+          <dFacility.04>9908001</dFacility.04>
           <dFacility.05>1104875699</dFacility.05>
-          <dFacility.05>1326093246</dFacility.05>
-          <dFacility.05>1639128820</dFacility.05>
+          <dFacility.05>1104875699</dFacility.05>
+          <dFacility.05>1104875699</dFacility.05>
           <dFacility.07>1000 Marwalt Drive</dFacility.07>
           <dFacility.08>2403650</dFacility.08>
           <dFacility.09>12</dFacility.09>
@@ -1312,13 +1310,13 @@
           <dFacility.02>USA Health University Hospital</dFacility.02>
           <dFacility.03>H4903</dFacility.03>
           <dFacility.04>9908003</dFacility.04>
-          <dFacility.04>9908007</dFacility.04>
-          <dFacility.04>9908021</dFacility.04>
-          <dFacility.04>9908033</dFacility.04>
-          <dFacility.04>9908043</dFacility.04>
+          <dFacility.04>9908003</dFacility.04>
+          <dFacility.04>9908003</dFacility.04>
+          <dFacility.04>9908003</dFacility.04>
+          <dFacility.04>9908003</dFacility.04>
           <dFacility.05>1063468072</dFacility.05>
-          <dFacility.05>1245890045</dFacility.05>
-          <dFacility.05>1972138022</dFacility.05>
+          <dFacility.05>1063468072</dFacility.05>
+          <dFacility.05>1063468072</dFacility.05>
           <dFacility.07>2451 University Hospital Drive</dFacility.07>
           <dFacility.08>2404278</dFacility.08>
           <dFacility.09>01</dFacility.09>
@@ -1327,9 +1325,9 @@
           <dFacility.12>US</dFacility.12>
           <dFacility.13>30.706,-88.099</dFacility.13>
           <dFacility.14>16RCU94759753</dFacility.14>
-          <dFacility.15 PhoneNumberType="9913009">251-445-9164</dFacility.15>
-          <dFacility.15 PhoneNumberType="9913001">251-471-1672</dFacility.15>
-          <dFacility.15 PhoneNumberType="9913009">251-471-7000</dFacility.15>
+          <dFacility.15>251-445-9164</dFacility.15>
+          <dFacility.15>251-445-9164</dFacility.15>
+          <dFacility.15>251-445-9164</dFacility.15>
         </dFacility.FacilityGroup>
       </dFacilityGroup>
       <dFacilityGroup UUID="966f685c-aeca-5aa8-ad41-09ff747e8eff">
@@ -1370,7 +1368,7 @@
           <dFacility.02>Lakeview Center</dFacility.02>
           <dFacility.03>17179601838554</dFacility.03>
           <dFacility.05>1316943772</dFacility.05>
-          <dFacility.05>1528734894</dFacility.05>
+          <dFacility.05>1316943772</dFacility.05>
           <dFacility.07>1221 West Lakeview Avenue</dFacility.07>
           <dFacility.08>2404503</dFacility.08>
           <dFacility.09>12</dFacility.09>
@@ -1399,12 +1397,5 @@
         </dFacility.FacilityGroup>
       </dFacilityGroup>
     </dFacility>
-    <dCustomResults>
-    <dCustomResults.ResultsGroup>
-      <dCustomResults.01>9910055</dCustomResults.01>
-      <dCustomResults.02>dPersonnel.18</dCustomResults.02>
-      <dCustomResults.03>c2</dCustomResults.03>
-    </dCustomResults.ResultsGroup>
-  </dCustomResults>
-</DemographicReport>
-</DEMDataSet>
+  </DemographicReport>
+</DEMDataSet></ws:payloadOfXmlElement></ws:submitPayload><ws:requestDataSchema>62</ws:requestDataSchema><ws:schemaVersion>3.5.1</ws:schemaVersion><ws:additionalInfo>2025-DEM-1_v351</ws:additionalInfo></ws:SubmitDataRequest></soapenv:Body></soapenv:Envelope>
