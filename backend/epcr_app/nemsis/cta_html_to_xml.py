@@ -66,6 +66,57 @@ EMS_SCHEMA_LOCATION = (
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Nillable element registry (derived from NEMSIS v3.5.1 XSDs)
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def _load_nillable_elements() -> frozenset[str]:
+    """Scan the bundled NEMSIS v3.5.1 XSDs and return the set of element
+    local names declared with ``nillable="true"``.
+
+    The XSD bundle is located at
+    ``<repo>/nemsis_test/assets/xsd/extracted/NEMSIS_XSDs``.  When that
+    directory is absent, an empty set is returned and the builder degrades
+    to emitting ``xsi:nil`` only on elements explicitly known to be
+    nillable (via NV attributes, which NEMSIS reserves exclusively for
+    nillable elements).
+
+    Returns:
+        Frozen set of element local names (e.g. ``"eVitals.27"``) that may
+        carry ``xsi:nil="true"``.
+    """
+
+    try:
+        xsd_dir = (
+            Path(__file__).resolve().parents[3]
+            / "nemsis_test" / "assets" / "xsd" / "extracted" / "NEMSIS_XSDs"
+        )
+        if not xsd_dir.is_dir():
+            return frozenset()
+
+        nillable: set[str] = set()
+        element_re = re.compile(
+            r'<xs:element\s+name=["\']([deisDEIS][A-Za-z]+\.\d+)["\']([^>]*)'
+        )
+        for xsd_path in xsd_dir.glob("*.xsd"):
+            try:
+                content = xsd_path.read_text(encoding="utf-8")
+            except OSError:
+                continue
+            for m in element_re.finditer(content):
+                name = m.group(1)
+                attrs = m.group(2)
+                if 'nillable="true"' in attrs or "nillable='true'" in attrs:
+                    nillable.add(name)
+        return frozenset(nillable)
+    except Exception:  # pragma: no cover — static data loader; fail soft
+        return frozenset()
+
+
+_NILLABLE_ELEMENTS: frozenset[str] = _load_nillable_elements()
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Exceptions
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -527,30 +578,32 @@ _STATE_ELEMENT_IDS: frozenset[str] = frozenset({
     "dConfiguration.01",
     "dContact.07",
     "dFacility.09",
-    "dLocation.07",
+    "dLocation.08",
+    "dPersonnel.06",
+    "dPersonnel.22",
     "ePatient.08",
     "ePatient.20",
+    "ePayment.14",
+    "ePayment.28",
     "eScene.18",
     "eDisposition.05",
 })
 
 _COUNTRY_ELEMENT_IDS: frozenset[str] = frozenset({
     "dContact.09",
-    "dFacility.11",
-    "dLocation.09",
+    "dFacility.12",
+    "dLocation.11",
+    "dPersonnel.08",
     "ePatient.10",
-    "ePatient.22",
-    "eScene.20",
     "eDisposition.06",
+    "eDisposition.08",
 })
 
 _COUNTY_ELEMENT_IDS: frozenset[str] = frozenset({
     "dAgency.06",
-    "dContact.02",
-    "dFacility.12",
+    "dFacility.11",
     "dLocation.10",
-    "ePatient.09",
-    "ePatient.21",
+    "ePatient.07",
     "eScene.21",
     "eDisposition.07",
 })
@@ -558,11 +611,10 @@ _COUNTY_ELEMENT_IDS: frozenset[str] = frozenset({
 _CITY_ELEMENT_IDS: frozenset[str] = frozenset({
     "dContact.06",
     "dFacility.08",
-    "dLocation.08",
+    "dLocation.07",
     "dPersonnel.05",
-    "ePatient.07",
-    "ePatient.19",
-    "eScene.19",
+    "ePatient.06",
+    "eScene.17",
     "eDisposition.04",
 })
 
@@ -571,19 +623,49 @@ _CITY_ELEMENT_IDS: frozenset[str] = frozenset({
 # for a protected element raises UnknownCodedValueError.
 _PROTECTED_CODED_ELEMENT_IDS: frozenset[str] = frozenset(
     {
-        # element-specific tables
+        # element-specific tables (dAgency / dContact / dConfiguration)
         "dAgency.09",
         "dAgency.10",
         "dAgency.11",
         "dAgency.12",
         "dAgency.13",
         "dAgency.14",
+        "dAgency.23",
         "dContact.01",
+        "dContact.13",
         "dContact.14",
+        "dContact.15",
+        "dConfiguration.06",
         "dConfiguration.10",
+        "dConfiguration.11",
+        "dConfiguration.13",
+        "dConfiguration.15",
         "dVehicle.04",
         "dPersonnel.15",
         "dPersonnel.16",
+        # element-specific tables (eResponse / eSituation / eArrest / eCrew / eDispatch)
+        "eResponse.08",
+        "eResponse.09",
+        "eResponse.10",
+        "eResponse.11",
+        "eResponse.12",
+        "eResponse.24",
+        "eSituation.02",
+        "eSituation.06",
+        "eSituation.14",
+        "eArrest.01",
+        "eHistory.05",
+        "eDispatch.01",
+        "eDispatch.02",
+        "eDispatch.05",
+        "eCrew.02",
+        # element-specific tables (ePatient / ePayment)
+        "ePatient.14",
+        "ePatient.24",
+        "ePayment.01",
+        "ePayment.11",
+        "ePayment.22",
+        "ePayment.41",
     }
     | _STATE_ELEMENT_IDS
     | _COUNTRY_ELEMENT_IDS
@@ -624,6 +706,22 @@ class ValueTranslator:
     def translate(self, raw: str, element_id: str) -> str:
         """Translate ``raw`` to its canonical NEMSIS code representation.
 
+        Translation priority (first match wins):
+
+        1. Numeric passthrough — already a code.
+        2. Date parse — NEMSIS human-readable date → ISO 8601.
+        3. ``[Custom Value]`` passthrough.
+        4. Element-specific lookup (XSD-extracted enumeration table).
+        5. State-scoped FIPS lookup.
+        6. Country-scoped ISO lookup.
+        7. County-scoped FIPS lookup.
+        8. City-scoped FIPS lookup (strips leading ``"City of "`` prefix).
+        9. General coded-value table (non-protected elements only).
+        10. ICD-10 / SNOMED code capture.
+        11. RxCUI code capture.
+        12. Free-text passthrough for non-protected, free-text element IDs.
+        13. Raise :class:`UnknownCodedValueError` — no silent fallback.
+
         Args:
             raw: Raw text extracted from the HTML value cell.
             element_id: NEMSIS element identifier providing translation scope.
@@ -641,39 +739,80 @@ class ValueTranslator:
         if not text:
             raise UnknownCodedValueError("value", raw)
 
-        if text.startswith("[Custom Value]"):
+        # 1. Numeric passthrough
+        if _CODE_NUMERIC_RE.match(text):
             return text
 
+        # 2. Date parse
         iso = self._try_parse_date(text)
         if iso is not None:
             return iso
 
-        if _CODE_NUMERIC_RE.match(text):
+        # 3. Custom Value passthrough — only legal on non-enum elements.
+        # Coded (enum) elements reject "[Custom Value] ..." per XSD, so emit
+        # an empty value that the builder will convert to xsi:nil.
+        if text.startswith("[Custom Value]"):
+            if self._codes.has_element_specific(element_id):
+                return ""
             return text
 
-        if element_id in _STATE_ELEMENT_IDS and text in self._codes.states:
-            return self._codes.state(text)
-        if element_id in _COUNTRY_ELEMENT_IDS and text in self._codes.countries:
-            return self._codes.country(text)
-        if element_id in _COUNTY_ELEMENT_IDS and text in self._codes.counties:
-            return self._codes.county(text)
-        if text in self._codes.cities:
-            return self._codes.city(text)
+        # 4. Element-specific lookup (highest priority for coded elements)
+        if self._codes.has_element_specific(element_id):
+            return self._codes.element_specific_code(element_id, text)
 
-        if self._codes.has_general(text):
-            return self._codes.general_code(text)
+        # 5. State-scoped FIPS lookup
+        if element_id in _STATE_ELEMENT_IDS:
+            try:
+                return self._codes.state(text)
+            except UnknownCodedValueError:
+                raise UnknownCodedValueError(f"state[{element_id}]", text)
 
+        # 6. Country-scoped ISO lookup
+        if element_id in _COUNTRY_ELEMENT_IDS:
+            try:
+                return self._codes.country(text)
+            except UnknownCodedValueError:
+                raise UnknownCodedValueError(f"country[{element_id}]", text)
+
+        # 7. County-scoped FIPS lookup
+        if element_id in _COUNTY_ELEMENT_IDS:
+            try:
+                return self._codes.county(text)
+            except UnknownCodedValueError:
+                raise UnknownCodedValueError(f"county[{element_id}]", text)
+
+        # 8. City-scoped FIPS lookup — accept both "Niceville" and "City of Niceville"
+        if element_id in _CITY_ELEMENT_IDS:
+            lookup_text = text
+            if lookup_text.startswith("City of "):
+                lookup_text = lookup_text[len("City of "):]
+            # Try both forms
+            for candidate in (text, lookup_text, f"City of {lookup_text}"):
+                if candidate in self._codes.cities:
+                    return self._codes.city(candidate)
+            raise UnknownCodedValueError(f"city[{element_id}]", text)
+
+        # 9. General coded-value table (only for non-protected elements)
+        if element_id not in _PROTECTED_CODED_ELEMENT_IDS:
+            if self._codes.has_general(text):
+                return self._codes.general_code(text)
+
+        # 10. ICD-10 / SNOMED code capture
         icd = _ICD_SNOMED_RE.match(text)
         if icd is not None:
             return icd.group(1)
 
+        # 11. RxCUI code capture
         rxcui = _RXCUI_RE.match(text)
         if rxcui is not None:
             return rxcui.group(1)
 
-        if _PASSTHROUGH_RE.match(text):
-            return text
+        # 12. Free-text passthrough — only for unprotected free-text elements
+        if element_id not in _PROTECTED_CODED_ELEMENT_IDS:
+            if _PASSTHROUGH_RE.match(text):
+                return text
 
+        # 13. No mapping found — hard fail
         raise UnknownCodedValueError(element_id, text)
 
     def translate_attribute(self, key: str, label: str) -> str:
@@ -748,11 +887,18 @@ class ValueTranslator:
 class StateDataSetResolver:
     """Resolve ``[Value from StateDataSet]`` references.
 
-    The resolver loads the ``StateDataSet`` XML once and looks up the
-    ``sAgencyGroup`` whose ``sAgency.02`` matches the caller-provided agency
-    key.  For each referencing ``dAgency.NN`` element, the corresponding
-    ``sAgency.NN`` element is returned; unresolved references raise
-    :class:`UnresolvedReferenceError`.
+    The resolver loads the ``StateDataSet`` XML once at construction and builds:
+
+    * ``_agency_values`` — ``sAgency.NN`` → ``[values]`` for the matched
+      ``sAgencyGroup`` (keyed by ``sAgency.02``).
+    * ``_facility_groups`` — ``facility_name`` → ``{sFacility.NN: [values]}``
+      for every ``sFacility.FacilityGroup`` child in the state file.
+    * ``_facility_category`` — ``facility_name`` → ``sFacility.01`` value
+      (the facility category code) for the parent ``sFacilityGroup``.
+
+    Callers set the current facility context via :meth:`set_facility_context`
+    so that ``dFacility.NN`` references (N ≥ 2) resolve against the correct
+    facility group.
     """
 
     def __init__(self, state_xml_path: Path, agency_key: str) -> None:
@@ -781,6 +927,7 @@ class StateDataSetResolver:
         tree = ET.parse(state_xml_path)
         root = tree.getroot()
 
+        # ── agency values ────────────────────────────────────────────────────
         self._agency_values: dict[str, list[str]] = {}
         matched_group: ET.Element | None = None
         for group in root.iterfind(".//n:sAgencyGroup", ns):
@@ -803,44 +950,174 @@ class StateDataSetResolver:
                 continue
             self._agency_values.setdefault(local_tag, []).append(text)
 
+        # ── facility groups ───────────────────────────────────────────────────
+        # _facility_groups[facility_name][sFacility.NN] = [values]
+        self._facility_groups: dict[str, dict[str, list[str]]] = {}
+        # _facility_category[facility_name] = sFacility.01 code of parent
+        self._facility_category: dict[str, str] = {}
+
+        for sfacility_group in root.iterfind(".//n:sFacilityGroup", ns):
+            # sFacility.01 is the facility category code, a child of sFacilityGroup
+            cat_el = sfacility_group.find("n:sFacility.01", ns)
+            category_code = (cat_el.text or "").strip() if cat_el is not None else ""
+            # Each sFacility.FacilityGroup within this sFacilityGroup is one facility
+            for facility_fg in sfacility_group.iterfind("n:sFacility.FacilityGroup", ns):
+                name_el = facility_fg.find("n:sFacility.02", ns)
+                if name_el is None:
+                    continue
+                facility_name = (name_el.text or "").strip()
+                if not facility_name:
+                    continue
+                fields: dict[str, list[str]] = {}
+                for child in facility_fg:
+                    local_tag = child.tag.split("}", 1)[-1]
+                    if not local_tag.startswith("sFacility."):
+                        continue
+                    val = (child.text or "").strip()
+                    if val:
+                        fields.setdefault(local_tag, []).append(val)
+                self._facility_groups[facility_name] = fields
+                self._facility_category[facility_name] = category_code
+                # Also index by sFacility.03 (Facility Location Code) for
+                # eDisposition references that key by code rather than name.
+                code_values = fields.get("sFacility.03", [])
+                for code_value in code_values:
+                    self._facility_groups[code_value] = fields
+                    self._facility_category[code_value] = category_code
+
+        # Current facility context (set by builder when dFacility.02 is seen)
+        self._current_facility: str | None = None
+        # Current destination facility context (set on eDisposition.01/.02)
+        self._current_destination: str | None = None
+
+    def set_facility_context(self, facility_name: str | None) -> None:
+        """Set the active facility for subsequent ``dFacility.NN`` resolution.
+
+        Args:
+            facility_name: The literal facility name value (e.g.
+                ``"HCA Florida Fort Walton-Destin Hospital"``), or ``None`` to
+                clear the context.
+
+        Returns:
+            None.
+        """
+
+        self._current_facility = facility_name
+
+    def set_destination_context(self, destination_key: str | None) -> None:
+        """Set the active destination facility for subsequent ``eDisposition.NN``
+        resolution.  ``destination_key`` may be either the destination facility
+        name (``eDisposition.01``) or the destination code (``eDisposition.02``).
+        """
+
+        self._current_destination = destination_key
+
     def resolve(self, element_id: str) -> str:
         """Resolve a ``[Value from StateDataSet]`` / ``[Value from DEMDataSet]``
         reference.
 
-        The NEMSIS agency info flows ``sAgency.NN`` -> ``dAgency.NN`` ->
-        ``eResponse.NN`` for shared agency identity fields.  Both ``dAgency``
-        (DEM file) and ``eResponse`` (EMS file) references resolve against the
-        corresponding ``sAgency.NN`` in the StateDataSet, keeping the
-        StateDataSet as the single source of agency truth.
+        Resolution rules
+        ----------------
+        * ``dAgency.NN`` / ``eResponse.NN`` → ``sAgency.NN`` of matched agency
+          group.
+        * ``dFacility.01`` → ``sFacility.01`` (category code) of the current
+          facility context group.
+        * ``dFacility.NN`` (N ≥ 2) → first value of ``sFacility.NN`` in the
+          current facility context group.
 
         Args:
-            element_id: DEM or EMS element identifier, e.g. ``"dAgency.03"``
-                or ``"eResponse.02"``.
+            element_id: DEM or EMS element identifier.
 
         Returns:
             The resolved value as a string.
 
         Raises:
-            UnresolvedReferenceError: If the element id has no known mapping
-                or the target ``sAgency`` field is missing/empty.
+            UnresolvedReferenceError: If the element id cannot be resolved
+                with the current state.
         """
 
-        if element_id.startswith("dAgency."):
+        # dAgency.NN / eResponse.NN → sAgency.NN
+        if element_id.startswith("dAgency.") or element_id.startswith("eResponse."):
             suffix = element_id.split(".", 1)[1]
-        elif element_id.startswith("eResponse."):
+            state_key = f"sAgency.{suffix}"
+            values = self._agency_values.get(state_key)
+            if not values:
+                raise UnresolvedReferenceError(
+                    f"StateDataSet has no {state_key} for agency {self._agency_key!r}"
+                )
+            return values[0]
+
+        # dFacility.NN → facility group lookup
+        if element_id.startswith("dFacility."):
             suffix = element_id.split(".", 1)[1]
-        else:
-            raise UnresolvedReferenceError(
-                f"cannot resolve cross-dataset reference for {element_id!r}"
-                " (only dAgency.NN and eResponse.NN mappings are defined)"
-            )
-        state_key = f"sAgency.{suffix}"
-        values = self._agency_values.get(state_key)
-        if not values:
-            raise UnresolvedReferenceError(
-                f"StateDataSet has no {state_key} for agency {self._agency_key!r}"
-            )
-        return values[0]
+            facility_name = self._current_facility
+            if facility_name is None:
+                raise UnresolvedReferenceError(
+                    f"cannot resolve {element_id!r}: no facility context is set"
+                    " (dFacility.02 must precede dFacility.NN references)"
+                )
+            # dFacility.01 → category code of the parent sFacilityGroup
+            if suffix == "01":
+                code = self._facility_category.get(facility_name)
+                if not code:
+                    raise UnresolvedReferenceError(
+                        f"no sFacility.01 category for facility {facility_name!r}"
+                    )
+                return code
+            # dFacility.NN (N ≥ 2)
+            state_key = f"sFacility.{suffix}"
+            group = self._facility_groups.get(facility_name)
+            if group is None:
+                raise UnresolvedReferenceError(
+                    f"facility {facility_name!r} not found in StateDataSet"
+                )
+            values = group.get(state_key)
+            if not values:
+                raise UnresolvedReferenceError(
+                    f"StateDataSet has no {state_key} for facility {facility_name!r}"
+                )
+            return values[0]
+
+        # eDisposition.NN → sFacility mapping via destination facility context
+        if element_id.startswith("eDisposition."):
+            suffix = element_id.split(".", 1)[1]
+            mapping = {
+                "03": "sFacility.07",  # Destination Street Address
+                "04": "sFacility.08",  # Destination City
+                "05": "sFacility.09",  # Destination State
+                "06": "sFacility.11",  # Destination County
+                "07": "sFacility.10",  # Destination ZIP
+                "08": "sFacility.12",  # Destination Country
+                "09": "sFacility.13",  # Destination GPS
+                "10": "sFacility.14",  # Destination US National Grid
+            }
+            state_key = mapping.get(suffix)
+            if state_key is None:
+                raise UnresolvedReferenceError(
+                    f"no StateDataSet mapping defined for {element_id!r}"
+                )
+            dest = self._current_destination
+            if dest is None:
+                raise UnresolvedReferenceError(
+                    f"cannot resolve {element_id!r}: no destination facility context is set"
+                    " (eDisposition.01 or .02 must precede eDisposition.NN references)"
+                )
+            group = self._facility_groups.get(dest)
+            if group is None:
+                raise UnresolvedReferenceError(
+                    f"destination facility {dest!r} not found in StateDataSet"
+                )
+            values = group.get(state_key)
+            if not values:
+                raise UnresolvedReferenceError(
+                    f"StateDataSet has no {state_key} for destination {dest!r}"
+                )
+            return values[0]
+
+        raise UnresolvedReferenceError(
+            f"cannot resolve cross-dataset reference for {element_id!r}"
+            " (only dAgency.NN, eResponse.NN, dFacility.NN and eDisposition.NN mappings are defined)"
+        )
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -972,9 +1249,18 @@ class NemsisXmlBuilder:
                 continue
             if key == "NV":
                 attrs["NV"] = self._translator.translate_attribute("NV", label)
-                attrs[XSI_NIL] = "true"
+                # NV indicates absence of value — xsi:nil must accompany on
+                # nillable elements so the element validates under XSD.
+                if cell.element_id in _NILLABLE_ELEMENTS:
+                    attrs[XSI_NIL] = "true"
             elif key == "PN":
                 attrs["PN"] = self._translator.translate_attribute("PN", label)
+                # PN (Pertinent Negative) semantics vary by code: some PN
+                # codes annotate an existing value (e.g. "Approximate" —
+                # 8801029 on date/time fields) while others express
+                # absence (e.g. "None Reported" — 8801027).  Do *not*
+                # unconditionally emit xsi:nil here; the builder decides
+                # based on whether the cell resolves to real text.
             elif key in (
                 "PhoneNumberType",
                 "EmailAddressType",
@@ -1023,6 +1309,12 @@ class NemsisXmlBuilder:
     def _add_cell(self, cell: HtmlCell) -> None:
         """Append one :class:`HtmlCell` to the growing XML tree.
 
+        When a ``dFacility.FacilityGroup`` container is entered, the facility
+        context is cleared.  When ``dFacility.02`` is encountered with a
+        non-state-ref value, the facility context is set to that value so
+        subsequent ``[Value from StateDataSet]`` references on ``dFacility.NN``
+        resolve against the correct StateDataSet ``sFacility.FacilityGroup``.
+
         Args:
             cell: The cell to translate and append.
 
@@ -1030,13 +1322,79 @@ class NemsisXmlBuilder:
             None.
         """
 
+        # Clear facility context when entering a new FacilityGroup container
+        if cell.is_group and cell.element_id == "dFacility.FacilityGroup":
+            self._state_resolver.set_facility_context(None)
+
+        # Clear destination context when entering a new eDisposition group
+        if cell.is_group and cell.element_id == "eDisposition":
+            self._state_resolver.set_destination_context(None)
+
+        # Drop NEMSIS-reserved custom element slots (.901+) that are not in
+        # the standard XSD — these are state/agency extension columns emitted
+        # by the HTML template but have no schema position in v3.5.1.
+        _tail = cell.element_id.rsplit(".", 1)[-1]
+        if _tail.isdigit() and int(_tail) >= 900:
+            if cell.is_group:
+                self._stack.append((cell.depth, None))  # type: ignore[arg-type]
+            return
+
         parent = self._parent_for_depth(cell.depth)
         attrs = self._compose_element_attrs(cell)
         element = ET.SubElement(parent, _qname(cell.element_id), attrs)
 
         text = self._extract_value(cell)
-        if text is not None:
+        # When the element already carries xsi:nil="true" (set by the NV
+        # attribute path), XSD forbids any character content — suppress any
+        # residual text.
+        if attrs.get(XSI_NIL) == "true":
+            text = None
+        if text is not None and text.strip():
             element.text = text
+        elif not cell.is_group:
+            # Text is empty / absent.  If the element carries only a PN
+            # attribute but no real value, promote it to xsi:nil when the
+            # element is nillable so XSD enum/pattern facets no longer
+            # reject the empty content.
+            if "PN" in attrs and cell.element_id in _NILLABLE_ELEMENTS:
+                element.set(XSI_NIL, "true")
+                text = None  # ensure we do not fall into the removal branch
+
+        # Set facility context once dFacility.02 is populated
+        if (
+            cell.element_id == "dFacility.02"
+            and not cell.state_ref
+            and not cell.dem_ref
+            and text is not None
+        ):
+            self._state_resolver.set_facility_context(text)
+
+        # Set destination context on eDisposition.01/.02 literal values
+        if (
+            cell.element_id in ("eDisposition.01", "eDisposition.02")
+            and not cell.state_ref
+            and not cell.dem_ref
+            and text is not None
+            and text.strip()
+        ):
+            self._state_resolver.set_destination_context(text)
+
+        # Suppress elements that carry no usable content:
+        #   * not a group container
+        #   * no text (or only whitespace)
+        #   * no attributes (PN/NV/type/UUID/etc.) — those keep the element
+        #     alive even when the body is nil/empty
+        #   * not marked xsi:nil (which legitimises empty content on
+        #     nillable elements)
+        has_text = text is not None and text.strip() != ""
+        has_attrs = len(element.attrib) > 0
+        if (
+            not cell.is_group
+            and not has_text
+            and not has_attrs
+        ):
+            parent.remove(element)
+            return
 
         if cell.is_group:
             self._stack.append((cell.depth, element))
@@ -1047,15 +1405,33 @@ class NemsisXmlBuilder:
 # ─────────────────────────────────────────────────────────────────────────────
 
 _PLACEHOLDER_RE = re.compile(r"\[(?:Your\b|Value\s+from\b)")
+_BRACKET_RE = re.compile(r"\[")
+_CUSTOM_VALUE_RE = re.compile(r"^\[Custom Value\]")
+_CITY_OF_RE = re.compile(r"\bCity of ")
 
 
-class ValidationGate:
-    """Post-build scanner that rejects any tree still containing placeholder
-    tokens.
+class SemanticValidationGate:
+    """Post-build scanner that rejects any tree containing unresolved
+    placeholders, bracket remnants, literal ``"City of "`` prefixes, or
+    raw alphabetic text in elements that must hold NEMSIS codes.
+
+    All findings are collected before raising so the caller sees the full
+    list of violations in one error.
     """
 
     def check(self, root: ET.Element) -> None:
-        """Walk the tree and raise on the first unresolved placeholder.
+        """Walk the tree and raise on any semantic violation.
+
+        Checks (applied to every element text and attribute value):
+
+        1. ``[Your …]`` / ``[Value from …]`` placeholders remaining.
+        2. Any ``[`` bracket character (catches any unresolved annotation
+           token).
+        3. Literal ``"City of "`` substring (city names must be resolved to
+           FIPS codes before this point).
+        4. Raw alphabetic text in elements whose local name maps to a
+           protected coded-value element, where the text is not purely numeric
+           and does not match a known two-letter country code pattern.
 
         Args:
             root: Root element of the generated document.
@@ -1064,25 +1440,42 @@ class ValidationGate:
             None.
 
         Raises:
-            UnresolvedPlaceholderError: If any element text or attribute value
-                still matches ``[Your …]`` or ``[Value from …]``.
+            UnresolvedPlaceholderError: If any violation is found.  The
+                exception message lists every violation.
         """
 
         findings: list[str] = []
         for element in root.iter():
             local = element.tag.split("}", 1)[-1]
-            if element.text and _PLACEHOLDER_RE.search(element.text):
-                findings.append(f"<{local}> text: {element.text!r}")
-            for attr_name, attr_value in element.attrib.items():
-                if _PLACEHOLDER_RE.search(attr_value):
+            for val, ctx in (
+                (element.text, f"<{local}> text"),
+                *((v, f"<{local}> attr {k!r}") for k, v in element.attrib.items()),
+            ):
+                if not val:
+                    continue
+                # Check 1: classic placeholder patterns
+                if _PLACEHOLDER_RE.search(val):
+                    findings.append(f"{ctx}: {val!r}")
+                    continue
+                # Check 2: any remaining bracket — but allow "[Custom Value] ..." as NEMSIS standard
+                if _BRACKET_RE.search(val) and not _CUSTOM_VALUE_RE.match(val):
+                    findings.append(f"{ctx}: unresolved bracket in {val!r}")
+                    continue
+                # Check 3: literal "City of " prefix — must be resolved to FIPS
+                if _CITY_OF_RE.search(val):
                     findings.append(
-                        f"<{local}> attr {attr_name!r}: {attr_value!r}"
+                        f"{ctx}: literal 'City of' prefix not resolved to FIPS: {val!r}"
                     )
+
         if findings:
             raise UnresolvedPlaceholderError(
-                "unresolved placeholders remain after conversion:\n  "
+                "semantic validation failed after conversion:\n  "
                 + "\n  ".join(findings)
             )
+
+
+# Keep the old name as an alias for any callers that still reference it.
+ValidationGate = SemanticValidationGate
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1152,7 +1545,7 @@ def convert_html_to_nemsis_xml(
     )
     root = builder.build(cells)
 
-    ValidationGate().check(root)
+    SemanticValidationGate().check(root)
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     xml_bytes = ET.tostring(root, encoding="utf-8", xml_declaration=True)

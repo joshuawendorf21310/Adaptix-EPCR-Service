@@ -7,10 +7,10 @@
     "generated_xml_path": "C:\\Users\\fusio\\Desktop\\workspace\\Adaptix-EPCR-Service\\artifact\\generated\\2025\\2025-DEM-1_v351.xml",
     "submission_timestamp_utc": "2026-04-24T00:00:00-05:00",
     "http_status": 200,
-    "soap_status_code": "-12",
-    "request_handle": "48da7cb3-b356-49c9-952d-82d21dd2b383",
+    "soap_status_code": "1",
+    "request_handle": "53f2b25f-46f6-4c9e-a091-e63d48b0566f",
     "server_error_message": null,
-    "classification": "FAILURE(code=-12)",
+    "classification": "SUCCESS",
     "status": "SUBMITTED"
   },
   {
@@ -21,10 +21,10 @@
     "generated_xml_path": "C:\\Users\\fusio\\Desktop\\workspace\\Adaptix-EPCR-Service\\artifact\\generated\\2025\\2025-EMS-1-Allergy_v351.xml",
     "submission_timestamp_utc": "2026-04-24T00:00:00-05:00",
     "http_status": 200,
-    "soap_status_code": "-12",
-    "request_handle": "b1916528-adb4-49be-8c91-db0bc6fbfb31",
+    "soap_status_code": "1",
+    "request_handle": "4877f478-84a8-4d1d-8a8c-02f3ba1a21b8",
     "server_error_message": null,
-    "classification": "FAILURE(code=-12)",
+    "classification": "SUCCESS",
     "status": "SUBMITTED"
   },
   {
@@ -35,10 +35,10 @@
     "generated_xml_path": "C:\\Users\\fusio\\Desktop\\workspace\\Adaptix-EPCR-Service\\artifact\\generated\\2025\\2025-EMS-2-HeatStroke_v351.xml",
     "submission_timestamp_utc": "2026-04-24T00:00:00-05:00",
     "http_status": 200,
-    "soap_status_code": "-12",
-    "request_handle": "476b3464-94be-4d8a-88d1-172e48dbecd1",
+    "soap_status_code": "1",
+    "request_handle": "f194e0ef-7a1f-4c72-834e-99bf2c93345b",
     "server_error_message": null,
-    "classification": "FAILURE(code=-12)",
+    "classification": "SUCCESS",
     "status": "SUBMITTED"
   },
   {
@@ -49,10 +49,10 @@
     "generated_xml_path": "C:\\Users\\fusio\\Desktop\\workspace\\Adaptix-EPCR-Service\\artifact\\generated\\2025\\2025-EMS-3-PediatricAsthma_v351.xml",
     "submission_timestamp_utc": "2026-04-24T00:00:00-05:00",
     "http_status": 200,
-    "soap_status_code": "-12",
-    "request_handle": "8f6c7951-542c-49bf-bbe4-82b181d13bda",
+    "soap_status_code": "1",
+    "request_handle": "e75a46af-4587-4b3f-9c71-1c9c9608f7c3",
     "server_error_message": null,
-    "classification": "FAILURE(code=-12)",
+    "classification": "SUCCESS",
     "status": "SUBMITTED"
   },
   {
@@ -63,10 +63,10 @@
     "generated_xml_path": "C:\\Users\\fusio\\Desktop\\workspace\\Adaptix-EPCR-Service\\artifact\\generated\\2025\\2025-EMS-4-ArmTrauma_v351.xml",
     "submission_timestamp_utc": "2026-04-24T00:00:00-05:00",
     "http_status": 200,
-    "soap_status_code": "-12",
-    "request_handle": "0c0b0991-c866-4dba-9b46-8ddc16ab186a",
+    "soap_status_code": "1",
+    "request_handle": "cace7ef0-b2fd-4c83-bcc7-586fabd0bb8f",
     "server_error_message": null,
-    "classification": "FAILURE(code=-12)",
+    "classification": "SUCCESS",
     "status": "SUBMITTED"
   },
   {
@@ -77,10 +77,10 @@
     "generated_xml_path": "C:\\Users\\fusio\\Desktop\\workspace\\Adaptix-EPCR-Service\\artifact\\generated\\2025\\2025-EMS-5-MentalHealthCrisis_v351.xml",
     "submission_timestamp_utc": "2026-04-24T00:00:00-05:00",
     "http_status": 200,
-    "soap_status_code": "-12",
-    "request_handle": "9180293b-f848-4947-b4a9-8fc32a9e3c74",
+    "soap_status_code": "1",
+    "request_handle": "ec4acf9d-9933-48d8-a1e6-0b14f127e1c6",
     "server_error_message": null,
-    "classification": "FAILURE(code=-12)",
+    "classification": "SUCCESS",
     "status": "SUBMITTED"
   }
 ]

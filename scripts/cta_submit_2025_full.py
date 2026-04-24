@@ -96,10 +96,7 @@ PCR_NUMBERS: dict[str, str] = {
 }
 
 
-DEM_REFERENCES_GLOBAL: dict[str, str] = {
-    **{f"eDisposition.{i:02d}": "351-T0495" for i in range(1, 30)},
-    **{f"dFacility.{i:02d}": "FAC-OKALOOSA-001" for i in range(1, 40)},
-}
+DEM_REFERENCES_GLOBAL: dict[str, str] = {}
 
 
 DEM_REFERENCES: dict[str, dict[str, str]] = {}

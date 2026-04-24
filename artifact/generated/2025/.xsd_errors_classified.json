@@ -1,0 +1,4128 @@
+{
+  "dConfiguration.08": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "9925005",
+      "9925007"
+    ],
+    "allowed_head": [
+      "9917001",
+      "9917002",
+      "9917003",
+      "9917005",
+      "9917007",
+      "9917019",
+      "9917021",
+      "9917023",
+      "9917025",
+      "9917027",
+      "9917029",
+      "9917031"
+    ],
+    "allowed_count": 12
+  },
+  "dDevice.03": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "9917021",
+      "ECG-Less than 12 Lead (Cardiac Monitor)",
+      "Medication Infusion Pump",
+      "Pressure Monitors-Non-Invasive"
+    ],
+    "allowed_head": [
+      "1603001",
+      "1603003",
+      "1603005",
+      "1603007",
+      "1603009",
+      "1603011",
+      "1603013",
+      "1603015",
+      "1603017",
+      "1603019",
+      "1603021",
+      "1603023",
+      "1603025",
+      "1603027",
+      "1603029",
+      "1603031",
+      "1603033",
+      "1603035",
+      "1603037",
+      "1603039"
+    ],
+    "allowed_count": 20
+  },
+  "dFacility.01": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Hospital",
+      "Mental Health Facility",
+      "Morgue/Mortuary",
+      "Urgent Care"
+    ],
+    "allowed_head": [
+      "1701001",
+      "1701003",
+      "1701005",
+      "1701007",
+      "1701009",
+      "1701011",
+      "1701013",
+      "1701015",
+      "1701017",
+      "1701019",
+      "1701021",
+      "1701023",
+      "1701025",
+      "1701027",
+      "1701029",
+      "1701031",
+      "1701033",
+      "1701035"
+    ],
+    "allowed_count": 18
+  },
+  "dFacility.04": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "FAC-OKALOOSA-001"
+    ],
+    "allowed_head": [
+      "9908001",
+      "9908003",
+      "9908005",
+      "9908007",
+      "9908009",
+      "9908011",
+      "9908019",
+      "9908021",
+      "9908023",
+      "9908025",
+      "9908027",
+      "9908029",
+      "9908031",
+      "9908033",
+      "9908035",
+      "9908037",
+      "9908039",
+      "9908041",
+      "9908043",
+      "9908045",
+      "9908047"
+    ],
+    "allowed_count": 21
+  },
+  "dFacility.05": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": null,
+    "facet": "length",
+    "seen_values": [
+      "<EMPTY>"
+    ],
+    "allowed_head": [],
+    "allowed_count": 0
+  },
+  "dFacility.06": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": null,
+    "facet": "maxLength",
+    "seen_values": [
+      "<EMPTY>"
+    ],
+    "allowed_head": [],
+    "allowed_count": 0
+  },
+  "dFacility.08": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": null,
+    "facet": "atomic",
+    "seen_values": [
+      "FAC-OKALOOSA-001"
+    ],
+    "allowed_head": [],
+    "allowed_count": 0
+  },
+  "dFacility.09": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": null,
+    "facet": "pattern",
+    "seen_values": [
+      "FAC-OKALOOSA-001"
+    ],
+    "allowed_head": [],
+    "allowed_count": 0
+  },
+  "dFacility.10": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": null,
+    "facet": "pattern",
+    "seen_values": [
+      "FAC-OKALOOSA-001"
+    ],
+    "allowed_head": [],
+    "allowed_count": 0
+  },
+  "dFacility.11": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": null,
+    "facet": "pattern",
+    "seen_values": [
+      "FAC-OKALOOSA-001"
+    ],
+    "allowed_head": [],
+    "allowed_count": 0
+  },
+  "dFacility.12": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "FAC-OKALOOSA-001"
+    ],
+    "allowed_head": [
+      "CA",
+      "MX",
+      "US"
+    ],
+    "allowed_count": 3
+  },
+  "dFacility.13": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": null,
+    "facet": "pattern",
+    "seen_values": [
+      "FAC-OKALOOSA-001"
+    ],
+    "allowed_head": [],
+    "allowed_count": 0
+  },
+  "dFacility.14": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": null,
+    "facet": "pattern",
+    "seen_values": [
+      "FAC-OKALOOSA-001"
+    ],
+    "allowed_head": [],
+    "allowed_count": 0
+  },
+  "dFacility.15": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": null,
+    "facet": "pattern",
+    "seen_values": [
+      "FAC-OKALOOSA-001"
+    ],
+    "allowed_head": [],
+    "allowed_count": 0
+  },
+  "dLocation.01": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "EMS Agency Headquarters",
+      "EMS Station"
+    ],
+    "allowed_head": [
+      "1301001",
+      "1301003",
+      "1301005",
+      "1301007"
+    ],
+    "allowed_count": 4
+  },
+  "dLocation.11": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "United States"
+    ],
+    "allowed_head": [
+      "CA",
+      "MX",
+      "US"
+    ],
+    "allowed_count": 3
+  },
+  "dPersonnel.06": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": null,
+    "facet": "pattern",
+    "seen_values": [
+      "Florida"
+    ],
+    "allowed_head": [],
+    "allowed_count": 0
+  },
+  "dPersonnel.08": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "United States"
+    ],
+    "allowed_head": [
+      "CA",
+      "MX",
+      "US"
+    ],
+    "allowed_count": 3
+  },
+  "dPersonnel.13": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "2514003",
+      "2514005",
+      "2514007",
+      "2514011",
+      "Middle Eastern or North African"
+    ],
+    "allowed_head": [
+      "1513001",
+      "1513003",
+      "1513005",
+      "1513007",
+      "1513009",
+      "1513011",
+      "1513013"
+    ],
+    "allowed_count": 7
+  },
+  "dPersonnel.17": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "All-Terrain Vehicle (ATV)",
+      "Operator Class D (Normal)",
+      "Taxi and Livery Class E"
+    ],
+    "allowed_head": [
+      "1517001",
+      "1517003",
+      "1517005",
+      "1517007",
+      "1517009",
+      "1517011",
+      "1517013",
+      "1517015",
+      "1517017",
+      "1517019",
+      "1517021",
+      "1517023"
+    ],
+    "allowed_count": 12
+  },
+  "dPersonnel.18": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Hepatitis A",
+      "Hepatitis B",
+      "MMR (Measles, Mumps, Rubella)",
+      "[Custom Value] COVID-19"
+    ],
+    "allowed_head": [
+      "9910001",
+      "9910003",
+      "9910005",
+      "9910007",
+      "9910009",
+      "9910011",
+      "9910013",
+      "9910015",
+      "9910017",
+      "9910019",
+      "9910021",
+      "9910023",
+      "9910025",
+      "9910027",
+      "9910029",
+      "9910031",
+      "9910033",
+      "9910035",
+      "9910037",
+      "9910039",
+      "9910041",
+      "9910043",
+      "9910045",
+      "9910047",
+      "9910049",
+      "9910051",
+      "9910053"
+    ],
+    "allowed_count": 27
+  },
+  "dPersonnel.20": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Croatian",
+      "Sign Languages",
+      "Spanish"
+    ],
+    "allowed_head": [
+      "amh",
+      "ara",
+      "arm",
+      "ben",
+      "chi",
+      "cpf",
+      "crp",
+      "cze",
+      "dan",
+      "dut",
+      "fin",
+      "fre",
+      "gem",
+      "ger",
+      "gre",
+      "guj",
+      "heb",
+      "hin",
+      "hmn",
+      "hrv",
+      "hun",
+      "ilo",
+      "itl",
+      "jpn",
+      "kor",
+      "kro",
+      "lit",
+      "mal",
+      "mkh",
+      "nav",
+      "nno",
+      "pan",
+      "per",
+      "pol",
+      "por",
+      "rum",
+      "rus",
+      "sgn",
+      "slo",
+      "smo"
+    ],
+    "allowed_count": 51
+  },
+  "dPersonnel.22": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": null,
+    "facet": "pattern",
+    "seen_values": [
+      "Alabama",
+      "Florida"
+    ],
+    "allowed_head": [],
+    "allowed_count": 0
+  },
+  "dPersonnel.24": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "9917023",
+      "Student"
+    ],
+    "allowed_head": [
+      "9925001",
+      "9925002",
+      "9925003",
+      "9925005",
+      "9925007",
+      "9925023",
+      "9925025",
+      "9925027",
+      "9925029",
+      "9925031",
+      "9925033",
+      "9925035",
+      "9925037",
+      "9925039",
+      "9925041",
+      "9925043"
+    ],
+    "allowed_count": 16
+  },
+  "dPersonnel.29": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "9925005",
+      "9925007"
+    ],
+    "allowed_head": [
+      "1529001",
+      "1529002",
+      "1529003",
+      "1529005",
+      "1529007"
+    ],
+    "allowed_count": 5
+  },
+  "dPersonnel.31": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "9916009",
+      "Full Time Paid Employee",
+      "Neither an Employee Nor a Volunteer",
+      "Part Time Paid Employee"
+    ],
+    "allowed_head": [
+      "1531001",
+      "1531003",
+      "1531005",
+      "1531007"
+    ],
+    "allowed_count": 4
+  },
+  "dPersonnel.34": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Patient Care Provider"
+    ],
+    "allowed_head": [
+      "1534001",
+      "1534003",
+      "1534005",
+      "1534007",
+      "1534009",
+      "1534011",
+      "1534013",
+      "1534015",
+      "1534017"
+    ],
+    "allowed_count": 9
+  },
+  "dPersonnel.35": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "9917021",
+      "Driver/Pilot",
+      "Educator/Preceptor",
+      "First-Line Supervisor"
+    ],
+    "allowed_head": [
+      "1534001",
+      "1534003",
+      "1534005",
+      "1534007",
+      "1534009",
+      "1534011",
+      "1534013",
+      "1534015",
+      "1534017"
+    ],
+    "allowed_count": 9
+  },
+  "dPersonnel.38": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "9917023",
+      "Student"
+    ],
+    "allowed_head": [
+      "9925001",
+      "9925002",
+      "9925003",
+      "9925005",
+      "9925007",
+      "9925023",
+      "9925025",
+      "9925027",
+      "9925029",
+      "9925031",
+      "9925033",
+      "9925035",
+      "9925037",
+      "9925039",
+      "9925041",
+      "9925043"
+    ],
+    "allowed_count": 16
+  },
+  "dVehicle.05": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "9925005",
+      "9925007"
+    ],
+    "allowed_head": [
+      "9917001",
+      "9917002",
+      "9917003",
+      "9917005",
+      "9917007",
+      "9917019",
+      "9917021",
+      "9917023",
+      "9917025",
+      "9917027",
+      "9917029",
+      "9917031"
+    ],
+    "allowed_count": 12
+  },
+  "dVehicle.13@DistanceUnit": {
+    "cases": [
+      "2025-DEM-1_v351.xml"
+    ],
+    "attr": "DistanceUnit",
+    "facet": "enumeration",
+    "seen_values": [
+      "2516081"
+    ],
+    "allowed_head": [
+      "9929001",
+      "9929003"
+    ],
+    "allowed_count": 2
+  },
+  "eAirway.01": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "9917021"
+    ],
+    "allowed_head": [
+      "4001001",
+      "4001003",
+      "4001005",
+      "4001007",
+      "4001009",
+      "4001011",
+      "4001013"
+    ],
+    "allowed_count": 7
+  },
+  "eAirway.04": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "9917021"
+    ],
+    "allowed_head": [
+      "4004001",
+      "4004003",
+      "4004005",
+      "4004007",
+      "4004009",
+      "4004011",
+      "4004013",
+      "4004015",
+      "4004017",
+      "4004019",
+      "4004021"
+    ],
+    "allowed_count": 11
+  },
+  "eAirway.08": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      ""
+    ],
+    "allowed_head": [
+      "4008001",
+      "4008003",
+      "4008005",
+      "4008007",
+      "4008009",
+      "4008011",
+      "4008013",
+      "4008015",
+      "4008017",
+      "4008019",
+      "4008021",
+      "4008023"
+    ],
+    "allowed_count": 12
+  },
+  "eArrest.02": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Traumatic Cause"
+    ],
+    "allowed_head": [
+      "3002001",
+      "3002003",
+      "3002005",
+      "3002007",
+      "3002009",
+      "3002011",
+      "3002013",
+      "3002015"
+    ],
+    "allowed_count": 8
+  },
+  "eArrest.03": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Initiated Chest Compressions"
+    ],
+    "allowed_head": [
+      "3003001",
+      "3003003",
+      "3003005",
+      "3003007",
+      "3003009",
+      "3003011"
+    ],
+    "allowed_count": 6
+  },
+  "eArrest.04": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Witnessed by Healthcare Provider"
+    ],
+    "allowed_head": [
+      "3004001",
+      "3004003",
+      "3004005",
+      "3004007"
+    ],
+    "allowed_count": 4
+  },
+  "eArrest.07": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "9923001"
+    ],
+    "allowed_head": [
+      "3007001",
+      "3007003",
+      "3007005"
+    ],
+    "allowed_count": 3
+  },
+  "eArrest.09": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Compressions-Manual"
+    ],
+    "allowed_head": [
+      "3009001",
+      "3009003",
+      "3009005",
+      "3009007",
+      "3009009",
+      "3009011",
+      "3009013",
+      "3009015",
+      "3009017",
+      "3009019",
+      "3009021",
+      "3009023",
+      "3009025",
+      "3009027"
+    ],
+    "allowed_count": 14
+  },
+  "eArrest.11": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Ventricular Tachycardia-Pulseless"
+    ],
+    "allowed_head": [
+      "3011001",
+      "3011005",
+      "3011007",
+      "3011009",
+      "3011011",
+      "3011013"
+    ],
+    "allowed_count": 6
+  },
+  "eArrest.12": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Yes, Prior to Arrival at the ED"
+    ],
+    "allowed_head": [
+      "3012001",
+      "3012003",
+      "3012005",
+      "3012007"
+    ],
+    "allowed_count": 4
+  },
+  "eArrest.13": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "CPC 1 Good Cerebral Performance"
+    ],
+    "allowed_head": [
+      "3013001",
+      "3013003",
+      "3013005",
+      "3013007"
+    ],
+    "allowed_count": 4
+  },
+  "eArrest.16": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Return of Spontaneous Circulation (pulse or BP noted)"
+    ],
+    "allowed_head": [
+      "3016001",
+      "3016003",
+      "3016005",
+      "3016007",
+      "3016009",
+      "3016011"
+    ],
+    "allowed_count": 6
+  },
+  "eArrest.18": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "ROSC in the Field"
+    ],
+    "allowed_head": [
+      "3018001",
+      "3018003",
+      "3018005",
+      "3018007",
+      "3018009",
+      "3018011"
+    ],
+    "allowed_count": 6
+  },
+  "eArrest.20": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "EMS Responder (transport EMS)"
+    ],
+    "allowed_head": [
+      "3020001",
+      "3020003",
+      "3020005",
+      "3020007",
+      "3020009",
+      "3020011",
+      "3020013"
+    ],
+    "allowed_count": 7
+  },
+  "eCrew.03": {
+    "cases": [
+      "2025-EMS-3-PediatricAsthma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "9917021"
+    ],
+    "allowed_head": [
+      "2403001",
+      "2403003",
+      "2403005",
+      "2403007",
+      "2403009",
+      "2403011",
+      "2403013"
+    ],
+    "allowed_count": 7
+  },
+  "eDevice.03": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "ECG-Monitor",
+      "Power On"
+    ],
+    "allowed_head": [
+      "4103001",
+      "4103003",
+      "4103005",
+      "4103007",
+      "4103009",
+      "4103011",
+      "4103013",
+      "4103015",
+      "4103017",
+      "4103019",
+      "4103021",
+      "4103023",
+      "4103025",
+      "4103027",
+      "4103029",
+      "4103031",
+      "4103033",
+      "4103035",
+      "4103037",
+      "4103039",
+      "4103041",
+      "4103043",
+      "4103045",
+      "4103047",
+      "4103049"
+    ],
+    "allowed_count": 25
+  },
+  "eDevice.06": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Automated"
+    ],
+    "allowed_head": [
+      "4106001",
+      "4106003",
+      "4106005",
+      "4106007",
+      "4106009",
+      "4106011",
+      "4106013"
+    ],
+    "allowed_count": 7
+  },
+  "eDevice.07": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "I"
+    ],
+    "allowed_head": [
+      "4107001",
+      "4107003",
+      "4107005",
+      "4107007",
+      "4107009",
+      "4107011",
+      "4107013",
+      "4107015",
+      "4107017",
+      "4107019",
+      "4107021",
+      "4107023",
+      "4107025",
+      "4107027",
+      "4107029",
+      "4107031",
+      "4107033",
+      "4107035",
+      "4107037",
+      "4107039",
+      "4107041"
+    ],
+    "allowed_count": 21
+  },
+  "eDisposition.04": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "atomic",
+    "seen_values": [
+      "351-T0495"
+    ],
+    "allowed_head": [],
+    "allowed_count": 0
+  },
+  "eDisposition.05": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "pattern",
+    "seen_values": [
+      "351-T0495"
+    ],
+    "allowed_head": [],
+    "allowed_count": 0
+  },
+  "eDisposition.06": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "pattern",
+    "seen_values": [
+      "351-T0495"
+    ],
+    "allowed_head": [],
+    "allowed_count": 0
+  },
+  "eDisposition.07": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "pattern",
+    "seen_values": [
+      "351-T0495"
+    ],
+    "allowed_head": [],
+    "allowed_count": 0
+  },
+  "eDisposition.08": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "length",
+    "seen_values": [
+      "<EMPTY>"
+    ],
+    "allowed_head": [],
+    "allowed_count": 0
+  },
+  "eDisposition.09": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "pattern",
+    "seen_values": [
+      "351-T0495"
+    ],
+    "allowed_head": [],
+    "allowed_count": 0
+  },
+  "eDisposition.10": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "pattern",
+    "seen_values": [
+      "351-T0495"
+    ],
+    "allowed_head": [],
+    "allowed_count": 0
+  },
+  "eDisposition.14": {
+    "cases": [
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Ambulance Integrated Car Seat",
+      "Fowlers (Semi-Upright Sitting)",
+      "Sitting"
+    ],
+    "allowed_head": [
+      "4214001",
+      "4214003",
+      "4214005",
+      "4214007",
+      "4214009",
+      "4214011",
+      "4214013",
+      "4214015",
+      "4214017",
+      "4214019",
+      "4214021",
+      "4214023",
+      "4214025",
+      "4214027"
+    ],
+    "allowed_count": 14
+  },
+  "eDisposition.17": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "2223001",
+      "2223003"
+    ],
+    "allowed_head": [
+      "4217001",
+      "4217003",
+      "4217005",
+      "4217007"
+    ],
+    "allowed_count": 4
+  },
+  "eDisposition.18": {
+    "cases": [
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "2224007",
+      "Intersection Navigation-With Normal Light Patterns",
+      "Speed-Normal Traffic"
+    ],
+    "allowed_head": [
+      "4218001",
+      "4218003",
+      "4218005",
+      "4218007",
+      "4218009",
+      "4218011",
+      "4218013",
+      "4218015",
+      "4218017",
+      "4218019"
+    ],
+    "allowed_count": 10
+  },
+  "eDisposition.19": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "2813001",
+      "2813005"
+    ],
+    "allowed_head": [
+      "4219001",
+      "4219003",
+      "4219005",
+      "4219007",
+      "4219009",
+      "4219011"
+    ],
+    "allowed_count": 6
+  },
+  "eDisposition.20": {
+    "cases": [
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Family Choice",
+      "On-Line/On-Scene Medical Direction",
+      "Regional Specialty Center"
+    ],
+    "allowed_head": [
+      "4220001",
+      "4220003",
+      "4220005",
+      "4220007",
+      "4220009",
+      "4220011",
+      "4220013",
+      "4220015",
+      "4220017",
+      "4220019",
+      "4220021"
+    ],
+    "allowed_count": 11
+  },
+  "eDisposition.21": {
+    "cases": [
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Mental Health Facility",
+      "Other EMS Responder (air)"
+    ],
+    "allowed_head": [
+      "4221001",
+      "4221003",
+      "4221005",
+      "4221007",
+      "4221009",
+      "4221013",
+      "4221015",
+      "4221017",
+      "4221019",
+      "4221021",
+      "4221023",
+      "4221025",
+      "4221027",
+      "4221029",
+      "4221031",
+      "4221033",
+      "4221035",
+      "4221037",
+      "4221039",
+      "4221041"
+    ],
+    "allowed_count": 20
+  },
+  "eDisposition.23": {
+    "cases": [
+      "2025-EMS-3-PediatricAsthma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Hospital (General)",
+      "Pediatric Center"
+    ],
+    "allowed_head": [
+      "9908001",
+      "9908003",
+      "9908005",
+      "9908007",
+      "9908009",
+      "9908011",
+      "9908019",
+      "9908021",
+      "9908023",
+      "9908025",
+      "9908027",
+      "9908029",
+      "9908031",
+      "9908033",
+      "9908035",
+      "9908037",
+      "9908039",
+      "9908041",
+      "9908043",
+      "9908045",
+      "9908047"
+    ],
+    "allowed_count": 21
+  },
+  "eDisposition.24": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml",
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "9923001",
+      "Yes-Adult Trauma"
+    ],
+    "allowed_head": [
+      "4224001",
+      "4224003",
+      "4224005",
+      "4224007",
+      "4224009",
+      "4224011",
+      "4224013",
+      "4224015",
+      "4224017",
+      "4224019"
+    ],
+    "allowed_count": 10
+  },
+  "eDisposition.29": {
+    "cases": [
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Initiated Primary Care and Transferred to Another EMS Crew"
+    ],
+    "allowed_head": [
+      "4229001",
+      "4229003",
+      "4229005",
+      "4229007",
+      "4229009",
+      "4229011",
+      "4229013"
+    ],
+    "allowed_count": 7
+  },
+  "eDisposition.30": {
+    "cases": [
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Transport by Another EMS Unit/Agency"
+    ],
+    "allowed_head": [
+      "4230001",
+      "4230003",
+      "4230005",
+      "4230007",
+      "4230009",
+      "4230011",
+      "4230013"
+    ],
+    "allowed_count": 7
+  },
+  "eDisposition.32": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml",
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "9917001",
+      "Integrated Health Care"
+    ],
+    "allowed_head": [
+      "4232001",
+      "4232003",
+      "4232005",
+      "4232007",
+      "4232009",
+      "4232011",
+      "4232013"
+    ],
+    "allowed_count": 7
+  },
+  "eExam.02": {
+    "cases": [
+      "2025-EMS-3-PediatricAsthma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Blue"
+    ],
+    "allowed_head": [
+      "3502001",
+      "3502003",
+      "3502005",
+      "3502007",
+      "3502009",
+      "3502011",
+      "3502013",
+      "3502015",
+      "3502017"
+    ],
+    "allowed_count": 9
+  },
+  "eExam.04": {
+    "cases": [
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "3315007",
+      "Capillary Nail Bed Refill more than 4 seconds",
+      "Dry",
+      "Hot",
+      "Mottled",
+      "Poor Turgor"
+    ],
+    "allowed_head": [
+      "3504001",
+      "3504003",
+      "3504005",
+      "3504007",
+      "3504009",
+      "3504011",
+      "3504013",
+      "3504015",
+      "3504017",
+      "3504019",
+      "3504021",
+      "3504023",
+      "3504025",
+      "3504027",
+      "3504029",
+      "3504031",
+      "3504033",
+      "3504035",
+      "3504037",
+      "3504039"
+    ],
+    "allowed_count": 20
+  },
+  "eExam.05": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml",
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "3315007",
+      "Contusion"
+    ],
+    "allowed_head": [
+      "3505001",
+      "3505003",
+      "3505005",
+      "3505007",
+      "3505009",
+      "3505011",
+      "3505013",
+      "3505015",
+      "3505017",
+      "3505019",
+      "3505021",
+      "3505023",
+      "3505029",
+      "3505031",
+      "3505033",
+      "3505035",
+      "3505037",
+      "3505039",
+      "3505045",
+      "3505047",
+      "3505049",
+      "3505051",
+      "3505053"
+    ],
+    "allowed_count": 23
+  },
+  "eExam.06": {
+    "cases": [
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "3315007"
+    ],
+    "allowed_head": [
+      "3506001",
+      "3506003",
+      "3506005",
+      "3506007",
+      "3506009",
+      "3506011",
+      "3506013",
+      "3506015",
+      "3506017",
+      "3506021",
+      "3506023",
+      "3506025",
+      "3506031",
+      "3506033",
+      "3506035",
+      "3506037",
+      "3506039",
+      "3506041",
+      "3506047",
+      "3506049",
+      "3506051",
+      "3506053",
+      "3506055"
+    ],
+    "allowed_count": 23
+  },
+  "eExam.07": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml",
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "3315007",
+      "3506053",
+      "Stridor"
+    ],
+    "allowed_head": [
+      "3507001",
+      "3507003",
+      "3507005",
+      "3507007",
+      "3507009",
+      "3507011",
+      "3507013",
+      "3507015",
+      "3507017",
+      "3507019",
+      "3507025",
+      "3507027",
+      "3507029",
+      "3507031",
+      "3507033",
+      "3507035",
+      "3507037",
+      "3507039",
+      "3507045",
+      "3507047",
+      "3507049",
+      "3507051",
+      "3507053",
+      "3507055",
+      "3507057",
+      "3507059"
+    ],
+    "allowed_count": 26
+  },
+  "eExam.09": {
+    "cases": [
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "3315007",
+      "Heart Sounds Decreased"
+    ],
+    "allowed_head": [
+      "3509001",
+      "3509003",
+      "3509005",
+      "3509007",
+      "3509009",
+      "3509011",
+      "3509013",
+      "3509015",
+      "3509017",
+      "3509019",
+      "3509021"
+    ],
+    "allowed_count": 11
+  },
+  "eExam.11": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml",
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "3315007"
+    ],
+    "allowed_head": [
+      "3511001",
+      "3511003",
+      "3511005",
+      "3511007",
+      "3511009",
+      "3511011",
+      "3511013",
+      "3511015",
+      "3511017",
+      "3511019",
+      "3511021",
+      "3511023",
+      "3511025",
+      "3511031",
+      "3511033",
+      "3511035",
+      "3511037",
+      "3511039",
+      "3511041",
+      "3511043",
+      "3511045",
+      "3511051",
+      "3511053",
+      "3511055",
+      "3511057",
+      "3511059",
+      "3511061",
+      "3511063",
+      "3511065"
+    ],
+    "allowed_count": 29
+  },
+  "eExam.12": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml",
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "3315007"
+    ],
+    "allowed_head": [
+      "3512001",
+      "3512003",
+      "3512005",
+      "3512007",
+      "3512009",
+      "3512011",
+      "3512013",
+      "3512015",
+      "3512017",
+      "3512019",
+      "3512021",
+      "3512023",
+      "3512025",
+      "3512027",
+      "3512033",
+      "3512035",
+      "3512037",
+      "3512039",
+      "3512041",
+      "3512043",
+      "3512045",
+      "3512047",
+      "3512049",
+      "3512051",
+      "3512057",
+      "3512059",
+      "3512061",
+      "3512063",
+      "3512065"
+    ],
+    "allowed_count": 29
+  },
+  "eExam.13": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Flank-Right"
+    ],
+    "allowed_head": [
+      "3513001",
+      "3513003",
+      "3513005",
+      "3513007",
+      "3513009",
+      "3513011",
+      "3513013",
+      "3513015",
+      "3513017",
+      "3513019",
+      "3513021",
+      "3513023",
+      "3513025",
+      "3513029",
+      "3513031"
+    ],
+    "allowed_count": 15
+  },
+  "eExam.14": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "3315007",
+      "Tenderness"
+    ],
+    "allowed_head": [
+      "3514001",
+      "3514003",
+      "3514005",
+      "3514007",
+      "3514009",
+      "3514011",
+      "3514013",
+      "3514015",
+      "3514017",
+      "3514019",
+      "3514025",
+      "3514027",
+      "3514029",
+      "3514031",
+      "3514033",
+      "3514035",
+      "3514041",
+      "3514043",
+      "3514045",
+      "3514047",
+      "3514049",
+      "3514051",
+      "3514053",
+      "3514055"
+    ],
+    "allowed_count": 24
+  },
+  "eExam.15": {
+    "cases": [
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Finger-2nd (Index)-Left",
+      "Finger-2nd (Index)-Right",
+      "Finger-3rd (Middle)-Left",
+      "Finger-3rd (Middle)-Right",
+      "Finger-4th (Ring)-Left",
+      "Finger-4th (Ring)-Right",
+      "Finger-5th (Smallest)-Left",
+      "Finger-5th (Smallest)-Right",
+      "Hand-Whole Hand-Right",
+      "Leg-Whole Leg-Left",
+      "Leg-Whole Leg-Right",
+      "Thumb-Left",
+      "Thumb-Right"
+    ],
+    "allowed_head": [
+      "3515001",
+      "3515003",
+      "3515005",
+      "3515007",
+      "3515009",
+      "3515011",
+      "3515013",
+      "3515015",
+      "3515017",
+      "3515019",
+      "3515021",
+      "3515023",
+      "3515025",
+      "3515027",
+      "3515029",
+      "3515031",
+      "3515033",
+      "3515035",
+      "3515037",
+      "3515039",
+      "3515041",
+      "3515043",
+      "3515045",
+      "3515047",
+      "3515049",
+      "3515051",
+      "3515053",
+      "3515055",
+      "3515057",
+      "3515059",
+      "3515061",
+      "3515063",
+      "3515065",
+      "3515067",
+      "3515069",
+      "3515071",
+      "3515073",
+      "3515075",
+      "3515077",
+      "3515079"
+    ],
+    "allowed_count": 56
+  },
+  "eExam.16": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml",
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "3315007",
+      "3506053",
+      "Abrasion",
+      "Amputation-Acute",
+      "Avulsion",
+      "Bleeding Uncontrolled",
+      "Contusion",
+      "Crush Injury",
+      "Cyanosis",
+      "Deformity",
+      "Dislocation",
+      "Erythema/Flushing",
+      "Fracture-Open",
+      "Motor Function-Absent"
+    ],
+    "allowed_head": [
+      "3516001",
+      "3516003",
+      "3516005",
+      "3516007",
+      "3516009",
+      "3516011",
+      "3516013",
+      "3516015",
+      "3516017",
+      "3516019",
+      "3516021",
+      "3516023",
+      "3516025",
+      "3516027",
+      "3516029",
+      "3516031",
+      "3516033",
+      "3516035",
+      "3516041",
+      "3516043",
+      "3516045",
+      "3516047",
+      "3516049",
+      "3516051",
+      "3516053",
+      "3516055",
+      "3516057",
+      "3516059",
+      "3516061",
+      "3516063",
+      "3516065",
+      "3516067",
+      "3516069",
+      "3516075",
+      "3516077",
+      "3516079",
+      "3516081",
+      "3516083",
+      "3516085",
+      "3516087"
+    ],
+    "allowed_count": 45
+  },
+  "eExam.17": {
+    "cases": [
+      "2025-EMS-2-HeatStroke_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Right"
+    ],
+    "allowed_head": [
+      "3517001",
+      "3517003",
+      "3517005"
+    ],
+    "allowed_count": 3
+  },
+  "eExam.18": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml",
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "3506053",
+      "Cataract Present",
+      "Dilated"
+    ],
+    "allowed_head": [
+      "3518001",
+      "3518003",
+      "3518005",
+      "3518007",
+      "3518009",
+      "3518011",
+      "3518013",
+      "3518015",
+      "3518017",
+      "3518019",
+      "3518021",
+      "3518023",
+      "3518025",
+      "3518027",
+      "3518029",
+      "3518031",
+      "3518033",
+      "3518035",
+      "3518037",
+      "3518039",
+      "3518041",
+      "3518043",
+      "3518045",
+      "3518047",
+      "3518049",
+      "3518051",
+      "3518053",
+      "3518055",
+      "3518057",
+      "3518059",
+      "3518061",
+      "3518063"
+    ],
+    "allowed_count": 32
+  },
+  "eExam.19": {
+    "cases": [
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "3326007",
+      "Agitation",
+      "Confused",
+      "Disorientation, unspecified",
+      "Hallucinations",
+      "State of emotional shock and stress, unspecified"
+    ],
+    "allowed_head": [
+      "3519001",
+      "3519003",
+      "3519005",
+      "3519007",
+      "3519009",
+      "3519011",
+      "3519013",
+      "3519015",
+      "3519017",
+      "3519021",
+      "3519023",
+      "3519025",
+      "3519027",
+      "3519029",
+      "3519031",
+      "3519033",
+      "3519035",
+      "3519037",
+      "3519039",
+      "3519041",
+      "3519043",
+      "3519045",
+      "3519047",
+      "3519049"
+    ],
+    "allowed_count": 24
+  },
+  "eExam.20": {
+    "cases": [
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "3514029",
+      "Normal Baseline for Patient",
+      "Speech Slurring"
+    ],
+    "allowed_head": [
+      "3520001",
+      "3520003",
+      "3520005",
+      "3520007",
+      "3520009",
+      "3520011",
+      "3520013",
+      "3520015",
+      "3520017",
+      "3520019",
+      "3520021",
+      "3520023",
+      "3520026",
+      "3520027",
+      "3520029",
+      "3520031",
+      "3520033",
+      "3520035",
+      "3520037",
+      "3520039",
+      "3520041",
+      "3520043",
+      "3520045",
+      "3520051",
+      "3520053",
+      "3520055"
+    ],
+    "allowed_count": 26
+  },
+  "eExam.22": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml",
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "3517001"
+    ],
+    "allowed_head": [
+      "3522001",
+      "3522003",
+      "3522005"
+    ],
+    "allowed_count": 3
+  },
+  "eExam.23": {
+    "cases": [
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "3315007",
+      "3514029",
+      "Breath Sounds-Decreased",
+      "Wheezing-Expiratory",
+      "Wheezing-Inspiratory"
+    ],
+    "allowed_head": [
+      "3523001",
+      "3523003",
+      "3523005",
+      "3523007",
+      "3523009",
+      "3523011",
+      "3523013",
+      "3523015",
+      "3523017",
+      "3523019",
+      "3523021",
+      "3523023",
+      "3523025",
+      "3523027",
+      "3523029",
+      "3523031"
+    ],
+    "allowed_count": 16
+  },
+  "eExam.25": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml",
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "3315007",
+      "3506053",
+      "3514029",
+      "Accessory Muscles Used with Breathing",
+      "Pain with Inspiration/Expiration"
+    ],
+    "allowed_head": [
+      "3525001",
+      "3525003",
+      "3525005",
+      "3525007",
+      "3525009",
+      "3525011",
+      "3525013",
+      "3525015",
+      "3525017",
+      "3525019",
+      "3525021",
+      "3525023",
+      "3525025",
+      "3525027",
+      "3525029",
+      "3525031",
+      "3525033",
+      "3525035",
+      "3525037",
+      "3525039",
+      "3525041",
+      "3525043",
+      "3525045",
+      "3525047",
+      "3525049"
+    ],
+    "allowed_count": 25
+  },
+  "eHistory.01": {
+    "cases": [
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "State of Emotional Distress"
+    ],
+    "allowed_head": [
+      "3101001",
+      "3101003",
+      "3101005",
+      "3101007",
+      "3101009",
+      "3101011",
+      "3101013",
+      "3101015",
+      "3101017",
+      "3101019",
+      "3101021",
+      "3101023",
+      "3101025",
+      "3101027",
+      "3101029",
+      "3101031",
+      "3101033",
+      "3101035"
+    ],
+    "allowed_count": 18
+  },
+  "eHistory.06": {
+    "cases": [
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "pattern",
+    "seen_values": [
+      ""
+    ],
+    "allowed_head": [],
+    "allowed_count": 0
+  },
+  "eHistory.08": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "pattern",
+    "seen_values": [
+      ""
+    ],
+    "allowed_head": [],
+    "allowed_count": 0
+  },
+  "eHistory.09": {
+    "cases": [
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Family",
+      "Health Care Personnel"
+    ],
+    "allowed_head": [
+      "3109001",
+      "3109003",
+      "3109005",
+      "3109007"
+    ],
+    "allowed_count": 4
+  },
+  "eHistory.10": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Tetanus"
+    ],
+    "allowed_head": [
+      "9910001",
+      "9910003",
+      "9910005",
+      "9910007",
+      "9910009",
+      "9910011",
+      "9910013",
+      "9910015",
+      "9910017",
+      "9910019",
+      "9910021",
+      "9910023",
+      "9910025",
+      "9910027",
+      "9910029",
+      "9910031",
+      "9910033",
+      "9910035",
+      "9910037",
+      "9910039",
+      "9910041",
+      "9910043",
+      "9910045",
+      "9910047",
+      "9910049",
+      "9910051",
+      "9910053"
+    ],
+    "allowed_count": 27
+  },
+  "eHistory.12": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "minLength",
+    "seen_values": [
+      "<EMPTY>"
+    ],
+    "allowed_head": [],
+    "allowed_count": 0
+  },
+  "eHistory.14": {
+    "cases": [
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "3706021",
+      "Puffs"
+    ],
+    "allowed_head": [
+      "3114001",
+      "3114003",
+      "3114005",
+      "3114007",
+      "3114009",
+      "3114011",
+      "3114013",
+      "3114015",
+      "3114017",
+      "3114019",
+      "3114021",
+      "3114023",
+      "3114025",
+      "3114027",
+      "3114029",
+      "3114031",
+      "3114033",
+      "3114035",
+      "3114037",
+      "3114039",
+      "3114041",
+      "3114043",
+      "3114045",
+      "3114047",
+      "3114049",
+      "3114051",
+      "3114053"
+    ],
+    "allowed_count": 27
+  },
+  "eHistory.15": {
+    "cases": [
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "3325009"
+    ],
+    "allowed_head": [
+      "9927001",
+      "9927003",
+      "9927005",
+      "9927007",
+      "9927009",
+      "9927011",
+      "9927013",
+      "9927015",
+      "9927017",
+      "9927019",
+      "9927021",
+      "9927023",
+      "9927025",
+      "9927027",
+      "9927029",
+      "9927031",
+      "9927033",
+      "9927035",
+      "9927037",
+      "9927039",
+      "9927041",
+      "9927043",
+      "9927045",
+      "9927047",
+      "9927049",
+      "9927051",
+      "9927053",
+      "9927055",
+      "9927057",
+      "9927059",
+      "9927061",
+      "9927063",
+      "9927065",
+      "9927067",
+      "9927069",
+      "9927071",
+      "9927073",
+      "9927075"
+    ],
+    "allowed_count": 38
+  },
+  "eHistory.17": {
+    "cases": [
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      ""
+    ],
+    "allowed_head": [
+      "3117001",
+      "3117003",
+      "3117005",
+      "3117007",
+      "3117009",
+      "3117013",
+      "3117015",
+      "3117017"
+    ],
+    "allowed_count": 8
+  },
+  "eHistory.18": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "9923001"
+    ],
+    "allowed_head": [
+      "3118001",
+      "3118003",
+      "3118005",
+      "3118007",
+      "3118009",
+      "3118011"
+    ],
+    "allowed_count": 6
+  },
+  "eHistory.20": {
+    "cases": [
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "prn (as needed)",
+      "qd (every day)",
+      "qd-am (every day in the morning)"
+    ],
+    "allowed_head": [
+      "3120001",
+      "3120003",
+      "3120005",
+      "3120007",
+      "3120009",
+      "3120011",
+      "3120013",
+      "3120015",
+      "3120017",
+      "3120019",
+      "3120021",
+      "3120023",
+      "3120025",
+      "3120027",
+      "3120029"
+    ],
+    "allowed_count": 15
+  },
+  "eInjury.03": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Crushed, degloved, mangled, or pulseless extremity",
+      "Unable to follow commands (motor GCS < 6)"
+    ],
+    "allowed_head": [
+      "2903001",
+      "2903003",
+      "2903005",
+      "2903007",
+      "2903009",
+      "2903011",
+      "2903013",
+      "2903015",
+      "2903017",
+      "2903019",
+      "2903021",
+      "2903023",
+      "2903025",
+      "2903027",
+      "2903029",
+      "2903031",
+      "2903033",
+      "2903035",
+      "2903037",
+      "2903039",
+      "2903041"
+    ],
+    "allowed_count": 21
+  },
+  "eInjury.04": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      ""
+    ],
+    "allowed_head": [
+      "2904001",
+      "2904003",
+      "2904005",
+      "2904007",
+      "2904009",
+      "2904011",
+      "2904013",
+      "2904015",
+      "2904017",
+      "2904019",
+      "2904021",
+      "2904023",
+      "2904025",
+      "2904027",
+      "2904029",
+      "2904031",
+      "2904033",
+      "2904035",
+      "2904037",
+      "2904039"
+    ],
+    "allowed_count": 20
+  },
+  "eInjury.10": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Eye and Face Protection",
+      "Hearing Protection"
+    ],
+    "allowed_head": [
+      "2910001",
+      "2910003",
+      "2910005",
+      "2910007",
+      "2910009",
+      "2910011",
+      "2910013"
+    ],
+    "allowed_count": 7
+  },
+  "eLabs.03": {
+    "cases": [
+      "2025-EMS-3-PediatricAsthma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "White Blood Cells"
+    ],
+    "allowed_head": [
+      "3403001",
+      "3403003",
+      "3403005",
+      "3403007",
+      "3403009",
+      "3403013",
+      "3403015",
+      "3403017",
+      "3403019",
+      "3403021",
+      "3403023",
+      "3403025",
+      "3403027",
+      "3403029",
+      "3403033",
+      "3403035",
+      "3403037",
+      "3403039",
+      "3403041",
+      "3403043",
+      "3403045",
+      "3403047",
+      "3403049",
+      "3403051",
+      "3403053",
+      "3403055",
+      "3403057",
+      "3403059",
+      "3403061",
+      "3403063",
+      "3403065",
+      "3403067",
+      "3403071",
+      "3403073",
+      "3403075",
+      "3403077",
+      "3403079",
+      "3403081",
+      "3403083",
+      "3403085"
+    ],
+    "allowed_count": 78
+  },
+  "eLabs.05": {
+    "cases": [
+      "2025-EMS-3-PediatricAsthma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Computed Tomography (CT) Scan"
+    ],
+    "allowed_head": [
+      "3405001",
+      "3405003",
+      "3405005",
+      "3405007",
+      "3405009",
+      "3405011",
+      "3405013"
+    ],
+    "allowed_count": 7
+  },
+  "eMedications.04": {
+    "cases": [
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "3325009",
+      "Nasal Cannula"
+    ],
+    "allowed_head": [
+      "9927001",
+      "9927003",
+      "9927005",
+      "9927007",
+      "9927009",
+      "9927011",
+      "9927013",
+      "9927015",
+      "9927017",
+      "9927019",
+      "9927021",
+      "9927023",
+      "9927025",
+      "9927027",
+      "9927029",
+      "9927031",
+      "9927033",
+      "9927035",
+      "9927037",
+      "9927039",
+      "9927041",
+      "9927043",
+      "9927045",
+      "9927047",
+      "9927049",
+      "9927051",
+      "9927053",
+      "9927055",
+      "9927057",
+      "9927059",
+      "9927061",
+      "9927063",
+      "9927065",
+      "9927067",
+      "9927069",
+      "9927071",
+      "9927073",
+      "9927075"
+    ],
+    "allowed_count": 38
+  },
+  "eMedications.06": {
+    "cases": [
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Liters (l)",
+      "Milligrams per Kilogram (mg/kg)"
+    ],
+    "allowed_head": [
+      "3706001",
+      "3706003",
+      "3706005",
+      "3706007",
+      "3706009",
+      "3706013",
+      "3706015",
+      "3706017",
+      "3706019",
+      "3706021",
+      "3706023",
+      "3706025",
+      "3706027",
+      "3706029",
+      "3706031",
+      "3706033",
+      "3706035",
+      "3706037",
+      "3706039",
+      "3706041",
+      "3706043",
+      "3706045",
+      "3706047",
+      "3706049",
+      "3706051",
+      "3706053",
+      "3706055"
+    ],
+    "allowed_count": 27
+  },
+  "eMedications.08": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml",
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "2706001",
+      "Itching"
+    ],
+    "allowed_head": [
+      "3708001",
+      "3708003",
+      "3708005",
+      "3708007",
+      "3708009",
+      "3708011",
+      "3708013",
+      "3708015",
+      "3708017",
+      "3708019",
+      "3708021",
+      "3708023",
+      "3708025",
+      "3708029",
+      "3708031",
+      "3708033",
+      "3708035",
+      "3708037",
+      "3708039",
+      "3708041",
+      "3708043",
+      "3708045"
+    ],
+    "allowed_count": 22
+  },
+  "eMedications.10": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml",
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "9925005",
+      "9925007",
+      "Student"
+    ],
+    "allowed_head": [
+      "9905001",
+      "9905002",
+      "9905003",
+      "9905005",
+      "9905007",
+      "9905019",
+      "9905021",
+      "9905025",
+      "9905027",
+      "9905029",
+      "9905031",
+      "9905033",
+      "9905035",
+      "9905037",
+      "9905039",
+      "9905041",
+      "9905043",
+      "9905045",
+      "9905047",
+      "9905049",
+      "9905051"
+    ],
+    "allowed_count": 21
+  },
+  "eMedications.11": {
+    "cases": [
+      "2025-EMS-3-PediatricAsthma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Written Orders (Patient Specific)"
+    ],
+    "allowed_head": [
+      "9918001",
+      "9918003",
+      "9918005",
+      "9918007"
+    ],
+    "allowed_count": 4
+  },
+  "eOther.02": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "9917021",
+      "Trauma"
+    ],
+    "allowed_head": [
+      "4502001",
+      "4502003",
+      "4502005",
+      "4502007",
+      "4502009",
+      "4502011",
+      "4502013",
+      "4502015",
+      "4502017",
+      "4502019"
+    ],
+    "allowed_count": 10
+  },
+  "eOther.03": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Eye Protection",
+      "Gloves",
+      "Reflective Vest"
+    ],
+    "allowed_head": [
+      "4503001",
+      "4503003",
+      "4503005",
+      "4503007",
+      "4503009",
+      "4503011",
+      "4503013",
+      "4503015",
+      "4503017",
+      "4503019",
+      "4503021",
+      "4503023"
+    ],
+    "allowed_count": 12
+  },
+  "eOther.06": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Exposure-Body Fluid Contact with Intact Skin",
+      "Exposure-Body Fluid Contact with Mucosal Surface",
+      "Violence-Offensive, Intimidating, or Hateful Language"
+    ],
+    "allowed_head": [
+      "4506001",
+      "4506003",
+      "4506005",
+      "4506007",
+      "4506009",
+      "4506011",
+      "4506013",
+      "4506015",
+      "4506017",
+      "4506019",
+      "4506021",
+      "4506023",
+      "4506025",
+      "4506027",
+      "4506029",
+      "4506031",
+      "4506033",
+      "4506035",
+      "4506037",
+      "4506039",
+      "4506041"
+    ],
+    "allowed_count": 21
+  },
+  "eOther.09": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Other Picture/Graphic"
+    ],
+    "allowed_head": [
+      "4509001",
+      "4509003",
+      "4509005",
+      "4509006",
+      "4509008",
+      "4509009",
+      "4509011",
+      "4509013",
+      "4509015",
+      "4509017",
+      "4509019",
+      "4509021",
+      "4509025",
+      "4509027"
+    ],
+    "allowed_count": 14
+  },
+  "eOther.12": {
+    "cases": [
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "3109005",
+      "9917021",
+      "Patient Representative"
+    ],
+    "allowed_head": [
+      "4512001",
+      "4512003",
+      "4512005",
+      "4512007",
+      "4512009",
+      "4512011",
+      "4512013",
+      "4512015",
+      "4512017",
+      "4512019"
+    ],
+    "allowed_count": 10
+  },
+  "eOther.13": {
+    "cases": [
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "9917021",
+      "HIPAA acknowledgement/Release",
+      "Permission to Transport",
+      "Permission to Treat",
+      "Transfer of Patient Care"
+    ],
+    "allowed_head": [
+      "4513001",
+      "4513003",
+      "4513005",
+      "4513007",
+      "4513009",
+      "4513011",
+      "4513013",
+      "4513015",
+      "4513017",
+      "4513019",
+      "4513021",
+      "4513023"
+    ],
+    "allowed_count": 12
+  },
+  "eOther.14": {
+    "cases": [
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "9917021",
+      "Mother"
+    ],
+    "allowed_head": [
+      "4514001",
+      "4514003",
+      "4514005",
+      "4514007",
+      "4514009",
+      "4514011",
+      "4514013",
+      "4514015",
+      "4514017",
+      "4514019",
+      "4514021",
+      "4514023",
+      "4514025",
+      "4514027",
+      "4514029",
+      "4514031",
+      "4514033",
+      "4514035",
+      "4514037",
+      "4514039",
+      "4514041",
+      "4514043",
+      "4514045",
+      "4514047",
+      "4514049",
+      "4514051"
+    ],
+    "allowed_count": 26
+  },
+  "eOther.15": {
+    "cases": [
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Physical Signature/Paper Copy Obtained",
+      "Signed",
+      "Signed-Not Patient"
+    ],
+    "allowed_head": [
+      "4515001",
+      "4515003",
+      "4515005",
+      "4515007",
+      "4515009",
+      "4515011",
+      "4515013",
+      "4515015",
+      "4515017",
+      "4515019",
+      "4515021",
+      "4515023",
+      "4515025",
+      "4515027",
+      "4515031",
+      "4515033",
+      "4515035",
+      "4515037",
+      "4515039"
+    ],
+    "allowed_count": 19
+  },
+  "eOutcome.01": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Admitted as an inpatient to this hospital.",
+      "Discharged to home or self care (routine discharge)"
+    ],
+    "allowed_head": [
+      "01",
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07",
+      "09",
+      "20",
+      "21",
+      "30",
+      "43",
+      "50",
+      "51",
+      "61",
+      "62",
+      "63",
+      "64",
+      "65",
+      "66",
+      "70"
+    ],
+    "allowed_count": 21
+  },
+  "eOutcome.02": {
+    "cases": [
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Discharged to home or self care (routine discharge)",
+      "Discharged/transferred to a Federal Health Care Facility (e.g., VA or federal health care facility)"
+    ],
+    "allowed_head": [
+      "01",
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07",
+      "20",
+      "21",
+      "30",
+      "43",
+      "50",
+      "51",
+      "61",
+      "62",
+      "63",
+      "64",
+      "65",
+      "66",
+      "70"
+    ],
+    "allowed_count": 20
+  },
+  "eOutcome.03": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Patient ID",
+      "Trauma Registry"
+    ],
+    "allowed_head": [
+      "4303001",
+      "4303003",
+      "4303005",
+      "4303007",
+      "4303009",
+      "4303011",
+      "4303013",
+      "4303015",
+      "4303017",
+      "4303019",
+      "4303021",
+      "4303023",
+      "4303025"
+    ],
+    "allowed_count": 13
+  },
+  "ePatient.12": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "pattern",
+    "seen_values": [
+      ""
+    ],
+    "allowed_head": [],
+    "allowed_count": 0
+  },
+  "ePayment.28": {
+    "cases": [
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "pattern",
+    "seen_values": [
+      "Florida"
+    ],
+    "allowed_head": [],
+    "allowed_count": 0
+  },
+  "ePayment.32": {
+    "cases": [
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Mother"
+    ],
+    "allowed_head": [
+      "2632001",
+      "2632003",
+      "2632005",
+      "2632007",
+      "2632009",
+      "2632011",
+      "2632013",
+      "2632015",
+      "2632017",
+      "2632019",
+      "2632021"
+    ],
+    "allowed_count": 11
+  },
+  "ePayment.42": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "9917023",
+      "Critical Care Paramedic",
+      "Registered Nurse"
+    ],
+    "allowed_head": [
+      "2642001",
+      "2642003",
+      "2642005",
+      "2642007",
+      "2642009",
+      "2642011",
+      "2642013",
+      "2642015",
+      "2642017",
+      "2642027",
+      "2642029",
+      "2642031",
+      "2642033",
+      "2642035",
+      "2642037",
+      "2642039",
+      "2643014"
+    ],
+    "allowed_count": 17
+  },
+  "ePayment.44": {
+    "cases": [
+      "2025-EMS-3-PediatricAsthma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Patient was transported for the care of a specialist or for availability of equipment"
+    ],
+    "allowed_head": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E"
+    ],
+    "allowed_count": 5
+  },
+  "ePayment.47": {
+    "cases": [
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Patient had visible hemorrhaging",
+      "Patient was admitted to a hospital",
+      "Patient was moved by stretcher",
+      "Patient was transported in an emergency situation",
+      "Patient was unconscious or in shock"
+    ],
+    "allowed_head": [
+      "01",
+      "04",
+      "05",
+      "06",
+      "07",
+      "08",
+      "09",
+      "12"
+    ],
+    "allowed_count": 8
+  },
+  "ePayment.57": {
+    "cases": [
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "2601011",
+      "Medicare Part B",
+      "Other Non-Federal Programs"
+    ],
+    "allowed_head": [
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "AM",
+      "BL",
+      "CH",
+      "CI",
+      "DS",
+      "FI",
+      "HM",
+      "LM",
+      "MA",
+      "MB",
+      "MC",
+      "OF",
+      "TV",
+      "VA",
+      "WC",
+      "ZZ"
+    ],
+    "allowed_count": 23
+  },
+  "eProcedures.07": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml",
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "2706001",
+      "Bleeding"
+    ],
+    "allowed_head": [
+      "3907001",
+      "3907003",
+      "3907005",
+      "3907007",
+      "3907009",
+      "3907011",
+      "3907013",
+      "3907015",
+      "3907017",
+      "3907019",
+      "3907021",
+      "3907023",
+      "3907025",
+      "3907027",
+      "3907031",
+      "3907033",
+      "3907035",
+      "3907039",
+      "3907041",
+      "3907043",
+      "3907045",
+      "3907047",
+      "3907049",
+      "3907051"
+    ],
+    "allowed_count": 24
+  },
+  "eProcedures.10": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml",
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "9917023",
+      "9925005",
+      "9925007",
+      "Other Healthcare Professional",
+      "Other Non-Healthcare Professional"
+    ],
+    "allowed_head": [
+      "9905001",
+      "9905002",
+      "9905003",
+      "9905005",
+      "9905007",
+      "9905019",
+      "9905021",
+      "9905025",
+      "9905027",
+      "9905029",
+      "9905031",
+      "9905033",
+      "9905035",
+      "9905037",
+      "9905039",
+      "9905041",
+      "9905043",
+      "9905045",
+      "9905047",
+      "9905049",
+      "9905051"
+    ],
+    "allowed_count": 21
+  },
+  "eProcedures.13": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Upper Arm-Left"
+    ],
+    "allowed_head": [
+      "3913001",
+      "3913003",
+      "3913005",
+      "3913007",
+      "3913009",
+      "3913011",
+      "3913013",
+      "3913015",
+      "3913017",
+      "3913019",
+      "3913021",
+      "3913023",
+      "3913025",
+      "3913027",
+      "3913029",
+      "3913031",
+      "3913033",
+      "3913035",
+      "3913037",
+      "3913039",
+      "3913041",
+      "3913043",
+      "3913045",
+      "3913047",
+      "3913049",
+      "3913051",
+      "3913053",
+      "3913055",
+      "3913057",
+      "3913059",
+      "3913061",
+      "3913063",
+      "3913065",
+      "3913067",
+      "3913069",
+      "3913071",
+      "3913073",
+      "3913075",
+      "3913077",
+      "3913079"
+    ],
+    "allowed_count": 41
+  },
+  "eProtocols.01": {
+    "cases": [
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Environmental-Heat Stroke/Hyperthermia",
+      "General-Community Paramedicine / Mobile Integrated Healthcare",
+      "General-IV Access",
+      "General-Pain Control",
+      "Injury-Amputation",
+      "Injury-Bleeding/ Hemorrhage Control",
+      "Injury-Crush Syndrome",
+      "Injury-Extremity",
+      "Medical-Hyperglycemia",
+      "Medical-Respiratory Distress/Asthma/COPD/Reactive Airway"
+    ],
+    "allowed_head": [
+      "9914001",
+      "9914003",
+      "9914005",
+      "9914007",
+      "9914009",
+      "9914011",
+      "9914013",
+      "9914015",
+      "9914017",
+      "9914019",
+      "9914021",
+      "9914023",
+      "9914025",
+      "9914027",
+      "9914029",
+      "9914031",
+      "9914033",
+      "9914035",
+      "9914037",
+      "9914041",
+      "9914043",
+      "9914045",
+      "9914047",
+      "9914049",
+      "9914051",
+      "9914053",
+      "9914055",
+      "9914057",
+      "9914059",
+      "9914061",
+      "9914063",
+      "9914065",
+      "9914067",
+      "9914069",
+      "9914071",
+      "9914073",
+      "9914075",
+      "9914077",
+      "9914079",
+      "9914081"
+    ],
+    "allowed_count": 112
+  },
+  "eProtocols.02": {
+    "cases": [
+      "2025-EMS-1-Allergy_v351.xml",
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "9914101",
+      "Adult Only",
+      "Pediatric Only"
+    ],
+    "allowed_head": [
+      "3602001",
+      "3602003",
+      "3602005"
+    ],
+    "allowed_count": 3
+  },
+  "eScene.04": {
+    "cases": [
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "9917021",
+      "Other EMS Agency"
+    ],
+    "allowed_head": [
+      "2704001",
+      "2704003",
+      "2704005",
+      "2704007",
+      "2704009",
+      "2704011",
+      "2704013",
+      "2704015",
+      "2704017",
+      "2704019"
+    ],
+    "allowed_count": 10
+  },
+  "eScene.25": {
+    "cases": [
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Transferred Patient to Agency"
+    ],
+    "allowed_head": [
+      "2725001",
+      "2725003",
+      "2725005"
+    ],
+    "allowed_count": 3
+  },
+  "eSituation.03": {
+    "cases": [
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Secondary"
+    ],
+    "allowed_head": [
+      "2803001",
+      "2803003",
+      "2803005"
+    ],
+    "allowed_count": 3
+  },
+  "eSituation.07": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Extremity-Upper"
+    ],
+    "allowed_head": [
+      "2807001",
+      "2807003",
+      "2807005",
+      "2807007",
+      "2807009",
+      "2807011",
+      "2807013",
+      "2807015",
+      "2807017"
+    ],
+    "allowed_count": 9
+  },
+  "eSituation.08": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Behavioral/Psychiatric",
+      "Musculoskeletal/Skin"
+    ],
+    "allowed_head": [
+      "2808001",
+      "2808003",
+      "2808005",
+      "2808007",
+      "2808009",
+      "2808011",
+      "2808013",
+      "2808015",
+      "2808017",
+      "2808019",
+      "2808021"
+    ],
+    "allowed_count": 11
+  },
+  "eSituation.13": {
+    "cases": [
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "4219003"
+    ],
+    "allowed_head": [
+      "2813001",
+      "2813003",
+      "2813005",
+      "2813007",
+      "2813009"
+    ],
+    "allowed_count": 5
+  },
+  "eSituation.16": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Military Specific Occupations"
+    ],
+    "allowed_head": [
+      "2816001",
+      "2816003",
+      "2816005",
+      "2816007",
+      "2816009",
+      "2816011",
+      "2816013",
+      "2816015",
+      "2816017",
+      "2816019",
+      "2816021",
+      "2816023",
+      "2816025",
+      "2816027",
+      "2816029",
+      "2816031",
+      "2816033",
+      "2816035",
+      "2816037",
+      "2816039",
+      "2816041",
+      "2816043",
+      "2816045"
+    ],
+    "allowed_count": 23
+  },
+  "eVitals.03": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Sinus Tachycardia"
+    ],
+    "allowed_head": [
+      "9901001",
+      "9901003",
+      "9901005",
+      "9901007",
+      "9901009",
+      "9901011",
+      "9901013",
+      "9901015",
+      "9901017",
+      "9901019",
+      "9901021",
+      "9901023",
+      "9901025",
+      "9901027",
+      "9901029",
+      "9901030",
+      "9901031",
+      "9901033",
+      "9901035",
+      "9901037",
+      "9901039",
+      "9901041",
+      "9901043",
+      "9901045",
+      "9901047",
+      "9901049",
+      "9901051",
+      "9901053",
+      "9901055",
+      "9901057",
+      "9901058",
+      "9901059",
+      "9901061",
+      "9901063",
+      "9901065",
+      "9901067",
+      "9901069",
+      "9901071"
+    ],
+    "allowed_count": 38
+  },
+  "eVitals.04": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "3 Lead"
+    ],
+    "allowed_head": [
+      "3304000",
+      "3304001",
+      "3304003",
+      "3304005",
+      "3304007",
+      "3304009",
+      "3304011",
+      "3304013",
+      "3304015"
+    ],
+    "allowed_count": 9
+  },
+  "eVitals.05": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Computer Interpretation"
+    ],
+    "allowed_head": [
+      "3305001",
+      "3305003",
+      "3305005",
+      "3305007"
+    ],
+    "allowed_count": 4
+  },
+  "eVitals.06": {
+    "cases": [
+      "2025-EMS-3-PediatricAsthma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "atomic",
+    "seen_values": [
+      ""
+    ],
+    "allowed_head": [],
+    "allowed_count": 0
+  },
+  "eVitals.07": {
+    "cases": [
+      "2025-EMS-3-PediatricAsthma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "pattern",
+    "seen_values": [
+      ""
+    ],
+    "allowed_head": [],
+    "allowed_count": 0
+  },
+  "eVitals.08": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Cuff-Manual Auscultated",
+      "Cuff-Manual Palpated Only",
+      "Venous Line"
+    ],
+    "allowed_head": [
+      "3308001",
+      "3308003",
+      "3308005",
+      "3308007",
+      "3308009",
+      "3308011"
+    ],
+    "allowed_count": 6
+  },
+  "eVitals.11": {
+    "cases": [
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "3308001",
+      "Electronic Monitor (Other)",
+      "Electronic Monitor - Cardiac",
+      "Palpated"
+    ],
+    "allowed_head": [
+      "3311001",
+      "3311003",
+      "3311005",
+      "3311007",
+      "3311009",
+      "3311011"
+    ],
+    "allowed_count": 6
+  },
+  "eVitals.13": {
+    "cases": [
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Irregularly Irregular",
+      "Regular"
+    ],
+    "allowed_head": [
+      "3313001",
+      "3313003",
+      "3313005"
+    ],
+    "allowed_count": 3
+  },
+  "eVitals.16": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "atomic",
+    "seen_values": [
+      ""
+    ],
+    "allowed_head": [],
+    "allowed_count": 0
+  },
+  "eVitals.17": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "atomic",
+    "seen_values": [
+      ""
+    ],
+    "allowed_head": [],
+    "allowed_count": 0
+  },
+  "eVitals.18": {
+    "cases": [
+      "2025-EMS-3-PediatricAsthma_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "pattern",
+    "seen_values": [
+      ""
+    ],
+    "allowed_head": [],
+    "allowed_count": 0
+  },
+  "eVitals.24": {
+    "cases": [
+      "2025-EMS-3-PediatricAsthma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "atomic",
+    "seen_values": [
+      ""
+    ],
+    "allowed_head": [],
+    "allowed_count": 0
+  },
+  "eVitals.25": {
+    "cases": [
+      "2025-EMS-2-HeatStroke_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Temporal Artery"
+    ],
+    "allowed_head": [
+      "3325001",
+      "3325003",
+      "3325005",
+      "3325007",
+      "3325009",
+      "3325011",
+      "3325013",
+      "3325015",
+      "3325017"
+    ],
+    "allowed_count": 9
+  },
+  "eVitals.26": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Painful"
+    ],
+    "allowed_head": [
+      "3326001",
+      "3326003",
+      "3326005",
+      "3326007"
+    ],
+    "allowed_count": 4
+  },
+  "eVitals.27": {
+    "cases": [
+      "2025-EMS-4-ArmTrauma_v351.xml",
+      "2025-EMS-5-MentalHealthCrisis_v351.xml"
+    ],
+    "attr": null,
+    "facet": "atomic",
+    "seen_values": [
+      ""
+    ],
+    "allowed_head": [],
+    "allowed_count": 0
+  },
+  "eVitals.28": {
+    "cases": [
+      "2025-EMS-3-PediatricAsthma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Wong-Baker (FACES)"
+    ],
+    "allowed_head": [
+      "3328001",
+      "3328003",
+      "3328005",
+      "3328007"
+    ],
+    "allowed_count": 4
+  },
+  "eVitals.29": {
+    "cases": [
+      "2025-EMS-2-HeatStroke_v351.xml",
+      "2025-EMS-4-ArmTrauma_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "",
+      "Negative"
+    ],
+    "allowed_head": [
+      "3329001",
+      "3329003",
+      "3329005"
+    ],
+    "allowed_count": 3
+  },
+  "eVitals.30": {
+    "cases": [
+      "2025-EMS-2-HeatStroke_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "FAST-ED"
+    ],
+    "allowed_head": [
+      "3330001",
+      "3330004",
+      "3330005",
+      "3330007",
+      "3330009",
+      "3330011",
+      "3330013",
+      "3330015",
+      "3330017",
+      "3330019",
+      "3330021",
+      "3330023",
+      "3330025",
+      "3330027",
+      "3330029"
+    ],
+    "allowed_count": 15
+  },
+  "eVitals.31": {
+    "cases": [
+      "2025-EMS-2-HeatStroke_v351.xml"
+    ],
+    "attr": null,
+    "facet": "enumeration",
+    "seen_values": [
+      "Possible Contraindications to Thrombolytic Use"
+    ],
+    "allowed_head": [
+      "3331001",
+      "3331003",
+      "3331005"
+    ],
+    "allowed_count": 3
+  }
+}

@@ -18,7 +18,9 @@ explicit error.
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Mapping
 from types import MappingProxyType
 
@@ -109,6 +111,8 @@ _FIPS_STATES: Mapping[str, str] = MappingProxyType(
 _ISO_COUNTRIES: Mapping[str, str] = MappingProxyType(
     {
         "United States": "US",
+        # ISO-2 passthrough — HTML may already contain the 2-letter code
+        "US": "US",
     }
 )
 
@@ -138,26 +142,40 @@ _FIPS_COUNTIES: Mapping[str, str] = MappingProxyType(
 
 _FIPS_CITIES: Mapping[str, str] = MappingProxyType(
     {
-        "Oglala": "1254716",
-        # Okaloosa County, Florida — U.S. Census Bureau FIPS place codes (2020 vintage)
-        "Niceville": "2404378",
-        "City of Niceville": "2404378",
+        # GNIS feature IDs for all cities referenced in CTA 2025 HTML test cases.
+        # NEMSIS uses GNIS codes for CityGnisCode elements (eScene.17, ePatient.06,
+        # dFacility.08, dLocation.07, dContact.06, eDisposition.04, dPersonnel.05).
+        # Priority per NEMSIS TAC: Civil > Populated Place > Census/Military.
+        # Source: USGS GNIS DomesticNames text files (2026-03-26 vintage).
+        # https://prd-tnm.s3.amazonaws.com/StagedProducts/GeographicNames/DomesticNames/
+        #
+        # Florida — Okaloosa County
+        "City of Niceville": "2404378",    # Civil
+        "Niceville": "2404378",            # resolves to Civil code
+        "City of Fort Walton Beach": "2403650",  # Civil
         "Fort Walton Beach": "2403650",
-        "City of Fort Walton Beach": "2403650",
+        "City of Crestview": "2404153",    # Civil
         "Crestview": "2404153",
-        "City of Crestview": "2404153",
-        "Destin": "2404275",
-        "City of Destin": "2404275",
-        "Laurel Hill": "2404260",
-        "City of Laurel Hill": "2404260",
-        "Valparaiso": "1273675",
-        "City of Valparaiso": "1273675",
-        # Escambia County, Florida
+        "City of Destin": "2404223",       # Civil
+        "Destin": "2404223",
+        "City of Laurel Hill": "2404890",  # Civil
+        "Laurel Hill": "2404890",
+        "City of Valparaiso": "2405636",   # Civil
+        "Valparaiso": "2405636",
+        # Okaloosa County — military/unincorporated
+        "Eglin Air Force Base": "2512171", # Military
+        "Holt": "284195",                  # Populated Place (unincorporated)
+        # Florida — Escambia County
+        "City of Pensacola": "2404503",    # Civil
         "Pensacola": "2404503",
-        "City of Pensacola": "2404503",
-        # Mobile County, Alabama (USA Health University Hospital)
-        "Mobile": "0151000",
-        "City of Mobile": "0151000",
+        # Alabama — Mobile County
+        "City of Mobile": "2404278",       # Civil
+        "Mobile": "2404278",
+        # South Dakota — Oglala Lakota County
+        "Oglala": "1261129",               # Populated Place
+        # Wisconsin — Calumet County
+        "Village of Greenleaf": "2831515", # Civil
+        "Greenleaf": "2831515",
     }
 )
 
@@ -481,8 +499,601 @@ _ELEMENT_SPECIFIC_MAPPINGS: Mapping[str, Mapping[str, str]] = MappingProxyType(
                 "Visual and Performing Arts": "1516071",
             }
         ),
+        # dAgency.23 — EMSAgencyTimeZone (dAgency_v3.xsd)
+        "dAgency.23": MappingProxyType(
+            {
+                "All other time zones": "1027001",
+                "GMT-04:00 Atlantic Time": "1027003",
+                "GMT-05:00 Eastern Time": "1027005",
+                "GMT-06:00 Central Time": "1027007",
+                "GMT-07:00 Mountain Time": "1027009",
+                "GMT-08:00 Pacific Time": "1027011",
+                "GMT-09:00 Alaska": "1027013",
+                "GMT-10:00 Hawaii": "1027015",
+                "GMT-11:00 Midway Island, Samoa": "1027017",
+            }
+        ),
+        # dContact.13 — AgencyMedicalDirectorDegree (dContact_v3.xsd)
+        "dContact.13": MappingProxyType(
+            {
+                "Doctor of Medicine": "1113001",
+                "Doctor of Osteopathy": "1113003",
+            }
+        ),
+        # dContact.15 — MedicalDirectorCompensation (dContact_v3.xsd)
+        "dContact.15": MappingProxyType(
+            {
+                "Compensated": "1115001",
+                "Non-Compensated": "1115003",
+                # HTML label variants
+                "Non-Compensated/Volunteer": "1115003",
+            }
+        ),
+        # dConfiguration.06 — StateCertificationLicensureLevels (dConfiguration_v3.xsd)
+        # Same type as dConfiguration.08 and dAgency.11
+        "dConfiguration.06": MappingProxyType(
+            {
+                "Advanced Emergency Medical Technician (AEMT)": "9917001",
+                "Emergency Medical Technician - Intermediate": "9917002",
+                "Emergency Medical Responder (EMR)": "9917003",
+                "Emergency Medical Technician (EMT)": "9917005",
+                "Paramedic": "9917007",
+                "Physician": "9917019",
+                "Critical Care Paramedic": "9917021",
+                "Community Paramedicine": "9917023",
+                "Nurse Practitioner": "9917025",
+                "Physician Assistant": "9917027",
+                "Licensed Practical Nurse (LPN)": "9917029",
+                "Registered Nurse": "9917031",
+            }
+        ),
+        # dConfiguration.11 — AgencySpecialtyServiceCapability (dConfiguration_v3.xsd)
+        "dConfiguration.11": MappingProxyType(
+            {
+                "Air Rescue": "1211001",
+                "CBRNE": "1211003",
+                "Community Health Medicine": "1211005",
+                "Disaster Medical Assistance Team (DMAT)": "1211007",
+                "Disaster Mortuary (DMORT)": "1211009",
+                "Dive Rescue": "1211011",
+                "Farm Rescue": "1211013",
+                "High Angle Rescue": "1211015",
+                "Machinery Disentanglement": "1211017",
+                "None": "1211019",
+                "Ski / Snow Rescue": "1211021",
+                "Tactical EMS": "1211023",
+                "Trench / Confined Space Rescue": "1211025",
+                "Urban Search and Rescue (USAR)": "1211027",
+                "Vehicle Extrication": "1211029",
+                "Veterinary Medical Assistance Team (VMAT)": "1211031",
+                "Water or Ice Related Rescue (Incl Swift Water)": "1211033",
+                "Wilderness Search and Rescue": "1211035",
+            }
+        ),
+        # dConfiguration.13 — EMDtoAgencyServiceArea (dConfiguration_v3.xsd)
+        "dConfiguration.13": MappingProxyType(
+            {
+                "No": "1213001",
+                "Yes, 100% of the EMS Agency's Service Area": "1213003",
+                "Yes, Less than 100% of the EMS Agency's Service Area": "1213005",
+            }
+        ),
+        # dConfiguration.15 — PatientMonitoringCapability (dConfiguration_v3.xsd)
+        "dConfiguration.15": MappingProxyType(
+            {
+                "Capnography-Numeric": "1215001",
+                "Capnography-Waveform": "1215003",
+                "ECG-12 Lead or Greater": "1215005",
+                "ECG-Less than 12 Lead (Cardiac Monitor)": "1215007",
+                "Oximetry-Carbon Monoxide": "1215009",
+                "Oximetry-Oxygen": "1215011",
+                "Pressure Measurement-Invasive (Arterial, CVP, Swan, etc.)": "1215013",
+                "Pressure Measurement-Non-Invasive (Blood Pressure, etc.)": "1215015",
+                "Ventilator-Transport": "1215017",
+                "Vital Sign Monitoring": "1215019",
+            }
+        ),
+        # eResponse.08 — EMSDispatchDelayReason (eResponse_v3.xsd)
+        "eResponse.08": MappingProxyType(
+            {
+                "Caller (Uncooperative)": "2208001",
+                "Diversion/Failure (of previous unit)": "2208003",
+                "High Call Volume": "2208005",
+                "Language Barrier": "2208007",
+                "Incomplete Address Information Provided": "2208009",
+                "No EMS Vehicles (Units) Available": "2208011",
+                "None/No Delay": "2208013",
+                "Other": "2208015",
+                "Technical Failure (Computer, Phone etc.)": "2208017",
+                "Communication Specialist-Assignment Error": "2208019",
+                "No Receiving MD, Bed, Hospital": "2208021",
+                "Specialty Team Delay": "2208023",
+            }
+        ),
+        # eResponse.09 — EMSUnitDelayReason (eResponse_v3.xsd)
+        "eResponse.09": MappingProxyType(
+            {
+                "Crowd": "2209001",
+                "Directions/Unable to Locate": "2209003",
+                "Distance": "2209005",
+                "Diversion (Different Incident)": "2209007",
+                "HazMat": "2209009",
+                "None/No Delay": "2209011",
+                "Other": "2209013",
+                "Rendezvous Transport Unavailable": "2209015",
+                "Route Obstruction (e.g., Train)": "2209017",
+                "Scene Safety (Not Secure for EMS)": "2209019",
+                "Staff Delay": "2209021",
+                "Traffic": "2209023",
+                "Vehicle Crash Involving this Unit": "2209025",
+                "Vehicle Failure of this Unit": "2209027",
+                "Weather": "2209029",
+                "Mechanical Issue-Unit, Equipment, etc.": "2209031",
+                "Flight Planning": "2209033",
+                "Out of Service Area Response": "2209035",
+            }
+        ),
+        # eResponse.10 — EMSSceneUnitDelayReason (eResponse_v3.xsd)
+        "eResponse.10": MappingProxyType(
+            {
+                "Awaiting Air Unit": "2210001",
+                "Awaiting Ground Unit": "2210003",
+                "Crowd": "2210005",
+                "Directions/Unable to Locate": "2210007",
+                "Distance": "2210009",
+                "Extrication": "2210011",
+                "HazMat": "2210013",
+                "Language Barrier": "2210015",
+                "None/No Delay": "2210017",
+                "Other": "2210019",
+                "Patient Access": "2210021",
+                "Safety-Crew/Staging": "2210023",
+                "Safety-Patient": "2210025",
+                "Staff Delay": "2210027",
+                "Traffic": "2210029",
+                "Triage/Multiple Patients": "2210031",
+                "Vehicle Crash Involving this Unit": "2210033",
+                "Vehicle Failure of this Unit": "2210035",
+                "Weather": "2210037",
+                "Mechanical Issue-Unit, Equipment, etc.": "2210039",
+            }
+        ),
+        # eResponse.11 — EMSTransportUnitDelayReason (eResponse_v3.xsd)
+        "eResponse.11": MappingProxyType(
+            {
+                "Crowd": "2211001",
+                "Directions/Unable to Locate": "2211003",
+                "Distance": "2211005",
+                "Diversion": "2211007",
+                "HazMat": "2211009",
+                "None/No Delay": "2211011",
+                "Other": "2211013",
+                "Rendezvous Transport Unavailable": "2211015",
+                "Route Obstruction (e.g., Train)": "2211017",
+                "Safety": "2211019",
+                "Staff Delay": "2211021",
+                "Traffic": "2211023",
+                "Vehicle Crash Involving this Unit": "2211025",
+                "Vehicle Failure of this Unit": "2211027",
+                "Weather": "2211029",
+                "Patient Condition Change (e.g., Unit Stopped)": "2211031",
+            }
+        ),
+        # eResponse.12 — EMSTurnaroundUnitDelayReason (eResponse_v3.xsd)
+        "eResponse.12": MappingProxyType(
+            {
+                "Clean-up": "2212001",
+                "Decontamination": "2212003",
+                "Distance": "2212005",
+                "Documentation": "2212007",
+                "ED Overcrowding / Transfer of Care": "2212009",
+                "Equipment Failure": "2212011",
+                "Equipment/Supply Replenishment": "2212013",
+                "None/No Delay": "2212015",
+                "Other": "2212017",
+                "Rendezvous Transport Unavailable": "2212019",
+                "Route Obstruction (e.g., Train)": "2212021",
+                "Staff Delay": "2212023",
+                "Traffic": "2212025",
+                "Vehicle Crash of this Unit": "2212027",
+                "Vehicle Failure of this Unit": "2212029",
+                "Weather": "2212031",
+                "EMS Crew Accompanies Patient for Facility Procedure": "2212033",
+            }
+        ),
+        # eResponse.24 — EMSAdditionalResponseMode (eResponse_v3.xsd)
+        "eResponse.24": MappingProxyType(
+            {
+                "Intersection Navigation-Against Normal Light  Patterns": "2224001",
+                "Intersection Navigation-Against Normal Light Patterns": "2224001",
+                "Intersection Navigation-With Automated Light Changing Technology": "2224003",
+                "Intersection Navigation-With Normal Light Patterns": "2224005",
+                "Scheduled": "2224007",
+                "Speed-Enhanced per Local Policy": "2224009",
+                "Speed-Normal Traffic": "2224011",
+                "Unscheduled": "2224013",
+                "Lights and Sirens": "2224015",
+                "Lights and No Sirens": "2224017",
+                "No Lights or Sirens": "2224019",
+                "Initial No Lights or Sirens, Upgraded to Lights and Sirens": "2224021",
+                "Initial Lights and Sirens, Downgraded to No Lights or Sirens": "2224023",
+            }
+        ),
+        # eSituation.02 — YesNoUnkValues (eSituation_v3.xsd)
+        "eSituation.02": MappingProxyType(
+            {
+                "No": "9922001",
+                "Unknown": "9922003",
+                "Yes": "9922005",
+            }
+        ),
+        # eSituation.06 — TimeUnitsOfChiefComplaint (eSituation_v3.xsd)
+        "eSituation.06": MappingProxyType(
+            {
+                "Seconds": "2806001",
+                "Minutes": "2806003",
+                "Hours": "2806005",
+                "Days": "2806007",
+                "Weeks": "2806009",
+                "Months": "2806011",
+                "Years": "2806013",
+            }
+        ),
+        # eSituation.14 — YesNoUnkValues (eSituation_v3.xsd)
+        "eSituation.14": MappingProxyType(
+            {
+                "No": "9922001",
+                "Unknown": "9922003",
+                "Yes": "9922005",
+            }
+        ),
+        # eArrest.01 — CardiacArrest (eArrest_v3.xsd)
+        "eArrest.01": MappingProxyType(
+            {
+                "No": "3001001",
+                "Yes, Prior to Any EMS Arrival": "3001003",
+                "Yes, Prior to Any EMS Arrival (includes Transport EMS & Medical First Responders)": "3001003",
+                "Yes, After EMS Arrival": "3001005",
+                "Yes, After Any EMS Arrival (includes Transport EMS & Medical First Responders)": "3001005",
+            }
+        ),
+        # eHistory.05 — AdvanceDirectives (eHistory_v3.xsd)
+        "eHistory.05": MappingProxyType(
+            {
+                "Family/Guardian request DNR (but no documentation)": "3105001",
+                "Living Will": "3105003",
+                "None": "3105005",
+                "Other": "3105007",
+                "Other Healthcare Advanced Directive Form": "3105009",
+                "State EMS DNR or Medical Order Form": "3105011",
+                # HTML label variants
+                "DNR": "3105011",
+                "Comfort Measures Only": "3105003",
+            }
+        ),
+        # eDispatch.01 — DispatchReason (eDispatch_v3.xsd) — complete v3.5.1 list
+        "eDispatch.01": MappingProxyType(
+            {
+                "Abdominal Pain/Problems": "2301001",
+                "Allergic Reaction/Stings": "2301003",
+                "Animal Bite": "2301005",
+                "Assault": "2301007",
+                "Automated Crash Notification": "2301009",
+                "Back Pain (Non-Traumatic)": "2301011",
+                "Breathing Problem": "2301013",
+                "Burns/Explosion": "2301015",
+                "Carbon Monoxide/Hazmat/Inhalation/CBRN": "2301017",
+                "Cardiac Arrest/Death": "2301019",
+                "Chest Pain (Non-Traumatic)": "2301021",
+                "Choking": "2301023",
+                "Convulsions/Seizure": "2301025",
+                "Diabetic Problem": "2301027",
+                "Electrocution/Lightning": "2301029",
+                "Eye Problem/Injury": "2301031",
+                "Falls": "2301033",
+                "Fire": "2301035",
+                "Headache": "2301037",
+                "Healthcare Professional/Admission": "2301039",
+                "Heart Problems/AICD": "2301041",
+                "Heat/Cold Exposure": "2301043",
+                "Hemorrhage/Laceration": "2301045",
+                "Industrial Accident/Inaccessible Incident/Other Entrapments (Non-Vehicle)": "2301047",
+                "Medical Alarm": "2301049",
+                "No Other Appropriate Choice": "2301051",
+                "Overdose/Poisoning/Ingestion": "2301053",
+                "Pandemic/Epidemic/Outbreak": "2301055",
+                "Pregnancy/Childbirth/Miscarriage": "2301057",
+                "Psychiatric Problem/Abnormal Behavior/Suicide Attempt": "2301059",
+                "Sick Person": "2301061",
+                "Stab/Gunshot Wound/Penetrating Trauma": "2301063",
+                "Standby": "2301065",
+                "Stroke/CVA": "2301067",
+                "Traffic/Transportation Incident": "2301069",
+                "Transfer/Interfacility/Palliative Care": "2301071",
+                "Traumatic Injury": "2301073",
+                "Well Person Check": "2301075",
+                "Unconscious/Fainting/Near-Fainting": "2301077",
+                "Unknown Problem/Person Down": "2301079",
+                "Drowning/Diving/SCUBA Accident": "2301081",
+                "Airmedical Transport": "2301083",
+                "Altered Mental Status": "2301085",
+                "Intercept": "2301087",
+                "Nausea": "2301089",
+                "Vomiting": "2301091",
+                "Hanging/Strangulation/Asphyxiation": "2301093",
+                "Intoxicated Subject": "2301095",
+                "EMS Requested by Law Enforcement": "2301097",
+                "Active Shooter": "2301099",
+            }
+        ),
+        # eDispatch.02 — EMDPerformed (eDispatch_v3.xsd)
+        "eDispatch.02": MappingProxyType(
+            {
+                "No": "2302001",
+                "Yes, With Pre-Arrival Instructions": "2302003",
+                "Yes, Without Pre-Arrival Instructions": "2302005",
+                "Yes, Unknown if Pre-Arrival Instructions Given": "2302007",
+            }
+        ),
+        # eDispatch.05 — DispatchPriority (eDispatch_v3.xsd)
+        "eDispatch.05": MappingProxyType(
+            {
+                "Critical": "2305001",
+                "Emergent": "2305003",
+                "Lower Acuity": "2305005",
+                "Non-Acute [e.g., Scheduled Transfer  or Standby]": "2305007",
+                "Non-Acute (e.g., Scheduled Transfer or Standby)": "2305007",
+            }
+        ),
+        # eCrew.02 — MemberLevel (eCrew_v3.xsd) — distinct from StateCertificationLicensureLevels
+        "eCrew.02": MappingProxyType(
+            {
+                "Advanced Emergency Medical Technician (AEMT)": "9925001",
+                "Emergency Medical Technician - Intermediate": "9925002",
+                "Emergency Medical Responder (EMR)": "9925003",
+                "Emergency Medical Technician (EMT)": "9925005",
+                "Paramedic": "9925007",
+                "Other Healthcare Professional": "9925023",
+                "Other Non-Healthcare Professional": "9925025",
+                "Physician": "9925027",
+                "Respiratory Therapist": "9925029",
+                "Student": "9925031",
+                "Critical Care Paramedic": "9925033",
+                "Community Paramedicine": "9925035",
+                "Nurse Practitioner": "9925037",
+                "Physician Assistant": "9925039",
+                "Licensed Practical Nurse (LPN)": "9925041",
+                "Registered Nurse": "9925043",
+            }
+        ),
+        # ePatient.14 — Race (ePatient_v3.xsd)
+        "ePatient.14": MappingProxyType(
+            {
+                "American Indian or Alaska Native": "2514001",
+                "Asian": "2514003",
+                "Black or African American": "2514005",
+                "Hispanic or Latino": "2514007",
+                "Native Hawaiian or Other Pacific Islander": "2514009",
+                "White": "2514011",
+                "Middle Eastern or North African": "2514013",
+            }
+        ),
+        # ePatient.24 — PatientPreferredLanguage (ePatient_v3.xsd)
+        # Uses ISO 639-2/T language codes (3-letter or 2-letter alpha codes)
+        "ePatient.24": MappingProxyType(
+            {
+                "Amharic": "amh",
+                "Arabic": "ara",
+                "Armenian": "arm",
+                "Bengali": "ben",
+                "Cajun (Creole and Pidgins)": "crp",
+                "Chinese": "chi",
+                "Croatian": "hrv",
+                "Czech": "cze",
+                "Danish": "dan",
+                "Dutch": "dut",
+                "English": "eng",
+                "Finnish": "fin",
+                "Formosan": "tai",
+                "French": "fre",
+                "French Creole": "cpf",
+                "German": "ger",
+                "Greek": "gre",
+                "Gujarati": "guj",
+                "Hebrew": "heb",
+                "Hindi (Urdu)": "hin",
+                "Hungarian": "hun",
+                "Ilocano": "ilo",
+                "Italian": "itl",
+                "Japanese": "jpn",
+                "Korean": "kor",
+                "Kru": "kro",
+                "Lithuanian": "lit",
+                "Malayalam": "mal",
+                "Miao (Hmong)": "hmn",
+                "Mon-Khmer (Cambodian)": "mkh",
+                "Navaho": "nav",
+                "Norwegian": "nno",
+                "Panjabi": "pan",
+                "Pennsylvania Dutch (Germanic Other)": "gem",
+                "Persian": "per",
+                "Polish": "pol",
+                "Portuguese": "por",
+                "Romanian": "rum",
+                "Russian": "rus",
+                "Sign Languages": "sgn",
+                "Samoan": "smo",
+                "Serbo-Croatian": "srp",
+                "Slovak": "slo",
+                "Spanish": "spa",
+                "Swedish": "swe",
+                "Syriac": "syr",
+                "Tagalog": "tgl",
+                "Thai (Laotian)": "tha",
+                "Turkish": "tur",
+                "Ukrainian": "ukr",
+                "Vietnamese": "vie",
+                "Yiddish": "yid",
+            }
+        ),
+        # ePayment.01 — PrimaryMethodOfPayment (ePayment_v3.xsd)
+        "ePayment.01": MappingProxyType(
+            {
+                "Insurance": "2601001",
+                "Medicaid": "2601003",
+                "Medicare": "2601005",
+                "Not Billed (for any reason)": "2601007",
+                "Other Government": "2601009",
+                "Self Pay": "2601011",
+                "Workers Compensation": "2601013",
+                "Payment by Facility": "2601015",
+                "Contracted Payment": "2601017",
+                "Community Network": "2601019",
+                "No Insurance Identified": "2601021",
+                "Other Payment Option": "2601023",
+                # Legacy / alternate HTML label variants
+                "Workmen's Compensation": "2601013",
+                "VA": "2601009",
+                "CHAMPUS": "2601005",
+                "Champus": "2601005",
+            }
+        ),
+        # ePayment.11 — InsuranceCompanyBillingPriority (ePayment_v3.xsd)
+        "ePayment.11": MappingProxyType(
+            {
+                "Other": "2611001",
+                "Primary": "2611003",
+                "Secondary": "2611005",
+                "Tertiary": "2611007",
+                "Payer Responsibility Four": "2611009",
+                "Payer Responsibility Five": "2611011",
+                "Payer Responsibility Six": "2611013",
+                "Payer Responsibility Seven": "2611015",
+                "Payer Responsibility Eight": "2611017",
+                "Payer Responsibility Nine": "2611019",
+                "Payer Responsibility Ten": "2611021",
+                "Payer Responsibility Eleven": "2611023",
+                "Unknown": "2611025",
+            }
+        ),
+        # ePayment.22 — RelationshipToInsured (ePayment_v3.xsd)
+        "ePayment.22": MappingProxyType(
+            {
+                "Self": "2622001",
+                "Spouse": "2622003",
+                "Child/Dependent": "2622005",
+                "Cadaver Donor": "2622009",
+                "Employee": "2622011",
+                "Life/Domestic Partner": "2622013",
+                "Organ Donor": "2622015",
+                "Unknown": "2622017",
+                "Other Relationship": "2622019",
+            }
+        ),
+        # ePayment.41 — TransportAssessment (ePayment_v3.xsd)
+        "ePayment.41": MappingProxyType(
+            {
+                "Unable to sit without assistance": "2641001",
+                "Unable to stand without assistance": "2641003",
+                "Unable to walk without assistance": "2641005",
+            }
+        ),
     }
 )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# XSD-derived element-specific mappings
+#
+# Auto-generated from the NEMSIS v3.5.1 XSDs at import time (artifact located
+# at ``artifact/generated/2025/.xsd_enums.json``).  For every NEMSIS element
+# whose declared type is a ``simpleType`` with an ``xs:enumeration``, we build
+# a ``{label: code, code: code}`` table so the runtime translator can resolve
+# both human labels and pre-coded values.  Hand-curated entries above win on
+# conflict and extend the auto-generated tables with synonyms / edge cases.
+#
+# If the XSD artifact is missing (e.g. wheel install without dev assets), the
+# generator degrades to the hand-curated table only.  This never silently
+# succeeds with bad data: translation still raises ``UnknownCodedValueError``
+# for any unmapped label.
+# ─────────────────────────────────────────────────────────────────────────────
+
+_XSD_ENUMS_JSON = (
+    Path(__file__).resolve().parents[3]
+    / "artifact"
+    / "generated"
+    / "2025"
+    / ".xsd_enums.json"
+)
+
+
+def _load_xsd_enums() -> dict:
+    """Load the XSD-derived enumeration artifact.
+
+    Returns an empty scaffold if the artifact is missing so that the module
+    still imports cleanly in environments without the development assets.
+    Callers relying on XSD-backed coverage must ensure the artifact is built
+    via ``scripts/extract_xsd_enums.py``.
+    """
+
+    if not _XSD_ENUMS_JSON.is_file():
+        return {"simple_types": {}, "element_types": {}, "element_inline_enums": {}}
+    return json.loads(_XSD_ENUMS_JSON.read_text(encoding="utf-8"))
+
+
+def _build_full_element_specific() -> Mapping[str, Mapping[str, str]]:
+    """Merge XSD-derived element enumerations with hand-curated overrides.
+
+    Priority order (last write wins):
+
+    1. XSD ``element → simpleType`` enumeration tables.
+    2. XSD inline (anonymous) enumeration tables.
+    3. Hand-curated :data:`_ELEMENT_SPECIFIC_MAPPINGS` overrides.
+    """
+
+    data = _load_xsd_enums()
+    simple_types = data.get("simple_types", {})
+    element_types = data.get("element_types", {})
+    inline = data.get("element_inline_enums", {})
+
+    full: dict[str, dict[str, str]] = {}
+
+    for element_id, type_name in element_types.items():
+        local = type_name.split(":", 1)[-1] if isinstance(type_name, str) else ""
+        enum = simple_types.get(local)
+        if not enum:
+            continue
+        table: dict[str, str] = {}
+        for code, label in enum.items():
+            table[code] = code
+            if label:
+                table[label] = code
+                combined = f"{code} - {label}"
+                table[combined] = code
+        full[element_id] = table
+
+    for element_id, enum in inline.items():
+        table = full.setdefault(element_id, {})
+        for code, label in enum.items():
+            table.setdefault(code, code)
+            if label:
+                if label not in table:
+                    table[label] = code
+                combined = f"{code} - {label}"
+                table.setdefault(combined, code)
+
+    for element_id, override in _ELEMENT_SPECIFIC_MAPPINGS.items():
+        merged = dict(full.get(element_id, {}))
+        for label, code in override.items():
+            merged[label] = code
+        full[element_id] = merged
+
+    return MappingProxyType(
+        {k: MappingProxyType(v) for k, v in full.items()}
+    )
+
+
+_ELEMENT_SPECIFIC_FULL: Mapping[str, Mapping[str, str]] = _build_full_element_specific()
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -512,12 +1123,22 @@ _NV_CODES: Mapping[str, str] = MappingProxyType(
 
 _PN_CODES: Mapping[str, str] = MappingProxyType(
     {
+        # Source: commonTypes_v3.xsd — PN.* simpleTypes
         "Approximate": "8801029",
-        "Exam Finding Not Present": "8801015",
-        "Symptom Not Present": "8801015",
-        "No Known Drug Allergy": "8801023",
+        "Contraindication Noted": "8801001",
+        "Denied By Order": "8801003",
+        "Exam Finding Not Present": "8801005",
+        "Medication Allergy": "8801007",
+        "Medication Already Taken": "8801009",
+        "No Known Drug Allergy": "8801013",
         "None Reported": "8801015",
+        "Not Immunized": "8801025",
+        "Not Performed by EMS": "8801017",
+        "Order Criteria Not Met": "8801027",
+        "Refused": "8801019",
+        "Symptom Not Present": "8801031",
         "Unable to Complete": "8801023",
+        "Unresponsive": "8801021",
     }
 )
 
@@ -528,11 +1149,12 @@ _PN_CODES: Mapping[str, str] = MappingProxyType(
 
 _PHONE_TYPES: Mapping[str, str] = MappingProxyType(
     {
-        "Work": "9913001",
-        "Fax": "9913007",
-        "Mobile": "9913003",
-        "Home": "9913005",
-        "Pager": "9913009",
+        # Source: commonTypes_v3.xsd — PhoneNumberType simpleType
+        "Fax": "9913001",
+        "Home": "9913003",
+        "Mobile": "9913005",
+        "Pager": "9913007",
+        "Work": "9913009",
     }
 )
 
@@ -558,8 +1180,8 @@ _ETCO2_UNITS: Mapping[str, str] = MappingProxyType(
 
 _DISTANCE_UNITS: Mapping[str, str] = MappingProxyType(
     {
-        "Miles": "2516081",
-        "Kilometers": "2516083",
+        "Miles": "9929001",
+        "Kilometers": "9929003",
     }
 )
 
@@ -1301,5 +1923,5 @@ NEMSIS_V351_CODED_VALUES: CodedValueSet = CodedValueSet(
     etco2_units=_ETCO2_UNITS,
     distance_units=_DISTANCE_UNITS,
     general=_GENERAL_CODED,
-    element_specific=_ELEMENT_SPECIFIC_MAPPINGS,
+    element_specific=_ELEMENT_SPECIFIC_FULL,
 )
