@@ -1,2 +1,759 @@
 <?xml version='1.0' encoding='utf-8'?>
-<EMSDataSet xmlns="http://www.nemsis.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.nemsis.org https://nemsis.org/media/nemsis_v3/3.5.1.250403CP1/XSDs/NEMSIS_XSDs/EMSDataSet_v3.xsd"><Header><DemographicGroup><dAgency.01>120495</dAgency.01><dAgency.02>351-T0495</dAgency.02><dAgency.04>12</dAgency.04></DemographicGroup><PatientCareReport UUID="397f7035-b4b5-58ae-92ae-053460588876"><eRecord><eRecord.01>FEMSQ-2025-EMS-00004</eRecord.01><eRecord.SoftwareApplicationGroup><eRecord.02>Adaptix</eRecord.02><eRecord.03>Adaptix ePCR</eRecord.03><eRecord.04>1.0.0</eRecord.04></eRecord.SoftwareApplicationGroup></eRecord><eResponse><eResponse.AgencyGroup><eResponse.01>351-T0495</eResponse.01><eResponse.02>351-T0495</eResponse.02></eResponse.AgencyGroup><eResponse.03>351-241198-002</eResponse.03><eResponse.04>351-241198-002-1</eResponse.04><eResponse.ServiceGroup><eResponse.05>2205001</eResponse.05></eResponse.ServiceGroup><eResponse.07>2207015</eResponse.07><eResponse.08>2208013</eResponse.08><eResponse.09>2209011</eResponse.09><eResponse.10>2210017</eResponse.10><eResponse.11 NV="7701001" xsi:nil="true" /><eResponse.12>2212001</eResponse.12><eResponse.12>2212013</eResponse.12><eResponse.13>1D446</eResponse.13><eResponse.14>Medic 40</eResponse.14><eResponse.16>Niceville Office</eResponse.16><eResponse.17>30.537,-86.477</eResponse.17><eResponse.18>16REU50167840</eResponse.18><eResponse.19>92658.8</eResponse.19><eResponse.20>92666.1</eResponse.20><eResponse.22>92694.3</eResponse.22><eResponse.23>2223001</eResponse.23><eResponse.24>2224003</eResponse.24><eResponse.24>2224015</eResponse.24></eResponse><eDispatch><eDispatch.01>2301073</eDispatch.01><eDispatch.02>2302003</eDispatch.02><eDispatch.03>30E</eDispatch.03><eDispatch.04>Okaloosa 911</eDispatch.04><eDispatch.05>2305001</eDispatch.05></eDispatch><eCrew><eCrew.CrewGroup><eCrew.01>PMD584736</eCrew.01><eCrew.02>9925007</eCrew.02><eCrew.03>2403001</eCrew.03><eCrew.03>2403007</eCrew.03></eCrew.CrewGroup><eCrew.CrewGroup><eCrew.01>PMD668912</eCrew.01><eCrew.02>9925007</eCrew.02><eCrew.03>2403011</eCrew.03></eCrew.CrewGroup></eCrew><eTimes><eTimes.01 NV="7701003" xsi:nil="true" /><eTimes.02>2024-11-05T16:48:05-05:00</eTimes.02><eTimes.03>2024-11-05T16:48:42-05:00</eTimes.03><eTimes.04>2024-11-05T16:49:09-05:00</eTimes.04><eTimes.05>2024-11-05T16:51:10-05:00</eTimes.05><eTimes.06>2024-11-05T16:58:31-05:00</eTimes.06><eTimes.07>2024-11-05T16:59:08-05:00</eTimes.07><eTimes.08>2024-11-05T17:11:38-05:00</eTimes.08><eTimes.09>2024-11-05T17:16:29-05:00</eTimes.09><eTimes.11 NV="7701001" xsi:nil="true" /><eTimes.12 NV="7701001" xsi:nil="true" /><eTimes.13>2024-11-05T17:50:10-05:00</eTimes.13><eTimes.15>2024-11-05T17:55:27-05:00</eTimes.15></eTimes><ePatient><ePatient.01>46JW8T</ePatient.01><ePatient.PatientNameGroup><ePatient.02>Tannous</ePatient.02><ePatient.03>Orlo</ePatient.03></ePatient.PatientNameGroup><ePatient.05 StreetAddress2="Apartment 208">501 8th Street Building 19D</ePatient.05><ePatient.06>2512171</ePatient.06><ePatient.07>12091</ePatient.07><ePatient.08>12</ePatient.08><ePatient.09>32542</ePatient.09><ePatient.10>US</ePatient.10><ePatient.11>12091021200</ePatient.11><ePatient.12 PN="8801023" xsi:nil="true" /><ePatient.13 NV="7701003" xsi:nil="true" /><ePatient.14>2514013</ePatient.14><ePatient.AgeGroup><ePatient.15>42</ePatient.15><ePatient.16>2516009</ePatient.16></ePatient.AgeGroup><ePatient.17>1982-01-17</ePatient.17><ePatient.25>9919003</ePatient.25></ePatient><ePayment><ePayment.01>2601009</ePayment.01><ePayment.08>2608001</ePayment.08><ePayment.InsuranceGroup><ePayment.09>TRICARE</ePayment.09><ePayment.10>TRICARE</ePayment.10><ePayment.11>2611003</ePayment.11><ePayment.12 StreetAddress2="Suite 5101">7700 Arlington Boulevard</ePayment.12><ePayment.13>Falls Church</ePayment.13><ePayment.14>51</ePayment.14><ePayment.15>22042-5101</ePayment.15><ePayment.16>US</ePayment.16><ePayment.17>TP</ePayment.17><ePayment.18>6510818</ePayment.18><ePayment.19>Tannous</ePayment.19><ePayment.20>Orlo</ePayment.20><ePayment.22>2622001</ePayment.22><ePayment.58>TRICARE Prime</ePayment.58><ePayment.60>1982-01-17</ePayment.60></ePayment.InsuranceGroup><ePayment.ClosestRelativeGroup><ePayment.23>Tannous</ePayment.23><ePayment.24>Lizeth</ePayment.24><ePayment.31 PhoneNumberType="9913005">+966 011 398 5340</ePayment.31></ePayment.ClosestRelativeGroup><ePayment.EmployerGroup><ePayment.33>US Air Force</ePayment.33></ePayment.EmployerGroup><ePayment.40>2640001</ePayment.40><ePayment.41>2641001</ePayment.41><ePayment.41>2641003</ePayment.41><ePayment.41>2641005</ePayment.41><ePayment.42>2642035</ePayment.42><ePayment.42>2642039</ePayment.42><ePayment.46>Severe trauma</ePayment.46><ePayment.47>01</ePayment.47><ePayment.47>04</ePayment.47><ePayment.47>05</ePayment.47><ePayment.47>06</ePayment.47><ePayment.47>08</ePayment.47><ePayment.49>9923003</ePayment.49><ePayment.50>2650003</ePayment.50><ePayment.51>S49.9</ePayment.51><ePayment.51>S59.91</ePayment.51><ePayment.51>S69.9</ePayment.51><ePayment.SupplyItemGroup><ePayment.55>22G catheter</ePayment.55><ePayment.56>1</ePayment.56></ePayment.SupplyItemGroup><ePayment.SupplyItemGroup><ePayment.55>Fentanyl (100mcg)</ePayment.55><ePayment.56>1</ePayment.56></ePayment.SupplyItemGroup><ePayment.SupplyItemGroup><ePayment.55>Pressure bandage</ePayment.55><ePayment.56>5</ePayment.56></ePayment.SupplyItemGroup><ePayment.SupplyItemGroup><ePayment.55>Whole blood</ePayment.55><ePayment.56>1</ePayment.56></ePayment.SupplyItemGroup><ePayment.57>CH</ePayment.57></ePayment><eScene><eScene.01>9923001</eScene.01><eScene.ResponderGroup><eScene.04>2704011</eScene.04><eScene.24>9923003</eScene.24></eScene.ResponderGroup><eScene.ResponderGroup><eScene.02>Survival Flight, Inc.</eScene.02><eScene.03>9511</eScene.03><eScene.04>2704013</eScene.04><eScene.25>2725001</eScene.25></eScene.ResponderGroup><eScene.06>2707005</eScene.06><eScene.07>9923001</eScene.07><eScene.08 NV="7701001" xsi:nil="true" /><eScene.09>Y92.13</eScene.09><eScene.11>30.608,-86.536</eScene.11><eScene.12>16REU44468625</eScene.12><eScene.14>Mile 20.4</eScene.14><eScene.15>FL-85</eScene.15><eScene.17>2512171</eScene.17><eScene.18>12</eScene.18><eScene.19>32542</eScene.19><eScene.20>Northbound side</eScene.20><eScene.21>12091</eScene.21><eScene.22>US</eScene.22><eScene.23>12091020500</eScene.23></eScene><eSituation><eSituation.01>2024-11-05T16:42:00-05:00</eSituation.01><eSituation.02>9922005</eSituation.02><eSituation.PatientComplaintGroup><eSituation.03>2803001</eSituation.03><eSituation.04>Mangled arm</eSituation.04><eSituation.05>17</eSituation.05><eSituation.06>2806003</eSituation.06></eSituation.PatientComplaintGroup><eSituation.PatientComplaintGroup><eSituation.03>2803005</eSituation.03><eSituation.04>Heavy bleeding</eSituation.04><eSituation.05>17</eSituation.05><eSituation.06>2806003</eSituation.06></eSituation.PatientComplaintGroup><eSituation.07>2807009</eSituation.07><eSituation.08>2808015</eSituation.08><eSituation.09>S69.9</eSituation.09><eSituation.10>G89.11</eSituation.10><eSituation.10>R58</eSituation.10><eSituation.10>S49.9</eSituation.10><eSituation.11>S59.91</eSituation.11><eSituation.12>S49.9</eSituation.12><eSituation.13>2813001</eSituation.13><eSituation.WorkRelatedGroup><eSituation.14>9922005</eSituation.14><eSituation.16>2816033</eSituation.16></eSituation.WorkRelatedGroup><eSituation.17>Y93.89</eSituation.17><eSituation.18>2024-11-05T16:42:00-05:00</eSituation.18><eSituation.20 NV="7701001" xsi:nil="true" /></eSituation><eInjury><eInjury.01>W23</eInjury.01><eInjury.01>W31.9</eInjury.01><eInjury.02>2902001</eInjury.02><eInjury.02>2902007</eInjury.02><eInjury.03>2903003</eInjury.03><eInjury.03>2903023</eInjury.03><eInjury.03>2903025</eInjury.03><eInjury.03>2903041</eInjury.03><eInjury.04 PN="8801015" xsi:nil="true" /><eInjury.10>2910001</eInjury.10><eInjury.10>2910007</eInjury.10></eInjury><eArrest><eArrest.01>3001005</eArrest.01><eArrest.02>3002015</eArrest.02><eArrest.03>3003005</eArrest.03><eArrest.04>3004005</eArrest.04><eArrest.07>3007001</eArrest.07><eArrest.09>3009001</eArrest.09><eArrest.10>9923001</eArrest.10><eArrest.11>3011013</eArrest.11><eArrest.12>3012005</eArrest.12><eArrest.13>3013001</eArrest.13><eArrest.14 PN="8801029">2024-11-05T17:05:00-05:00</eArrest.14><eArrest.15>2024-11-05T17:08:27-05:00</eArrest.15><eArrest.16>3016011</eArrest.16><eArrest.17 NV="7701003" xsi:nil="true" /><eArrest.18>3018007</eArrest.18><eArrest.19>2024-11-05T17:06:23-05:00</eArrest.19><eArrest.20>3020013</eArrest.20><eArrest.21 NV="7701001" xsi:nil="true" /><eArrest.22 NV="7701001" xsi:nil="true" /></eArrest><eHistory><eHistory.01>3101009</eHistory.01><eHistory.06 PN="8801013" xsi:nil="true" /><eHistory.07>160244002</eHistory.07><eHistory.08 PN="8801015" xsi:nil="true" /><eHistory.09>3109001</eHistory.09><eHistory.CurrentMedsGroup><eHistory.12 PN="8801015" xsi:nil="true" /></eHistory.CurrentMedsGroup><eHistory.17 PN="8801015" xsi:nil="true" /><eHistory.19>2024-11-05T12:30:00-05:00</eHistory.19></eHistory><eNarrative><eNarrative.01>Patient's right arm was mangled while working on military equipment. Patient was moved to highway shoulder by Eglin AFB unit. We administered blood &amp; pain medication and transferred to helicopter for transport to USA Health in Mobile. Patient briefly experienced cardiac arrest prior to blood administration. &lt;PM Raynor&gt;</eNarrative.01></eNarrative><eVitals><eVitals.VitalGroup><eVitals.01>2024-11-05T16:59:47-05:00</eVitals.01><eVitals.02>9923001</eVitals.02><eVitals.CardiacRhythmGroup><eVitals.03>9901049</eVitals.03><eVitals.04>3304001</eVitals.04><eVitals.05>3305001</eVitals.05></eVitals.CardiacRhythmGroup><eVitals.BloodPressureGroup><eVitals.06>80</eVitals.06><eVitals.07>51</eVitals.07><eVitals.08>3308005</eVitals.08></eVitals.BloodPressureGroup><eVitals.HeartRateGroup><eVitals.10>132</eVitals.10><eVitals.11>3311005</eVitals.11></eVitals.HeartRateGroup><eVitals.12>92</eVitals.12><eVitals.13>3313001</eVitals.13><eVitals.14>24</eVitals.14><eVitals.15>3315011</eVitals.15><eVitals.16 PN="8801023" xsi:nil="true" /><eVitals.17 PN="8801023" xsi:nil="true" /><eVitals.18 PN="8801023" xsi:nil="true" /><eVitals.GlasgowScoreGroup><eVitals.19>2</eVitals.19><eVitals.20>1</eVitals.20><eVitals.21>2</eVitals.21><eVitals.22>3322003</eVitals.22><eVitals.23>5</eVitals.23></eVitals.GlasgowScoreGroup><eVitals.TemperatureGroup><eVitals.24>36.1</eVitals.24><eVitals.25>3325013</eVitals.25></eVitals.TemperatureGroup><eVitals.26>3326007</eVitals.26><eVitals.PainScaleGroup><eVitals.27 PN="8801023" xsi:nil="true" /></eVitals.PainScaleGroup><eVitals.StrokeScaleGroup><eVitals.29 PN="8801023" xsi:nil="true" /><eVitals.30 NV="7701003" xsi:nil="true" /></eVitals.StrokeScaleGroup><eVitals.31 NV="7701003" xsi:nil="true" /><eVitals.33>8</eVitals.33></eVitals.VitalGroup><eVitals.VitalGroup><eVitals.01>2024-11-05T17:03:24-05:00</eVitals.01><eVitals.02>9923001</eVitals.02><eVitals.CardiacRhythmGroup><eVitals.03>9901049</eVitals.03><eVitals.04>3304001</eVitals.04><eVitals.05>3305001</eVitals.05></eVitals.CardiacRhythmGroup><eVitals.BloodPressureGroup><eVitals.06>76</eVitals.06><eVitals.07>48</eVitals.07><eVitals.08>3308005</eVitals.08></eVitals.BloodPressureGroup><eVitals.HeartRateGroup><eVitals.10>134</eVitals.10><eVitals.11>3311005</eVitals.11></eVitals.HeartRateGroup><eVitals.12>90</eVitals.12><eVitals.13>3313001</eVitals.13><eVitals.14>26</eVitals.14><eVitals.15>3315011</eVitals.15><eVitals.16 PN="8801023" xsi:nil="true" /><eVitals.17 PN="8801023" xsi:nil="true" /><eVitals.18 PN="8801023" xsi:nil="true" /><eVitals.GlasgowScoreGroup><eVitals.19>2</eVitals.19><eVitals.20>1</eVitals.20><eVitals.21>2</eVitals.21><eVitals.22>3322003</eVitals.22><eVitals.23>5</eVitals.23></eVitals.GlasgowScoreGroup><eVitals.TemperatureGroup><eVitals.24>35.9</eVitals.24><eVitals.25>3325013</eVitals.25></eVitals.TemperatureGroup><eVitals.26>3326007</eVitals.26><eVitals.PainScaleGroup><eVitals.27 PN="8801023" xsi:nil="true" /></eVitals.PainScaleGroup><eVitals.StrokeScaleGroup><eVitals.29 PN="8801023" xsi:nil="true" /><eVitals.30 NV="7701003" xsi:nil="true" /></eVitals.StrokeScaleGroup><eVitals.31 NV="7701003" xsi:nil="true" /><eVitals.33>8</eVitals.33></eVitals.VitalGroup><eVitals.VitalGroup><eVitals.01>2024-11-05T17:10:24-05:00</eVitals.01><eVitals.02>9923001</eVitals.02><eVitals.CardiacRhythmGroup><eVitals.03>9901049</eVitals.03><eVitals.04>3304001</eVitals.04><eVitals.05>3305001</eVitals.05></eVitals.CardiacRhythmGroup><eVitals.BloodPressureGroup><eVitals.06>88</eVitals.06><eVitals.07>56</eVitals.07><eVitals.08>3308011</eVitals.08><eVitals.09>72</eVitals.09></eVitals.BloodPressureGroup><eVitals.HeartRateGroup><eVitals.10>118</eVitals.10><eVitals.11>3311009</eVitals.11></eVitals.HeartRateGroup><eVitals.12>91</eVitals.12><eVitals.13>3313003</eVitals.13><eVitals.14>20</eVitals.14><eVitals.15>3315011</eVitals.15><eVitals.16 ETCO2Type="3340003">5.4</eVitals.16><eVitals.17>0.5</eVitals.17><eVitals.18>99</eVitals.18><eVitals.GlasgowScoreGroup><eVitals.19>3</eVitals.19><eVitals.20>1</eVitals.20><eVitals.21>3</eVitals.21><eVitals.22>3322003</eVitals.22><eVitals.23>7</eVitals.23></eVitals.GlasgowScoreGroup><eVitals.TemperatureGroup><eVitals.24>36.4</eVitals.24><eVitals.25>3325001</eVitals.25></eVitals.TemperatureGroup><eVitals.26>3326005</eVitals.26><eVitals.PainScaleGroup><eVitals.27 PN="8801023" xsi:nil="true" /></eVitals.PainScaleGroup><eVitals.StrokeScaleGroup><eVitals.29 PN="8801023" xsi:nil="true" /><eVitals.30 NV="7701003" xsi:nil="true" /></eVitals.StrokeScaleGroup><eVitals.31 NV="7701003" xsi:nil="true" /><eVitals.33>9</eVitals.33></eVitals.VitalGroup></eVitals><eExam><eExam.01>75</eExam.01><eExam.AssessmentGroup><eExam.03>2024-11-05T17:00:32-05:00</eExam.03><eExam.04>3504027</eExam.04><eExam.04>3504039</eExam.04><eExam.05>3505051</eExam.05><eExam.06>3506035</eExam.06><eExam.07>3507029</eExam.07><eExam.09>3509003</eExam.09><eExam.AbdomenGroup><eExam.10>3510001</eExam.10><eExam.11>3511037</eExam.11></eExam.AbdomenGroup><eExam.12>3512037</eExam.12><eExam.SpineGroup><eExam.13>3513031</eExam.13><eExam.14>3514055</eExam.14></eExam.SpineGroup><eExam.ExtremityGroup><eExam.15>3515007</eExam.15><eExam.16>3516079</eExam.16><eExam.16>3516081</eExam.16></eExam.ExtremityGroup><eExam.ExtremityGroup><eExam.15>3515015</eExam.15><eExam.16>3516003</eExam.16></eExam.ExtremityGroup><eExam.ExtremityGroup><eExam.15>3515039</eExam.15><eExam.16>3516001</eExam.16><eExam.16>3516011</eExam.16><eExam.16>3516023</eExam.16><eExam.16>3516027</eExam.16><eExam.16>3516035</eExam.16><eExam.16>3516079</eExam.16><eExam.16>3516081</eExam.16></eExam.ExtremityGroup><eExam.ExtremityGroup><eExam.15>3515097</eExam.15><eExam.16>3516049</eExam.16></eExam.ExtremityGroup><eExam.ExtremityGroup><eExam.15>3515103</eExam.15><eExam.16>3516001</eExam.16><eExam.16>3516007</eExam.16><eExam.16>3516011</eExam.16><eExam.16>3516023</eExam.16><eExam.16>3516025</eExam.16><eExam.16>3516045</eExam.16></eExam.ExtremityGroup><eExam.ExtremityGroup><eExam.15>3515105</eExam.15><eExam.16>3516081</eExam.16></eExam.ExtremityGroup><eExam.ExtremityGroup><eExam.15>3515107</eExam.15><eExam.16>3516049</eExam.16></eExam.ExtremityGroup><eExam.EyeGroup><eExam.17>3517001</eExam.17><eExam.18>3518061</eExam.18></eExam.EyeGroup><eExam.LungGroup><eExam.22>3522005</eExam.22><eExam.23>3523013</eExam.23></eExam.LungGroup><eExam.ChestGroup><eExam.25>3525029</eExam.25></eExam.ChestGroup><eExam.19>3519021</eExam.19><eExam.20>3520023</eExam.20></eExam.AssessmentGroup></eExam><eProtocols><eProtocols.ProtocolGroup><eProtocols.01>9914067</eProtocols.01><eProtocols.02>3602003</eProtocols.02></eProtocols.ProtocolGroup><eProtocols.ProtocolGroup><eProtocols.01>9914071</eProtocols.01><eProtocols.02>3602001</eProtocols.02></eProtocols.ProtocolGroup><eProtocols.ProtocolGroup><eProtocols.01>9914077</eProtocols.01><eProtocols.02>3602003</eProtocols.02></eProtocols.ProtocolGroup><eProtocols.ProtocolGroup><eProtocols.01>9914083</eProtocols.01><eProtocols.02>3602003</eProtocols.02></eProtocols.ProtocolGroup><eProtocols.ProtocolGroup><eProtocols.01>9914089</eProtocols.01><eProtocols.02>3602003</eProtocols.02></eProtocols.ProtocolGroup><eProtocols.ProtocolGroup><eProtocols.01>9914097</eProtocols.01><eProtocols.02>3602003</eProtocols.02></eProtocols.ProtocolGroup><eProtocols.ProtocolGroup><eProtocols.01>9914097</eProtocols.01><eProtocols.02>3602003</eProtocols.02></eProtocols.ProtocolGroup></eProtocols><eMedications><eMedications.MedicationGroup><eMedications.01>2024-11-05T17:05:32-05:00</eMedications.01><eMedications.02>9923001</eMedications.02><eMedications.03 CodeType="9924003">4337</eMedications.03><eMedications.04>9927023</eMedications.04><eMedications.DosageGroup><eMedications.05>50</eMedications.05><eMedications.06>3706015</eMedications.06></eMedications.DosageGroup><eMedications.07>9916003</eMedications.07><eMedications.08>3708031</eMedications.08><eMedications.09>PMD584736</eMedications.09><eMedications.10>9905007</eMedications.10><eMedications.11>9918005</eMedications.11><eMedications.13>9923001</eMedications.13></eMedications.MedicationGroup><eMedications.MedicationGroup><eMedications.01>2024-11-05T17:07:58-05:00</eMedications.01><eMedications.02>9923001</eMedications.02><eMedications.03 CodeType="9924005">33389009</eMedications.03><eMedications.04>9927023</eMedications.04><eMedications.DosageGroup><eMedications.05>1</eMedications.05><eMedications.06>3706049</eMedications.06></eMedications.DosageGroup><eMedications.07>9916001</eMedications.07><eMedications.08>3708031</eMedications.08><eMedications.09>PMD584736</eMedications.09><eMedications.10>9905007</eMedications.10><eMedications.11>9918001</eMedications.11><eMedications.12>Allan Ziemann</eMedications.12><eMedications.13>9923001</eMedications.13></eMedications.MedicationGroup></eMedications><eProcedures><eProcedures.ProcedureGroup><eProcedures.01>2024-11-05T16:50:00-05:00</eProcedures.01><eProcedures.02>9923003</eProcedures.02><eProcedures.03>20655006</eProcedures.03><eProcedures.05 NV="7701003" xsi:nil="true" /><eProcedures.06 NV="7701003" xsi:nil="true" /><eProcedures.07>3907005</eProcedures.07><eProcedures.08 NV="7701003" xsi:nil="true" /><eProcedures.10>9905021</eProcedures.10><eProcedures.15 NV="7701003" xsi:nil="true" /></eProcedures.ProcedureGroup><eProcedures.ProcedureGroup><eProcedures.01>2024-11-05T17:01:22-05:00</eProcedures.01><eProcedures.02>9923001</eProcedures.02><eProcedures.03>20655006</eProcedures.03><eProcedures.05>1</eProcedures.05><eProcedures.06>9923003</eProcedures.06><eProcedures.07>3907033</eProcedures.07><eProcedures.08>9916003</eProcedures.08><eProcedures.09>PMD668912</eProcedures.09><eProcedures.10>9905007</eProcedures.10><eProcedures.11>9918005</eProcedures.11><eProcedures.15>9923003</eProcedures.15></eProcedures.ProcedureGroup><eProcedures.ProcedureGroup><eProcedures.01>2024-11-05T17:02:01-05:00</eProcedures.01><eProcedures.02>9923001</eProcedures.02><eProcedures.03>26906007</eProcedures.03><eProcedures.05>1</eProcedures.05><eProcedures.06>9923003</eProcedures.06><eProcedures.07>3907033</eProcedures.07><eProcedures.08>9916001</eProcedures.08><eProcedures.10>9905021</eProcedures.10><eProcedures.15>9923003</eProcedures.15></eProcedures.ProcedureGroup><eProcedures.ProcedureGroup><eProcedures.01>2024-11-05T17:04:23-05:00</eProcedures.01><eProcedures.02>9923001</eProcedures.02><eProcedures.03>392230005</eProcedures.03><eProcedures.04>22G</eProcedures.04><eProcedures.05>1</eProcedures.05><eProcedures.06>9923003</eProcedures.06><eProcedures.07>3907033</eProcedures.07><eProcedures.08>9916003</eProcedures.08><eProcedures.09>PMD584736</eProcedures.09><eProcedures.10>9905007</eProcedures.10><eProcedures.11>9918005</eProcedures.11><eProcedures.13>3913071</eProcedures.13><eProcedures.15>9923003</eProcedures.15></eProcedures.ProcedureGroup><eProcedures.ProcedureGroup><eProcedures.01>2024-11-05T17:07:58-05:00</eProcedures.01><eProcedures.02>9923001</eProcedures.02><eProcedures.03>116859006</eProcedures.03><eProcedures.05>1</eProcedures.05><eProcedures.06>9923003</eProcedures.06><eProcedures.07>3907033</eProcedures.07><eProcedures.08>9916001</eProcedures.08><eProcedures.09>PMD584736</eProcedures.09><eProcedures.10>9905007</eProcedures.10><eProcedures.11>9918001</eProcedures.11><eProcedures.12>Allan Ziemann</eProcedures.12><eProcedures.15>9923003</eProcedures.15></eProcedures.ProcedureGroup></eProcedures><eDevice><eDevice.DeviceGroup><eDevice.01>CP.150.32189</eDevice.01><eDevice.02>2024-11-05T16:59:08-05:00</eDevice.02><eDevice.03>4103033</eDevice.03></eDevice.DeviceGroup><eDevice.DeviceGroup><eDevice.01>CP.150.32189</eDevice.01><eDevice.02>2024-11-05T16:59:47-05:00</eDevice.02><eDevice.03>4103011</eDevice.03><eDevice.WaveformGroup><eDevice.04>image/jpeg</eDevice.04><eDevice.06>4106003</eDevice.06></eDevice.WaveformGroup><eDevice.07>4107001</eDevice.07><eDevice.08>Sinus Tachycardia</eDevice.08></eDevice.DeviceGroup><eDevice.DeviceGroup><eDevice.01>CP.150.32189</eDevice.01><eDevice.02>2024-11-05T17:06:12-05:00</eDevice.02><eDevice.03>4103011</eDevice.03><eDevice.WaveformGroup><eDevice.04>image/jpeg</eDevice.04><eDevice.06>4106003</eDevice.06></eDevice.WaveformGroup><eDevice.07>4107001</eDevice.07><eDevice.08>Ventricular Tachycardia</eDevice.08></eDevice.DeviceGroup></eDevice><eDisposition><eDisposition.DestinationGroup><eDisposition.01>Survival Flight, Inc.</eDisposition.01><eDisposition.02>9511</eDisposition.02><eDisposition.05 NV="7701003" xsi:nil="true" /><eDisposition.06 NV="7701003" xsi:nil="true" /><eDisposition.07 NV="7701003" xsi:nil="true" /></eDisposition.DestinationGroup><eDisposition.11 NV="7701001" xsi:nil="true" /><eDisposition.IncidentDispositionGroup><eDisposition.27>4227001</eDisposition.27><eDisposition.28>4228001</eDisposition.28><eDisposition.29>4229003</eDisposition.29><eDisposition.30>4230005</eDisposition.30></eDisposition.IncidentDispositionGroup><eDisposition.16 NV="7701001" xsi:nil="true" /><eDisposition.17 NV="7701001" xsi:nil="true" /><eDisposition.18 NV="7701001" xsi:nil="true" /><eDisposition.19>4219001</eDisposition.19><eDisposition.20>4220011</eDisposition.20><eDisposition.21>4221015</eDisposition.21><eDisposition.22 NV="7701001" xsi:nil="true" /><eDisposition.23 NV="7701001" xsi:nil="true" /><eDisposition.HospitalTeamActivationGroup><eDisposition.24>4224003</eDisposition.24><eDisposition.25>2024-11-05T17:08:37-05:00</eDisposition.25></eDisposition.HospitalTeamActivationGroup><eDisposition.32>4232005</eDisposition.32></eDisposition><eOutcome><eOutcome.01 NV="7701001" xsi:nil="true" /><eOutcome.02>43</eOutcome.02><eOutcome.ExternalDataGroup><eOutcome.03>4303017</eOutcome.03><eOutcome.04>FT43641</eOutcome.04></eOutcome.ExternalDataGroup><eOutcome.ExternalDataGroup><eOutcome.03>4303025</eOutcome.03><eOutcome.04>USA.241917</eOutcome.04></eOutcome.ExternalDataGroup><eOutcome.EmergencyDepartmentProceduresGroup><eOutcome.09 NV="7701001" xsi:nil="true" /><eOutcome.19 NV="7701001" xsi:nil="true" /></eOutcome.EmergencyDepartmentProceduresGroup><eOutcome.10 NV="7701001" xsi:nil="true" /><eOutcome.11 NV="7701001" xsi:nil="true" /><eOutcome.HospitalProceduresGroup><eOutcome.12>0HQDXZZ</eOutcome.12><eOutcome.20>2024-11-05T21:09:15-05:00</eOutcome.20></eOutcome.HospitalProceduresGroup><eOutcome.HospitalProceduresGroup><eOutcome.12>0PQK0ZZ</eOutcome.12><eOutcome.20>2024-11-05T20:07:21-05:00</eOutcome.20></eOutcome.HospitalProceduresGroup><eOutcome.HospitalProceduresGroup><eOutcome.12>0XJD0ZZ</eOutcome.12><eOutcome.20>2024-11-05T18:18:23-05:00</eOutcome.20></eOutcome.HospitalProceduresGroup><eOutcome.HospitalProceduresGroup><eOutcome.12>0XMN0ZZ</eOutcome.12><eOutcome.20>2024-11-05T18:15:50-05:00</eOutcome.20></eOutcome.HospitalProceduresGroup><eOutcome.HospitalProceduresGroup><eOutcome.12>30243H0</eOutcome.12><eOutcome.20>2024-11-05T19:03:19-05:00</eOutcome.20></eOutcome.HospitalProceduresGroup><eOutcome.HospitalProceduresGroup><eOutcome.12>BW38ZZZ</eOutcome.12><eOutcome.20>2024-11-05T22:00:04-05:00</eOutcome.20></eOutcome.HospitalProceduresGroup><eOutcome.13>S06.0XAA</eOutcome.13><eOutcome.13>S52.601C</eOutcome.13><eOutcome.13>S57.81XA</eOutcome.13><eOutcome.13>S61.401A</eOutcome.13><eOutcome.13>S68.120A</eOutcome.13><eOutcome.16>2024-11-21T15:03:00-05:00</eOutcome.16><eOutcome.18>2024-11-05T18:02:30-05:00</eOutcome.18><eOutcome.21>24</eOutcome.21></eOutcome><eOther><eOther.01>9923003</eOther.01><eOther.02>4502011</eOther.02><eOther.02>4502017</eOther.02><eOther.EMSCrewMemberGroup><eOther.03>4503001</eOther.03><eOther.03>4503003</eOther.03><eOther.03>4503023</eOther.03><eOther.04>PMD668912</eOther.04><eOther.05>9923001</eOther.05></eOther.EMSCrewMemberGroup><eOther.EMSCrewMemberGroup><eOther.03>4503001</eOther.03><eOther.03>4503003</eOther.03><eOther.04>PMD584736</eOther.04><eOther.05>9923003</eOther.05><eOther.06>4506013</eOther.06><eOther.06>4506015</eOther.06></eOther.EMSCrewMemberGroup><eOther.08>PMD584736</eOther.08><eOther.FileGroup><eOther.09>4509021</eOther.09><eOther.10>image/jpeg</eOther.10><eOther.22>RightArm.jpg</eOther.22></eOther.FileGroup></eOther></PatientCareReport></Header></EMSDataSet>
+<EMSDataSet xmlns="http://www.nemsis.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.nemsis.org https://nemsis.org/media/nemsis_v3/3.5.1.250403CP1/XSDs/NEMSIS_XSDs/EMSDataSet_v3.xsd">
+  <Header>
+    <DemographicGroup>
+      <dAgency.01>120495</dAgency.01>
+      <dAgency.02>351-T0495</dAgency.02>
+      <dAgency.04>12</dAgency.04>
+    </DemographicGroup>
+    <PatientCareReport UUID="397f7035-b4b5-58ae-92ae-053460588876">
+      <eRecord>
+        <eRecord.01>FEMSQ-2025-EMS-00004</eRecord.01>
+        <eRecord.SoftwareApplicationGroup>
+          <eRecord.02>Adaptix</eRecord.02>
+          <eRecord.03>Adaptix ePCR</eRecord.03>
+          <eRecord.04>1.0.0</eRecord.04>
+        </eRecord.SoftwareApplicationGroup>
+      </eRecord>
+      <eResponse>
+        <eResponse.AgencyGroup>
+          <eResponse.01>351-T0495</eResponse.01>
+          <eResponse.02>351-T0495</eResponse.02>
+        </eResponse.AgencyGroup>
+        <eResponse.03>351-241198-002</eResponse.03>
+        <eResponse.04>351-241198-002-1</eResponse.04>
+        <eResponse.ServiceGroup>
+          <eResponse.05>2205001</eResponse.05>
+        </eResponse.ServiceGroup>
+        <eResponse.07>2207015</eResponse.07>
+        <eResponse.08>2208013</eResponse.08>
+        <eResponse.09>2209011</eResponse.09>
+        <eResponse.10>2210017</eResponse.10>
+        <eResponse.11 NV="7701001" xsi:nil="true" />
+        <eResponse.12>2212001</eResponse.12>
+        <eResponse.12>2212013</eResponse.12>
+        <eResponse.13>1D446</eResponse.13>
+        <eResponse.14>Medic 40</eResponse.14>
+        <eResponse.16>Niceville Office</eResponse.16>
+        <eResponse.17>30.537,-86.477</eResponse.17>
+        <eResponse.18>16REU50167840</eResponse.18>
+        <eResponse.19>92658.8</eResponse.19>
+        <eResponse.20>92666.1</eResponse.20>
+        <eResponse.22>92694.3</eResponse.22>
+        <eResponse.23>2223001</eResponse.23>
+        <eResponse.24>2224003</eResponse.24>
+        <eResponse.24>2224015</eResponse.24>
+      </eResponse>
+      <eDispatch>
+        <eDispatch.01>2301073</eDispatch.01>
+        <eDispatch.02>2302003</eDispatch.02>
+        <eDispatch.03>30E</eDispatch.03>
+        <eDispatch.04>Okaloosa 911</eDispatch.04>
+        <eDispatch.05>2305001</eDispatch.05>
+      </eDispatch>
+      <eCrew>
+        <eCrew.CrewGroup>
+          <eCrew.01>PMD584736</eCrew.01>
+          <eCrew.02>9925007</eCrew.02>
+          <eCrew.03>2403001</eCrew.03>
+          <eCrew.03>2403007</eCrew.03>
+        </eCrew.CrewGroup>
+        <eCrew.CrewGroup>
+          <eCrew.01>PMD668912</eCrew.01>
+          <eCrew.02>9925007</eCrew.02>
+          <eCrew.03>2403011</eCrew.03>
+        </eCrew.CrewGroup>
+      </eCrew>
+      <eTimes>
+        <eTimes.01 NV="7701003" xsi:nil="true" />
+        <eTimes.02>2024-11-05T16:48:05-05:00</eTimes.02>
+        <eTimes.03>2024-11-05T16:48:42-05:00</eTimes.03>
+        <eTimes.04>2024-11-05T16:49:09-05:00</eTimes.04>
+        <eTimes.05>2024-11-05T16:51:10-05:00</eTimes.05>
+        <eTimes.06>2024-11-05T16:58:31-05:00</eTimes.06>
+        <eTimes.07>2024-11-05T16:59:08-05:00</eTimes.07>
+        <eTimes.08>2024-11-05T17:11:38-05:00</eTimes.08>
+        <eTimes.09>2024-11-05T17:16:29-05:00</eTimes.09>
+        <eTimes.11 NV="7701001" xsi:nil="true" />
+        <eTimes.12 NV="7701001" xsi:nil="true" />
+        <eTimes.13>2024-11-05T17:50:10-05:00</eTimes.13>
+        <eTimes.15>2024-11-05T17:55:27-05:00</eTimes.15>
+      </eTimes>
+      <ePatient>
+        <ePatient.01>46JW8T</ePatient.01>
+        <ePatient.PatientNameGroup>
+          <ePatient.02>Tannous</ePatient.02>
+          <ePatient.03>Orlo</ePatient.03>
+        </ePatient.PatientNameGroup>
+        <ePatient.05 StreetAddress2="Apartment 208">501 8th Street Building 19D</ePatient.05>
+        <ePatient.06>2512171</ePatient.06>
+        <ePatient.07>12091</ePatient.07>
+        <ePatient.08>12</ePatient.08>
+        <ePatient.09>32542</ePatient.09>
+        <ePatient.10>US</ePatient.10>
+        <ePatient.11>12091021200</ePatient.11>
+        <ePatient.12 PN="8801023" xsi:nil="true" />
+        <ePatient.13 NV="7701003" xsi:nil="true" />
+        <ePatient.14>2514013</ePatient.14>
+        <ePatient.AgeGroup>
+          <ePatient.15>42</ePatient.15>
+          <ePatient.16>2516009</ePatient.16>
+        </ePatient.AgeGroup>
+        <ePatient.17>1982-01-17</ePatient.17>
+        <ePatient.25>9919003</ePatient.25>
+      </ePatient>
+      <ePayment>
+        <ePayment.01>2601009</ePayment.01>
+        <ePayment.08>2608001</ePayment.08>
+        <ePayment.InsuranceGroup>
+          <ePayment.09>TRICARE</ePayment.09>
+          <ePayment.10>TRICARE</ePayment.10>
+          <ePayment.11>2611003</ePayment.11>
+          <ePayment.12 StreetAddress2="Suite 5101">7700 Arlington Boulevard</ePayment.12>
+          <ePayment.13>Falls Church</ePayment.13>
+          <ePayment.14>51</ePayment.14>
+          <ePayment.15>22042-5101</ePayment.15>
+          <ePayment.16>US</ePayment.16>
+          <ePayment.17>TP</ePayment.17>
+          <ePayment.18>6510818</ePayment.18>
+          <ePayment.19>Tannous</ePayment.19>
+          <ePayment.20>Orlo</ePayment.20>
+          <ePayment.22>2622001</ePayment.22>
+          <ePayment.58>TRICARE Prime</ePayment.58>
+          <ePayment.60>1982-01-17</ePayment.60>
+        </ePayment.InsuranceGroup>
+        <ePayment.ClosestRelativeGroup>
+          <ePayment.23>Tannous</ePayment.23>
+          <ePayment.24>Lizeth</ePayment.24>
+          <ePayment.31 PhoneNumberType="9913005">+966 011 398 5340</ePayment.31>
+        </ePayment.ClosestRelativeGroup>
+        <ePayment.EmployerGroup>
+          <ePayment.33>US Air Force</ePayment.33>
+        </ePayment.EmployerGroup>
+        <ePayment.40>2640001</ePayment.40>
+        <ePayment.41>2641001</ePayment.41>
+        <ePayment.41>2641003</ePayment.41>
+        <ePayment.41>2641005</ePayment.41>
+        <ePayment.42>2642035</ePayment.42>
+        <ePayment.42>2642039</ePayment.42>
+        <ePayment.46>Severe trauma</ePayment.46>
+        <ePayment.47>01</ePayment.47>
+        <ePayment.47>04</ePayment.47>
+        <ePayment.47>05</ePayment.47>
+        <ePayment.47>06</ePayment.47>
+        <ePayment.47>08</ePayment.47>
+        <ePayment.49>9923003</ePayment.49>
+        <ePayment.50>2650003</ePayment.50>
+        <ePayment.51>S49.9</ePayment.51>
+        <ePayment.51>S59.91</ePayment.51>
+        <ePayment.51>S69.9</ePayment.51>
+        <ePayment.SupplyItemGroup>
+          <ePayment.55>22G catheter</ePayment.55>
+          <ePayment.56>1</ePayment.56>
+        </ePayment.SupplyItemGroup>
+        <ePayment.SupplyItemGroup>
+          <ePayment.55>Fentanyl (100mcg)</ePayment.55>
+          <ePayment.56>1</ePayment.56>
+        </ePayment.SupplyItemGroup>
+        <ePayment.SupplyItemGroup>
+          <ePayment.55>Pressure bandage</ePayment.55>
+          <ePayment.56>5</ePayment.56>
+        </ePayment.SupplyItemGroup>
+        <ePayment.SupplyItemGroup>
+          <ePayment.55>Whole blood</ePayment.55>
+          <ePayment.56>1</ePayment.56>
+        </ePayment.SupplyItemGroup>
+        <ePayment.57>CH</ePayment.57>
+      </ePayment>
+      <eScene>
+        <eScene.01>9923001</eScene.01>
+        <eScene.ResponderGroup>
+          <eScene.04>2704011</eScene.04>
+          <eScene.24>9923003</eScene.24>
+        </eScene.ResponderGroup>
+        <eScene.ResponderGroup>
+          <eScene.02>Survival Flight, Inc.</eScene.02>
+          <eScene.03>9511</eScene.03>
+          <eScene.04>2704013</eScene.04>
+          <eScene.25>2725001</eScene.25>
+        </eScene.ResponderGroup>
+        <eScene.06>2707005</eScene.06>
+        <eScene.07>9923001</eScene.07>
+        <eScene.08 NV="7701001" xsi:nil="true" />
+        <eScene.09>Y92.13</eScene.09>
+        <eScene.11>30.608,-86.536</eScene.11>
+        <eScene.12>16REU44468625</eScene.12>
+        <eScene.14>Mile 20.4</eScene.14>
+        <eScene.15>FL-85</eScene.15>
+        <eScene.17>2512171</eScene.17>
+        <eScene.18>12</eScene.18>
+        <eScene.19>32542</eScene.19>
+        <eScene.20>Northbound side</eScene.20>
+        <eScene.21>12091</eScene.21>
+        <eScene.22>US</eScene.22>
+        <eScene.23>12091020500</eScene.23>
+      </eScene>
+      <eSituation>
+        <eSituation.01>2024-11-05T16:42:00-05:00</eSituation.01>
+        <eSituation.02>9922005</eSituation.02>
+        <eSituation.PatientComplaintGroup>
+          <eSituation.03>2803001</eSituation.03>
+          <eSituation.04>Mangled arm</eSituation.04>
+          <eSituation.05>17</eSituation.05>
+          <eSituation.06>2806003</eSituation.06>
+        </eSituation.PatientComplaintGroup>
+        <eSituation.PatientComplaintGroup>
+          <eSituation.03>2803005</eSituation.03>
+          <eSituation.04>Heavy bleeding</eSituation.04>
+          <eSituation.05>17</eSituation.05>
+          <eSituation.06>2806003</eSituation.06>
+        </eSituation.PatientComplaintGroup>
+        <eSituation.07>2807009</eSituation.07>
+        <eSituation.08>2808015</eSituation.08>
+        <eSituation.09>S69.9</eSituation.09>
+        <eSituation.10>G89.11</eSituation.10>
+        <eSituation.10>R58</eSituation.10>
+        <eSituation.10>S49.9</eSituation.10>
+        <eSituation.11>S59.91</eSituation.11>
+        <eSituation.12>S49.9</eSituation.12>
+        <eSituation.13>2813001</eSituation.13>
+        <eSituation.WorkRelatedGroup>
+          <eSituation.14>9922005</eSituation.14>
+          <eSituation.16>2816033</eSituation.16>
+        </eSituation.WorkRelatedGroup>
+        <eSituation.17>Y93.89</eSituation.17>
+        <eSituation.18>2024-11-05T16:42:00-05:00</eSituation.18>
+        <eSituation.20 NV="7701001" xsi:nil="true" />
+      </eSituation>
+      <eInjury>
+        <eInjury.01>W23</eInjury.01>
+        <eInjury.01>W31.9</eInjury.01>
+        <eInjury.02>2902001</eInjury.02>
+        <eInjury.02>2902007</eInjury.02>
+        <eInjury.03>2903003</eInjury.03>
+        <eInjury.03>2903023</eInjury.03>
+        <eInjury.03>2903025</eInjury.03>
+        <eInjury.03>2903041</eInjury.03>
+        <eInjury.04 PN="8801015" xsi:nil="true" />
+        <eInjury.10>2910001</eInjury.10>
+        <eInjury.10>2910007</eInjury.10>
+      </eInjury>
+      <eArrest>
+        <eArrest.01>3001005</eArrest.01>
+        <eArrest.02>3002015</eArrest.02>
+        <eArrest.03>3003005</eArrest.03>
+        <eArrest.04>3004005</eArrest.04>
+        <eArrest.07>3007001</eArrest.07>
+        <eArrest.09>3009001</eArrest.09>
+        <eArrest.10>9923001</eArrest.10>
+        <eArrest.11>3011013</eArrest.11>
+        <eArrest.12>3012005</eArrest.12>
+        <eArrest.13>3013001</eArrest.13>
+        <eArrest.14 PN="8801029">2024-11-05T17:05:00-05:00</eArrest.14>
+        <eArrest.15>2024-11-05T17:08:27-05:00</eArrest.15>
+        <eArrest.16>3016011</eArrest.16>
+        <eArrest.17 NV="7701003" xsi:nil="true" />
+        <eArrest.18>3018007</eArrest.18>
+        <eArrest.19>2024-11-05T17:06:23-05:00</eArrest.19>
+        <eArrest.20>3020013</eArrest.20>
+        <eArrest.21 NV="7701001" xsi:nil="true" />
+        <eArrest.22 NV="7701001" xsi:nil="true" />
+      </eArrest>
+      <eHistory>
+        <eHistory.01>3101009</eHistory.01>
+        <eHistory.06 PN="8801013" xsi:nil="true" />
+        <eHistory.07>160244002</eHistory.07>
+        <eHistory.08 PN="8801015" xsi:nil="true" />
+        <eHistory.09>3109001</eHistory.09>
+        <eHistory.CurrentMedsGroup>
+          <eHistory.12 PN="8801015" xsi:nil="true" />
+        </eHistory.CurrentMedsGroup>
+        <eHistory.17 PN="8801015" xsi:nil="true" />
+        <eHistory.19>2024-11-05T12:30:00-05:00</eHistory.19>
+      </eHistory>
+      <eNarrative>
+        <eNarrative.01>Patient's right arm was mangled while working on military equipment. Patient was moved to highway shoulder by Eglin AFB unit. We administered blood &amp; pain medication and transferred to helicopter for transport to USA Health in Mobile. Patient briefly experienced cardiac arrest prior to blood administration. &lt;PM Raynor&gt;</eNarrative.01>
+      </eNarrative>
+      <eVitals>
+        <eVitals.VitalGroup>
+          <eVitals.01>2024-11-05T16:59:47-05:00</eVitals.01>
+          <eVitals.02>9923001</eVitals.02>
+          <eVitals.CardiacRhythmGroup>
+            <eVitals.03>9901049</eVitals.03>
+            <eVitals.04>3304001</eVitals.04>
+            <eVitals.05>3305001</eVitals.05>
+          </eVitals.CardiacRhythmGroup>
+          <eVitals.BloodPressureGroup>
+            <eVitals.06>80</eVitals.06>
+            <eVitals.07>51</eVitals.07>
+            <eVitals.08>3308005</eVitals.08>
+          </eVitals.BloodPressureGroup>
+          <eVitals.HeartRateGroup>
+            <eVitals.10>132</eVitals.10>
+            <eVitals.11>3311005</eVitals.11>
+          </eVitals.HeartRateGroup>
+          <eVitals.12>92</eVitals.12>
+          <eVitals.13>3313001</eVitals.13>
+          <eVitals.14>24</eVitals.14>
+          <eVitals.15>3315011</eVitals.15>
+          <eVitals.16 PN="8801023" xsi:nil="true" />
+          <eVitals.17 PN="8801023" xsi:nil="true" />
+          <eVitals.18 PN="8801023" xsi:nil="true" />
+          <eVitals.GlasgowScoreGroup>
+            <eVitals.19>2</eVitals.19>
+            <eVitals.20>1</eVitals.20>
+            <eVitals.21>2</eVitals.21>
+            <eVitals.22>3322003</eVitals.22>
+            <eVitals.23>5</eVitals.23>
+          </eVitals.GlasgowScoreGroup>
+          <eVitals.TemperatureGroup>
+            <eVitals.24>36.1</eVitals.24>
+            <eVitals.25>3325013</eVitals.25>
+          </eVitals.TemperatureGroup>
+          <eVitals.26>3326007</eVitals.26>
+          <eVitals.PainScaleGroup>
+            <eVitals.27 PN="8801023" xsi:nil="true" />
+          </eVitals.PainScaleGroup>
+          <eVitals.StrokeScaleGroup>
+            <eVitals.29 PN="8801023" xsi:nil="true" />
+            <eVitals.30 NV="7701003" xsi:nil="true" />
+          </eVitals.StrokeScaleGroup>
+          <eVitals.31 NV="7701003" xsi:nil="true" />
+          <eVitals.33>8</eVitals.33>
+        </eVitals.VitalGroup>
+        <eVitals.VitalGroup>
+          <eVitals.01>2024-11-05T17:03:24-05:00</eVitals.01>
+          <eVitals.02>9923001</eVitals.02>
+          <eVitals.CardiacRhythmGroup>
+            <eVitals.03>9901049</eVitals.03>
+            <eVitals.04>3304001</eVitals.04>
+            <eVitals.05>3305001</eVitals.05>
+          </eVitals.CardiacRhythmGroup>
+          <eVitals.BloodPressureGroup>
+            <eVitals.06>76</eVitals.06>
+            <eVitals.07>48</eVitals.07>
+            <eVitals.08>3308005</eVitals.08>
+          </eVitals.BloodPressureGroup>
+          <eVitals.HeartRateGroup>
+            <eVitals.10>134</eVitals.10>
+            <eVitals.11>3311005</eVitals.11>
+          </eVitals.HeartRateGroup>
+          <eVitals.12>90</eVitals.12>
+          <eVitals.13>3313001</eVitals.13>
+          <eVitals.14>26</eVitals.14>
+          <eVitals.15>3315011</eVitals.15>
+          <eVitals.16 PN="8801023" xsi:nil="true" />
+          <eVitals.17 PN="8801023" xsi:nil="true" />
+          <eVitals.18 PN="8801023" xsi:nil="true" />
+          <eVitals.GlasgowScoreGroup>
+            <eVitals.19>2</eVitals.19>
+            <eVitals.20>1</eVitals.20>
+            <eVitals.21>2</eVitals.21>
+            <eVitals.22>3322003</eVitals.22>
+            <eVitals.23>5</eVitals.23>
+          </eVitals.GlasgowScoreGroup>
+          <eVitals.TemperatureGroup>
+            <eVitals.24>35.9</eVitals.24>
+            <eVitals.25>3325013</eVitals.25>
+          </eVitals.TemperatureGroup>
+          <eVitals.26>3326007</eVitals.26>
+          <eVitals.PainScaleGroup>
+            <eVitals.27 PN="8801023" xsi:nil="true" />
+          </eVitals.PainScaleGroup>
+          <eVitals.StrokeScaleGroup>
+            <eVitals.29 PN="8801023" xsi:nil="true" />
+            <eVitals.30 NV="7701003" xsi:nil="true" />
+          </eVitals.StrokeScaleGroup>
+          <eVitals.31 NV="7701003" xsi:nil="true" />
+          <eVitals.33>8</eVitals.33>
+        </eVitals.VitalGroup>
+        <eVitals.VitalGroup>
+          <eVitals.01>2024-11-05T17:10:24-05:00</eVitals.01>
+          <eVitals.02>9923001</eVitals.02>
+          <eVitals.CardiacRhythmGroup>
+            <eVitals.03>9901049</eVitals.03>
+            <eVitals.04>3304001</eVitals.04>
+            <eVitals.05>3305001</eVitals.05>
+          </eVitals.CardiacRhythmGroup>
+          <eVitals.BloodPressureGroup>
+            <eVitals.06>88</eVitals.06>
+            <eVitals.07>56</eVitals.07>
+            <eVitals.08>3308011</eVitals.08>
+            <eVitals.09>72</eVitals.09>
+          </eVitals.BloodPressureGroup>
+          <eVitals.HeartRateGroup>
+            <eVitals.10>118</eVitals.10>
+            <eVitals.11>3311009</eVitals.11>
+          </eVitals.HeartRateGroup>
+          <eVitals.12>91</eVitals.12>
+          <eVitals.13>3313003</eVitals.13>
+          <eVitals.14>20</eVitals.14>
+          <eVitals.15>3315011</eVitals.15>
+          <eVitals.16 ETCO2Type="3340003">5.4</eVitals.16>
+          <eVitals.17>0.5</eVitals.17>
+          <eVitals.18>99</eVitals.18>
+          <eVitals.GlasgowScoreGroup>
+            <eVitals.19>3</eVitals.19>
+            <eVitals.20>1</eVitals.20>
+            <eVitals.21>3</eVitals.21>
+            <eVitals.22>3322003</eVitals.22>
+            <eVitals.23>7</eVitals.23>
+          </eVitals.GlasgowScoreGroup>
+          <eVitals.TemperatureGroup>
+            <eVitals.24>36.4</eVitals.24>
+            <eVitals.25>3325001</eVitals.25>
+          </eVitals.TemperatureGroup>
+          <eVitals.26>3326005</eVitals.26>
+          <eVitals.PainScaleGroup>
+            <eVitals.27 PN="8801023" xsi:nil="true" />
+          </eVitals.PainScaleGroup>
+          <eVitals.StrokeScaleGroup>
+            <eVitals.29 PN="8801023" xsi:nil="true" />
+            <eVitals.30 NV="7701003" xsi:nil="true" />
+          </eVitals.StrokeScaleGroup>
+          <eVitals.31 NV="7701003" xsi:nil="true" />
+          <eVitals.33>9</eVitals.33>
+        </eVitals.VitalGroup>
+      </eVitals>
+      <eExam>
+        <eExam.01>75</eExam.01>
+        <eExam.AssessmentGroup>
+          <eExam.03>2024-11-05T17:00:32-05:00</eExam.03>
+          <eExam.04>3504027</eExam.04>
+          <eExam.04>3504039</eExam.04>
+          <eExam.05>3505051</eExam.05>
+          <eExam.06>3506035</eExam.06>
+          <eExam.07>3507029</eExam.07>
+          <eExam.09>3509003</eExam.09>
+          <eExam.AbdomenGroup>
+            <eExam.10>3510001</eExam.10>
+            <eExam.11>3511037</eExam.11>
+          </eExam.AbdomenGroup>
+          <eExam.12>3512037</eExam.12>
+          <eExam.SpineGroup>
+            <eExam.13>3513031</eExam.13>
+            <eExam.14>3514055</eExam.14>
+          </eExam.SpineGroup>
+          <eExam.ExtremityGroup>
+            <eExam.15>3515007</eExam.15>
+            <eExam.16>3516079</eExam.16>
+            <eExam.16>3516081</eExam.16>
+          </eExam.ExtremityGroup>
+          <eExam.ExtremityGroup>
+            <eExam.15>3515015</eExam.15>
+            <eExam.16>3516003</eExam.16>
+          </eExam.ExtremityGroup>
+          <eExam.ExtremityGroup>
+            <eExam.15>3515039</eExam.15>
+            <eExam.16>3516001</eExam.16>
+            <eExam.16>3516011</eExam.16>
+            <eExam.16>3516023</eExam.16>
+            <eExam.16>3516027</eExam.16>
+            <eExam.16>3516035</eExam.16>
+            <eExam.16>3516079</eExam.16>
+            <eExam.16>3516081</eExam.16>
+          </eExam.ExtremityGroup>
+          <eExam.ExtremityGroup>
+            <eExam.15>3515097</eExam.15>
+            <eExam.16>3516049</eExam.16>
+          </eExam.ExtremityGroup>
+          <eExam.ExtremityGroup>
+            <eExam.15>3515103</eExam.15>
+            <eExam.16>3516001</eExam.16>
+            <eExam.16>3516007</eExam.16>
+            <eExam.16>3516011</eExam.16>
+            <eExam.16>3516023</eExam.16>
+            <eExam.16>3516025</eExam.16>
+            <eExam.16>3516045</eExam.16>
+          </eExam.ExtremityGroup>
+          <eExam.ExtremityGroup>
+            <eExam.15>3515105</eExam.15>
+            <eExam.16>3516081</eExam.16>
+          </eExam.ExtremityGroup>
+          <eExam.ExtremityGroup>
+            <eExam.15>3515107</eExam.15>
+            <eExam.16>3516049</eExam.16>
+          </eExam.ExtremityGroup>
+          <eExam.EyeGroup>
+            <eExam.17>3517001</eExam.17>
+            <eExam.18>3518061</eExam.18>
+          </eExam.EyeGroup>
+          <eExam.LungGroup>
+            <eExam.22>3522005</eExam.22>
+            <eExam.23>3523013</eExam.23>
+          </eExam.LungGroup>
+          <eExam.ChestGroup>
+            <eExam.25>3525029</eExam.25>
+          </eExam.ChestGroup>
+          <eExam.19>3519021</eExam.19>
+          <eExam.20>3520023</eExam.20>
+        </eExam.AssessmentGroup>
+      </eExam>
+      <eProtocols>
+        <eProtocols.ProtocolGroup>
+          <eProtocols.01>9914067</eProtocols.01>
+          <eProtocols.02>3602003</eProtocols.02>
+        </eProtocols.ProtocolGroup>
+        <eProtocols.ProtocolGroup>
+          <eProtocols.01>9914071</eProtocols.01>
+          <eProtocols.02>3602001</eProtocols.02>
+        </eProtocols.ProtocolGroup>
+        <eProtocols.ProtocolGroup>
+          <eProtocols.01>9914077</eProtocols.01>
+          <eProtocols.02>3602003</eProtocols.02>
+        </eProtocols.ProtocolGroup>
+        <eProtocols.ProtocolGroup>
+          <eProtocols.01>9914083</eProtocols.01>
+          <eProtocols.02>3602003</eProtocols.02>
+        </eProtocols.ProtocolGroup>
+        <eProtocols.ProtocolGroup>
+          <eProtocols.01>9914089</eProtocols.01>
+          <eProtocols.02>3602003</eProtocols.02>
+        </eProtocols.ProtocolGroup>
+        <eProtocols.ProtocolGroup>
+          <eProtocols.01>9914097</eProtocols.01>
+          <eProtocols.02>3602003</eProtocols.02>
+        </eProtocols.ProtocolGroup>
+        <eProtocols.ProtocolGroup>
+          <eProtocols.01>9914097</eProtocols.01>
+          <eProtocols.02>3602003</eProtocols.02>
+        </eProtocols.ProtocolGroup>
+      </eProtocols>
+      <eMedications>
+        <eMedications.MedicationGroup>
+          <eMedications.01>2024-11-05T17:05:32-05:00</eMedications.01>
+          <eMedications.02>9923001</eMedications.02>
+          <eMedications.03 CodeType="9924003">4337</eMedications.03>
+          <eMedications.04>9927023</eMedications.04>
+          <eMedications.DosageGroup>
+            <eMedications.05>50</eMedications.05>
+            <eMedications.06>3706015</eMedications.06>
+          </eMedications.DosageGroup>
+          <eMedications.07>9916003</eMedications.07>
+          <eMedications.08>3708031</eMedications.08>
+          <eMedications.09>PMD584736</eMedications.09>
+          <eMedications.10>9905007</eMedications.10>
+          <eMedications.11>9918005</eMedications.11>
+          <eMedications.13>9923001</eMedications.13>
+        </eMedications.MedicationGroup>
+        <eMedications.MedicationGroup>
+          <eMedications.01>2024-11-05T17:07:58-05:00</eMedications.01>
+          <eMedications.02>9923001</eMedications.02>
+          <eMedications.03 CodeType="9924005">33389009</eMedications.03>
+          <eMedications.04>9927023</eMedications.04>
+          <eMedications.DosageGroup>
+            <eMedications.05>1</eMedications.05>
+            <eMedications.06>3706049</eMedications.06>
+          </eMedications.DosageGroup>
+          <eMedications.07>9916001</eMedications.07>
+          <eMedications.08>3708031</eMedications.08>
+          <eMedications.09>PMD584736</eMedications.09>
+          <eMedications.10>9905007</eMedications.10>
+          <eMedications.11>9918001</eMedications.11>
+          <eMedications.12>Allan Ziemann</eMedications.12>
+          <eMedications.13>9923001</eMedications.13>
+        </eMedications.MedicationGroup>
+      </eMedications>
+      <eProcedures>
+        <eProcedures.ProcedureGroup>
+          <eProcedures.01>2024-11-05T16:50:00-05:00</eProcedures.01>
+          <eProcedures.02>9923003</eProcedures.02>
+          <eProcedures.03>20655006</eProcedures.03>
+          <eProcedures.05 NV="7701003" xsi:nil="true" />
+          <eProcedures.06 NV="7701003" xsi:nil="true" />
+          <eProcedures.07>3907005</eProcedures.07>
+          <eProcedures.08 NV="7701003" xsi:nil="true" />
+          <eProcedures.10>9905021</eProcedures.10>
+          <eProcedures.15 NV="7701003" xsi:nil="true" />
+        </eProcedures.ProcedureGroup>
+        <eProcedures.ProcedureGroup>
+          <eProcedures.01>2024-11-05T17:01:22-05:00</eProcedures.01>
+          <eProcedures.02>9923001</eProcedures.02>
+          <eProcedures.03>20655006</eProcedures.03>
+          <eProcedures.05>1</eProcedures.05>
+          <eProcedures.06>9923003</eProcedures.06>
+          <eProcedures.07>3907033</eProcedures.07>
+          <eProcedures.08>9916003</eProcedures.08>
+          <eProcedures.09>PMD668912</eProcedures.09>
+          <eProcedures.10>9905007</eProcedures.10>
+          <eProcedures.11>9918005</eProcedures.11>
+          <eProcedures.15>9923003</eProcedures.15>
+        </eProcedures.ProcedureGroup>
+        <eProcedures.ProcedureGroup>
+          <eProcedures.01>2024-11-05T17:02:01-05:00</eProcedures.01>
+          <eProcedures.02>9923001</eProcedures.02>
+          <eProcedures.03>26906007</eProcedures.03>
+          <eProcedures.05>1</eProcedures.05>
+          <eProcedures.06>9923003</eProcedures.06>
+          <eProcedures.07>3907033</eProcedures.07>
+          <eProcedures.08>9916001</eProcedures.08>
+          <eProcedures.10>9905021</eProcedures.10>
+          <eProcedures.15>9923003</eProcedures.15>
+        </eProcedures.ProcedureGroup>
+        <eProcedures.ProcedureGroup>
+          <eProcedures.01>2024-11-05T17:04:23-05:00</eProcedures.01>
+          <eProcedures.02>9923001</eProcedures.02>
+          <eProcedures.03>392230005</eProcedures.03>
+          <eProcedures.04>22G</eProcedures.04>
+          <eProcedures.05>1</eProcedures.05>
+          <eProcedures.06>9923003</eProcedures.06>
+          <eProcedures.07>3907033</eProcedures.07>
+          <eProcedures.08>9916003</eProcedures.08>
+          <eProcedures.09>PMD584736</eProcedures.09>
+          <eProcedures.10>9905007</eProcedures.10>
+          <eProcedures.11>9918005</eProcedures.11>
+          <eProcedures.13>3913071</eProcedures.13>
+          <eProcedures.15>9923003</eProcedures.15>
+        </eProcedures.ProcedureGroup>
+        <eProcedures.ProcedureGroup>
+          <eProcedures.01>2024-11-05T17:07:58-05:00</eProcedures.01>
+          <eProcedures.02>9923001</eProcedures.02>
+          <eProcedures.03>116859006</eProcedures.03>
+          <eProcedures.05>1</eProcedures.05>
+          <eProcedures.06>9923003</eProcedures.06>
+          <eProcedures.07>3907033</eProcedures.07>
+          <eProcedures.08>9916001</eProcedures.08>
+          <eProcedures.09>PMD584736</eProcedures.09>
+          <eProcedures.10>9905007</eProcedures.10>
+          <eProcedures.11>9918001</eProcedures.11>
+          <eProcedures.12>Allan Ziemann</eProcedures.12>
+          <eProcedures.15>9923003</eProcedures.15>
+        </eProcedures.ProcedureGroup>
+      </eProcedures>
+      <eDevice>
+        <eDevice.DeviceGroup>
+          <eDevice.01>CP.150.32189</eDevice.01>
+          <eDevice.02>2024-11-05T16:59:08-05:00</eDevice.02>
+          <eDevice.03>4103033</eDevice.03>
+        </eDevice.DeviceGroup>
+        <eDevice.DeviceGroup>
+          <eDevice.01>CP.150.32189</eDevice.01>
+          <eDevice.02>2024-11-05T16:59:47-05:00</eDevice.02>
+          <eDevice.03>4103011</eDevice.03>
+          <eDevice.WaveformGroup>
+            <eDevice.04>image/jpeg</eDevice.04>
+            <eDevice.06>4106003</eDevice.06>
+          </eDevice.WaveformGroup>
+          <eDevice.07>4107001</eDevice.07>
+          <eDevice.08>Sinus Tachycardia</eDevice.08>
+        </eDevice.DeviceGroup>
+        <eDevice.DeviceGroup>
+          <eDevice.01>CP.150.32189</eDevice.01>
+          <eDevice.02>2024-11-05T17:06:12-05:00</eDevice.02>
+          <eDevice.03>4103011</eDevice.03>
+          <eDevice.WaveformGroup>
+            <eDevice.04>image/jpeg</eDevice.04>
+            <eDevice.06>4106003</eDevice.06>
+          </eDevice.WaveformGroup>
+          <eDevice.07>4107001</eDevice.07>
+          <eDevice.08>Ventricular Tachycardia</eDevice.08>
+        </eDevice.DeviceGroup>
+      </eDevice>
+      <eDisposition>
+        <eDisposition.DestinationGroup>
+          <eDisposition.01>Survival Flight, Inc.</eDisposition.01>
+          <eDisposition.02>9511</eDisposition.02>
+          <eDisposition.05 NV="7701003" xsi:nil="true" />
+          <eDisposition.06 NV="7701003" xsi:nil="true" />
+          <eDisposition.07 NV="7701003" xsi:nil="true" />
+        </eDisposition.DestinationGroup>
+        <eDisposition.11 NV="7701001" xsi:nil="true" />
+        <eDisposition.IncidentDispositionGroup>
+          <eDisposition.27>4227001</eDisposition.27>
+          <eDisposition.28>4228001</eDisposition.28>
+          <eDisposition.29>4229003</eDisposition.29>
+          <eDisposition.30>4230005</eDisposition.30>
+        </eDisposition.IncidentDispositionGroup>
+        <eDisposition.16 NV="7701001" xsi:nil="true" />
+        <eDisposition.17 NV="7701001" xsi:nil="true" />
+        <eDisposition.18 NV="7701001" xsi:nil="true" />
+        <eDisposition.19>4219001</eDisposition.19>
+        <eDisposition.20>4220011</eDisposition.20>
+        <eDisposition.21>4221015</eDisposition.21>
+        <eDisposition.22 NV="7701001" xsi:nil="true" />
+        <eDisposition.23 NV="7701001" xsi:nil="true" />
+        <eDisposition.HospitalTeamActivationGroup>
+          <eDisposition.24>4224003</eDisposition.24>
+          <eDisposition.25>2024-11-05T17:08:37-05:00</eDisposition.25>
+        </eDisposition.HospitalTeamActivationGroup>
+        <eDisposition.32>4232005</eDisposition.32>
+      </eDisposition>
+      <eOutcome>
+        <eOutcome.01 NV="7701001" xsi:nil="true" />
+        <eOutcome.02>43</eOutcome.02>
+        <eOutcome.ExternalDataGroup>
+          <eOutcome.03>4303017</eOutcome.03>
+          <eOutcome.04>FT43641</eOutcome.04>
+        </eOutcome.ExternalDataGroup>
+        <eOutcome.ExternalDataGroup>
+          <eOutcome.03>4303025</eOutcome.03>
+          <eOutcome.04>USA.241917</eOutcome.04>
+        </eOutcome.ExternalDataGroup>
+        <eOutcome.EmergencyDepartmentProceduresGroup>
+          <eOutcome.09 NV="7701001" xsi:nil="true" />
+          <eOutcome.19 NV="7701001" xsi:nil="true" />
+        </eOutcome.EmergencyDepartmentProceduresGroup>
+        <eOutcome.10 NV="7701001" xsi:nil="true" />
+        <eOutcome.11 NV="7701001" xsi:nil="true" />
+        <eOutcome.HospitalProceduresGroup>
+          <eOutcome.12>0HQDXZZ</eOutcome.12>
+          <eOutcome.20>2024-11-05T21:09:15-05:00</eOutcome.20>
+        </eOutcome.HospitalProceduresGroup>
+        <eOutcome.HospitalProceduresGroup>
+          <eOutcome.12>0PQK0ZZ</eOutcome.12>
+          <eOutcome.20>2024-11-05T20:07:21-05:00</eOutcome.20>
+        </eOutcome.HospitalProceduresGroup>
+        <eOutcome.HospitalProceduresGroup>
+          <eOutcome.12>0XJD0ZZ</eOutcome.12>
+          <eOutcome.20>2024-11-05T18:18:23-05:00</eOutcome.20>
+        </eOutcome.HospitalProceduresGroup>
+        <eOutcome.HospitalProceduresGroup>
+          <eOutcome.12>0XMN0ZZ</eOutcome.12>
+          <eOutcome.20>2024-11-05T18:15:50-05:00</eOutcome.20>
+        </eOutcome.HospitalProceduresGroup>
+        <eOutcome.HospitalProceduresGroup>
+          <eOutcome.12>30243H0</eOutcome.12>
+          <eOutcome.20>2024-11-05T19:03:19-05:00</eOutcome.20>
+        </eOutcome.HospitalProceduresGroup>
+        <eOutcome.HospitalProceduresGroup>
+          <eOutcome.12>BW38ZZZ</eOutcome.12>
+          <eOutcome.20>2024-11-05T22:00:04-05:00</eOutcome.20>
+        </eOutcome.HospitalProceduresGroup>
+        <eOutcome.13>S06.0XAA</eOutcome.13>
+        <eOutcome.13>S52.601C</eOutcome.13>
+        <eOutcome.13>S57.81XA</eOutcome.13>
+        <eOutcome.13>S61.401A</eOutcome.13>
+        <eOutcome.13>S68.120A</eOutcome.13>
+        <eOutcome.16>2024-11-21T15:03:00-05:00</eOutcome.16>
+        <eOutcome.18>2024-11-05T18:02:30-05:00</eOutcome.18>
+        <eOutcome.21>24</eOutcome.21>
+      </eOutcome>
+      <eOther>
+        <eOther.01>9923003</eOther.01>
+        <eOther.02>4502011</eOther.02>
+        <eOther.02>4502017</eOther.02>
+        <eOther.EMSCrewMemberGroup>
+          <eOther.03>4503001</eOther.03>
+          <eOther.03>4503003</eOther.03>
+          <eOther.03>4503023</eOther.03>
+          <eOther.04>PMD668912</eOther.04>
+          <eOther.05>9923001</eOther.05>
+        </eOther.EMSCrewMemberGroup>
+        <eOther.EMSCrewMemberGroup>
+          <eOther.03>4503001</eOther.03>
+          <eOther.03>4503003</eOther.03>
+          <eOther.04>PMD584736</eOther.04>
+          <eOther.05>9923003</eOther.05>
+          <eOther.06>4506013</eOther.06>
+          <eOther.06>4506015</eOther.06>
+        </eOther.EMSCrewMemberGroup>
+        <eOther.08>PMD584736</eOther.08>
+        <eOther.FileGroup>
+          <eOther.09>4509021</eOther.09>
+          <eOther.10>image/jpeg</eOther.10>
+          <eOther.22>RightArm.jpg</eOther.22>
+        </eOther.FileGroup>
+      </eOther>
+    </PatientCareReport>
+  </Header>
+</EMSDataSet>

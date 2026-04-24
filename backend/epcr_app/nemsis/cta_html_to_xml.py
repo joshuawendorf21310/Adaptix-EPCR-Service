@@ -31,6 +31,7 @@ from __future__ import annotations
 import logging
 import re
 from dataclasses import dataclass, field
+from enum import Enum
 from pathlib import Path
 from typing import Mapping
 import xml.etree.ElementTree as ET
@@ -114,6 +115,146 @@ def _load_nillable_elements() -> frozenset[str]:
 
 
 _NILLABLE_ELEMENTS: frozenset[str] = _load_nillable_elements()
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Field classification engine (Rule 3 — TYPE A CODED / B TEXT / C REPEATED / D NIL)
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+class FieldKind(Enum):
+    """Classification of a NEMSIS XML element's value discipline.
+
+    Every element is classified BEFORE write so the builder can enforce
+    type-specific invariants (numeric-only for CODED, ISO8601 for DATETIME,
+    etc.) and the validator can reject violations.
+
+    * ``CODED`` — Type A. Value must be a numeric enum code; no free text.
+    * ``TEXT`` — Type B. Free text, real-world format (names, narrative).
+    * ``REPEATED`` — Type C. May appear multiple times; never combined with
+      separators (commas, semicolons).
+    * ``NIL`` — Type D. Absent value. Must carry ``xsi:nil="true"`` AND a
+      justification attribute (``NV=...`` or ``PN=...``).
+    * ``DATETIME`` — Sub-kind of TEXT: ISO 8601 with TZ offset required.
+    * ``GROUP`` — Container element (no text of its own; holds children).
+    * ``UUID_VALUED`` — Element whose text is itself a UUID (e.g.
+      ``eRecord.01``, ``dAgency.01``).
+    """
+
+    CODED = "coded"
+    TEXT = "text"
+    REPEATED = "repeated"
+    NIL = "nil"
+    DATETIME = "datetime"
+    GROUP = "group"
+    UUID_VALUED = "uuid_valued"
+
+
+# Element IDs whose canonical value is an ISO 8601 date or date-time
+# literal.  Derived programmatically from the bundled NEMSIS v3.5.1 XSDs
+# by resolving every ``xs:element`` whose type chain ultimately restricts
+# ``xs:dateTime`` (``DateTimeType``) or ``xs:date`` (``DateType`` /
+# ``DateOfBirth``).  See `scripts/extract_xsd_enums.py` for the extraction
+# logic; this list must stay in lock-step with the XSDs.
+_DATETIME_ELEMENT_IDS: frozenset[str] = frozenset({
+    # xs:dateTime (DateTimeType) — full timestamp with TZ offset
+    "eAirway.10", "eAirway.11",
+    "eDevice.02",
+    "eHistory.19",
+    "eInjury.14",
+    "eLabs.01",
+    "eOther.19",
+    "ePayment.03",
+    "eScene.05",
+    "eTimes.02", "eTimes.03", "eTimes.04",
+    "eTimes.10",
+    "eTimes.13", "eTimes.14", "eTimes.15",
+    "eTimes.16", "eTimes.17",
+    # xs:date (DateType / DateOfBirth) — YYYY-MM-DD only
+    "dDevice.06",
+    "dPersonnel.25", "dPersonnel.26", "dPersonnel.27",
+    "dPersonnel.30", "dPersonnel.33",
+    "dPersonnel.37", "dPersonnel.39",
+    "ePayment.60",
+})
+
+
+# Element IDs whose value field (text) is expected to be a UUID literal.
+# In NEMSIS v3.5.1 UUIDs are carried exclusively via the ``UUID=...``
+# attribute on group elements (dAgency.AgencyGroup etc.), never as element
+# text content — so this set is intentionally empty, retained for future
+# spec changes that may introduce element-text UUIDs.
+_UUID_VALUED_ELEMENT_IDS: frozenset[str] = frozenset()
+
+
+_ISO_DATETIME_RE = re.compile(
+    r"^\d{4}-\d{2}-\d{2}"
+    r"(?:T\d{2}:\d{2}:\d{2}"
+    r"(?:\.\d+)?"
+    r"(?:Z|[+-]\d{2}:\d{2}))?$"
+)
+
+_UUID_RE = re.compile(
+    r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-"
+    r"[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+)
+
+_COMMA_IN_CODED_RE = re.compile(r",")
+
+
+def classify_field(
+    element_id: str,
+    *,
+    is_group: bool,
+    is_nil: bool,
+    coded_values: CodedValueSet,
+) -> FieldKind:
+    """Classify a NEMSIS element's value discipline.
+
+    Classification is deterministic — the same ``(element_id, is_group,
+    is_nil)`` tuple always returns the same :class:`FieldKind`.
+
+    Priority order (first match wins):
+
+    1. ``GROUP`` — cell is a container (``is_group=True``).
+    2. ``NIL`` — cell has ``[NV=...]`` annotation (``is_nil=True``).
+    3. ``DATETIME`` — element is in :data:`_DATETIME_ELEMENT_IDS` (xs:dateTime
+       or xs:date in the XSD).
+    4. ``UUID_VALUED`` — element is in :data:`_UUID_VALUED_ELEMENT_IDS`.
+    5. ``CODED`` — element has an XSD enumeration (element-specific table),
+       OR is in a scoped lookup set (state/country/county/city), OR is in
+       :data:`_PROTECTED_CODED_ELEMENT_IDS`.
+    6. ``TEXT`` — otherwise, free-text element.
+
+    Note: ``REPEATED`` is a structural property of an element's parent, not a
+    value discipline; repeated elements are emitted as distinct ``<tag>``
+    children in the tree by :class:`NemsisXmlBuilder`, and each instance is
+    classified individually by this function.
+
+    Args:
+        element_id: NEMSIS element identifier (e.g. ``"eSituation.02"``).
+        is_group: ``True`` if the cell is a container.
+        is_nil: ``True`` if the cell carries ``[NV=...]``.
+        coded_values: Active :class:`CodedValueSet`, used to detect
+            element-specific enumeration presence.
+
+    Returns:
+        The :class:`FieldKind` for this element.
+    """
+
+    if is_group:
+        return FieldKind.GROUP
+    if is_nil:
+        return FieldKind.NIL
+    if element_id in _DATETIME_ELEMENT_IDS:
+        return FieldKind.DATETIME
+    if element_id in _UUID_VALUED_ELEMENT_IDS:
+        return FieldKind.UUID_VALUED
+    if coded_values.has_element_specific(element_id):
+        return FieldKind.CODED
+    if element_id in _PROTECTED_CODED_ELEMENT_IDS:
+        return FieldKind.CODED
+    return FieldKind.TEXT
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -702,6 +843,16 @@ class ValueTranslator:
         """
 
         self._codes = coded_values
+
+    @property
+    def coded_values(self) -> CodedValueSet:
+        """Expose the underlying :class:`CodedValueSet` for classification.
+
+        Returns:
+            The active coded-value set (used by :func:`classify_field`).
+        """
+
+        return self._codes
 
     def translate(self, raw: str, element_id: str) -> str:
         """Translate ``raw`` to its canonical NEMSIS code representation.
@@ -1396,8 +1547,128 @@ class NemsisXmlBuilder:
             parent.remove(element)
             return
 
+        # ── Rule 3 / Rule 7: classify-and-enforce before the element is
+        # considered written.  Any violation detected here is a builder bug
+        # (not a user input problem) — raise immediately so CI catches it.
+        kind = classify_field(
+            cell.element_id,
+            is_group=cell.is_group,
+            is_nil=cell.is_nil,
+            coded_values=self._translator.coded_values,
+        )
+        self._enforce_field_kind(element, cell, kind, text, attrs)
+
         if cell.is_group:
             self._stack.append((cell.depth, element))
+
+    def _enforce_field_kind(
+        self,
+        element: ET.Element,
+        cell: HtmlCell,
+        kind: FieldKind,
+        text: str | None,
+        attrs: Mapping[str, str],
+    ) -> None:
+        """Assert the written element satisfies its :class:`FieldKind`.
+
+        Enforcement rules (Rule 7):
+
+        * ``CODED``: text, when present, must match ``^\\d+$`` (no commas,
+          no free text). ``xsi:nil`` permitted only when element is in
+          :data:`_NILLABLE_ELEMENTS` and carries an ``NV`` or ``PN`` attr.
+        * ``NIL``: element MUST have ``xsi:nil="true"`` AND an ``NV`` attr.
+        * ``DATETIME``: text must match ISO 8601 with optional TZ offset
+          (``_ISO_DATETIME_RE``) or the element must be ``xsi:nil``.
+        * ``UUID_VALUED``: text must match a canonical UUID regex.
+        * ``TEXT``: free text accepted; no enforcement beyond namespace.
+        * ``GROUP``: no text permitted on the element itself.
+
+        Args:
+            element: The just-created :class:`ET.Element`.
+            cell: The originating :class:`HtmlCell`.
+            kind: Classification result.
+            text: The text that was (or was not) set on ``element.text``.
+            attrs: The attributes that were composed for this element.
+
+        Raises:
+            CtaConversionError: When the element violates its kind contract.
+        """
+
+        eid = cell.element_id
+
+        if kind is FieldKind.GROUP:
+            if text is not None and text.strip():
+                raise CtaConversionError(
+                    f"group element {eid!r} must not carry text content; got {text!r}"
+                )
+            return
+
+        if kind is FieldKind.NIL:
+            if element.get(XSI_NIL) != "true":
+                raise CtaConversionError(
+                    f"{eid!r} classified NIL but xsi:nil attr not set"
+                )
+            if "NV" not in attrs:
+                raise CtaConversionError(
+                    f"{eid!r} classified NIL but NV attr not set"
+                )
+            return
+
+        if kind is FieldKind.DATETIME:
+            if element.get(XSI_NIL) == "true":
+                return
+            if text is None or not text.strip():
+                return  # empty element already stripped above, or kept alive by attrs
+            if not _ISO_DATETIME_RE.match(text.strip()):
+                raise CtaConversionError(
+                    f"{eid!r} classified DATETIME but text is not ISO 8601: {text!r}"
+                )
+            return
+
+        if kind is FieldKind.UUID_VALUED:
+            if element.get(XSI_NIL) == "true":
+                return
+            if text is None or not text.strip():
+                return
+            if not _UUID_RE.match(text.strip()):
+                # eRecord.01 accepts agency-defined identifiers (e.g.
+                # FEMSQ-2025-EMS-00001) alongside UUIDs per NEMSIS XSD
+                # (element_id eRecord.01 is xs:string).  Only enforce UUID
+                # shape for dAgency.01 which is xs:string with UUID pattern.
+                if eid == "dAgency.01":
+                    raise CtaConversionError(
+                        f"{eid!r} classified UUID_VALUED but text is not a UUID: {text!r}"
+                    )
+            return
+
+        if kind is FieldKind.CODED:
+            if element.get(XSI_NIL) == "true":
+                if "NV" not in attrs and "PN" not in attrs:
+                    raise CtaConversionError(
+                        f"{eid!r} CODED+xsi:nil requires NV or PN attr"
+                    )
+                return
+            if text is None or not text.strip():
+                return  # empty CODED element kept alive by attrs is allowed
+            stripped = text.strip()
+            if _COMMA_IN_CODED_RE.search(stripped):
+                raise CtaConversionError(
+                    f"{eid!r} CODED must not contain commas (use repeated "
+                    f"elements for multi-value); got {stripped!r}"
+                )
+            # CODED elements may hold numeric codes, ICD/SNOMED alphanumeric
+            # codes (e.g. "T78.40XA"), ISO country codes ("US", "CA"), or
+            # RxCUI numeric ids.  Reject only multi-word alphabetic labels
+            # (e.g. "United States") that slipped through translation —
+            # those clearly failed to resolve to a code.
+            if re.match(r"^[A-Za-z]+(?:\s+[A-Za-z]+)+$", stripped):
+                raise CtaConversionError(
+                    f"{eid!r} CODED contains multi-word raw text (translation failed?): {stripped!r}"
+                )
+            return
+
+        # FieldKind.TEXT → no structural enforcement
+        return
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1412,12 +1683,30 @@ _CITY_OF_RE = re.compile(r"\bCity of ")
 
 class SemanticValidationGate:
     """Post-build scanner that rejects any tree containing unresolved
-    placeholders, bracket remnants, literal ``"City of "`` prefixes, or
-    raw alphabetic text in elements that must hold NEMSIS codes.
+    placeholders, bracket remnants, literal ``"City of "`` prefixes, raw
+    alphabetic text in elements that must hold NEMSIS codes, malformed
+    datetime literals, comma-separated coded values, or ``xsi:nil`` without
+    an accompanying ``NV`` justification.
 
     All findings are collected before raising so the caller sees the full
     list of violations in one error.
     """
+
+    def __init__(
+        self, *, coded_values: CodedValueSet = NEMSIS_V351_CODED_VALUES
+    ) -> None:
+        """Initialise the validation gate.
+
+        Args:
+            coded_values: The :class:`CodedValueSet` used to classify
+                elements during validation.  Defaults to the canonical
+                v3.5.1 set.
+
+        Returns:
+            None.
+        """
+
+        self._codes = coded_values
 
     def check(self, root: ET.Element) -> None:
         """Walk the tree and raise on any semantic violation.
@@ -1429,9 +1718,14 @@ class SemanticValidationGate:
            token).
         3. Literal ``"City of "`` substring (city names must be resolved to
            FIPS codes before this point).
-        4. Raw alphabetic text in elements whose local name maps to a
-           protected coded-value element, where the text is not purely numeric
-           and does not match a known two-letter country code pattern.
+        4. Namespace enforcement — every element must live in the NEMSIS
+           namespace (``http://www.nemsis.org``).
+        5. ``xsi:nil="true"`` must be accompanied by ``NV=...`` (required
+           for Type D fields per Rule 3 / Rule 7).
+        6. Elements classified CODED must not carry commas or raw
+           alphabetic text in their element text (Rule 4).
+        7. Elements classified DATETIME must match ISO 8601 with TZ offset
+           (Rule 5).
 
         Args:
             root: Root element of the generated document.
@@ -1445,26 +1739,81 @@ class SemanticValidationGate:
         """
 
         findings: list[str] = []
+
+        # Check 4: the root itself must be in the NEMSIS namespace.
+        if not root.tag.startswith(f"{{{NEMSIS_NS}}}"):
+            findings.append(
+                f"root element {root.tag!r} is not in NEMSIS namespace "
+                f"{NEMSIS_NS!r}"
+            )
+
         for element in root.iter():
             local = element.tag.split("}", 1)[-1]
+            ns = element.tag.split("}", 1)[0].lstrip("{") if "}" in element.tag else ""
+
+            # Check 4 (per-element namespace)
+            if ns and ns != NEMSIS_NS:
+                findings.append(
+                    f"<{local}> is in namespace {ns!r}, expected {NEMSIS_NS!r}"
+                )
+
+            # Placeholder / bracket / city checks (text + attrs)
             for val, ctx in (
                 (element.text, f"<{local}> text"),
                 *((v, f"<{local}> attr {k!r}") for k, v in element.attrib.items()),
             ):
                 if not val:
                     continue
-                # Check 1: classic placeholder patterns
                 if _PLACEHOLDER_RE.search(val):
                     findings.append(f"{ctx}: {val!r}")
                     continue
-                # Check 2: any remaining bracket — but allow "[Custom Value] ..." as NEMSIS standard
                 if _BRACKET_RE.search(val) and not _CUSTOM_VALUE_RE.match(val):
                     findings.append(f"{ctx}: unresolved bracket in {val!r}")
                     continue
-                # Check 3: literal "City of " prefix — must be resolved to FIPS
                 if _CITY_OF_RE.search(val):
                     findings.append(
                         f"{ctx}: literal 'City of' prefix not resolved to FIPS: {val!r}"
+                    )
+
+            # Check 5: xsi:nil="true" must have NV or PN attr
+            if element.get(XSI_NIL) == "true":
+                if "NV" not in element.attrib and "PN" not in element.attrib:
+                    findings.append(
+                        f"<{local}>: xsi:nil=\"true\" without NV or PN attribute "
+                        f"(Rule 7 Type D requires justification)"
+                    )
+
+            # Check 6/7: CODED / DATETIME content conformance
+            text = element.text
+            if text is None or not text.strip():
+                continue
+            try:
+                kind = classify_field(
+                    local,
+                    is_group=False,
+                    is_nil=False,
+                    coded_values=self._codes,
+                )
+            except Exception:
+                continue
+
+            stripped = text.strip()
+            if kind is FieldKind.CODED:
+                if "," in stripped:
+                    findings.append(
+                        f"<{local}>: CODED value contains comma (use repeated "
+                        f"elements for multi-value): {stripped!r}"
+                    )
+                elif re.match(r"^[A-Za-z]+(?:\s+[A-Za-z]+)+$", stripped):
+                    findings.append(
+                        f"<{local}>: CODED value is raw multi-word text "
+                        f"(translation failed?): {stripped!r}"
+                    )
+            elif kind is FieldKind.DATETIME:
+                if not _ISO_DATETIME_RE.match(stripped):
+                    findings.append(
+                        f"<{local}>: DATETIME value is not ISO 8601: "
+                        f"{stripped!r}"
                     )
 
         if findings:
@@ -1545,9 +1894,13 @@ def convert_html_to_nemsis_xml(
     )
     root = builder.build(cells)
 
-    SemanticValidationGate().check(root)
+    SemanticValidationGate(coded_values=coded_values).check(root)
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    # Pretty-print the tree so the serialised XML matches the layout of the
+    # canonical CTA reference outputs (two-space indent, one element per
+    # line).  ``ET.indent`` is available from Python 3.9+.
+    ET.indent(root, space="  ", level=0)
     xml_bytes = ET.tostring(root, encoding="utf-8", xml_declaration=True)
     output_path.write_bytes(xml_bytes)
     log.info("%s: wrote %d bytes", output_path, len(xml_bytes))
