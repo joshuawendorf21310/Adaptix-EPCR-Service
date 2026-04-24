@@ -109,37 +109,37 @@ TEST_CASES = [
     {
         "id": "2025-DEM-1_v351",
         "html_filename": "2025-DEM-1_v351.html",
-        "data_schema": "61",
+        "data_schema": "62",
         "dataset_type": "DEMDataSet",
     },
     {
         "id": "2025-EMS-1-Allergy_v351",
         "html_filename": "2025-EMS-1-Allergy_v351.html",
-        "data_schema": "52",
+        "data_schema": "61",
         "dataset_type": "EMSDataSet",
     },
     {
         "id": "2025-EMS-2-HeatStroke_v351",
         "html_filename": "2025-EMS-2-HeatStroke_v351.html",
-        "data_schema": "52",
+        "data_schema": "61",
         "dataset_type": "EMSDataSet",
     },
     {
         "id": "2025-EMS-3-PediatricAsthma_v351",
         "html_filename": "2025-EMS-3-PediatricAsthma_v351.html",
-        "data_schema": "52",
+        "data_schema": "61",
         "dataset_type": "EMSDataSet",
     },
     {
         "id": "2025-EMS-4-ArmTrauma_v351",
         "html_filename": "2025-EMS-4-ArmTrauma_v351.html",
-        "data_schema": "52",
+        "data_schema": "61",
         "dataset_type": "EMSDataSet",
     },
     {
         "id": "2025-EMS-5-MentalHealthCrisis_v351",
         "html_filename": "2025-EMS-5-MentalHealthCrisis_v351.html",
-        "data_schema": "52",
+        "data_schema": "61",
         "dataset_type": "EMSDataSet",
     },
 ]
@@ -280,7 +280,8 @@ def _build_soap_envelope(
         username: CTA SOAP username (VSA).
         password: CTA SOAP password.
         organization: Vendor/organisation name.
-        data_schema: NEMSIS data schema code (``"61"`` for DEM, ``"52"`` for EMS).
+        data_schema: NEMSIS data schema code per WSDL NemsisDataSchema
+            (``"61"`` = EMS / EMSDataSet, ``"62"`` = Demographics / DEMDataSet).
         schema_version: NEMSIS schema version string (e.g. ``"3.5.1"``).
         additional_info: Submission identifier for additionalInfo.
         xml_payload: Serialised NEMSIS XML string (any ``<?xml ... ?>``

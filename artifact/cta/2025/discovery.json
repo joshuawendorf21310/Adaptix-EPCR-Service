@@ -1,0 +1,256 @@
+{
+  "global_uuid_keys": [
+    "PatientCareReport[0]",
+    "dAgency.AgencyServiceGroup[0]",
+    "dAgency.AgencyServiceGroup[1]",
+    "dAgency.AgencyYearGroup[0]",
+    "dAgency.AgencyYearGroup[1]",
+    "dConfiguration.ConfigurationGroup[0]",
+    "dConfiguration.ConfigurationGroup[1]",
+    "dConfiguration.MedicationGroup[0]",
+    "dConfiguration.MedicationGroup[1]",
+    "dConfiguration.MedicationGroup[2]",
+    "dConfiguration.MedicationGroup[3]",
+    "dConfiguration.MedicationGroup[4]",
+    "dConfiguration.ProcedureGroup[0]",
+    "dConfiguration.ProcedureGroup[1]",
+    "dConfiguration.ProcedureGroup[2]",
+    "dConfiguration.ProcedureGroup[3]",
+    "dConfiguration.ProcedureGroup[4]",
+    "dContact.ContactInfoGroup[0]",
+    "dContact.ContactInfoGroup[1]",
+    "dContact.ContactInfoGroup[2]",
+    "dDevice.DeviceGroup[0]",
+    "dDevice.DeviceGroup[1]",
+    "dDevice.DeviceGroup[2]",
+    "dFacility.FacilityGroup[0]",
+    "dFacility.FacilityGroup[1]",
+    "dFacility.FacilityGroup[2]",
+    "dFacility.FacilityGroup[3]",
+    "dFacility.FacilityGroup[4]",
+    "dFacility.FacilityGroup[5]",
+    "dFacility.FacilityGroup[6]",
+    "dFacilityGroup[0]",
+    "dFacilityGroup[1]",
+    "dFacilityGroup[2]",
+    "dFacilityGroup[3]",
+    "dLocation.LocationGroup[0]",
+    "dLocation.LocationGroup[1]",
+    "dLocation.LocationGroup[2]",
+    "dPersonnel.CertificationLevelGroup[0]",
+    "dPersonnel.CertificationLevelGroup[1]",
+    "dPersonnel.CertificationLevelGroup[2]",
+    "dPersonnel.CertificationLevelGroup[3]",
+    "dPersonnel.CertificationLevelGroup[4]",
+    "dPersonnel.CertificationLevelGroup[5]",
+    "dPersonnel.CertificationLevelGroup[6]",
+    "dPersonnel.ImmunizationsGroup[0]",
+    "dPersonnel.ImmunizationsGroup[1]",
+    "dPersonnel.ImmunizationsGroup[2]",
+    "dPersonnel.ImmunizationsGroup[3]",
+    "dPersonnel.LicensureGroup[0]",
+    "dPersonnel.LicensureGroup[1]",
+    "dPersonnel.LicensureGroup[2]",
+    "dPersonnel.LicensureGroup[3]",
+    "dPersonnel.LicensureGroup[4]",
+    "dPersonnel.LicensureGroup[5]",
+    "dPersonnel.PersonnelGroup[0]",
+    "dPersonnel.PersonnelGroup[1]",
+    "dPersonnel.PersonnelGroup[2]",
+    "dPersonnel.PersonnelGroup[3]",
+    "dPersonnel.PersonnelGroup[4]",
+    "dVehicle.VehicleCertificationLevelsGroup[0]",
+    "dVehicle.VehicleCertificationLevelsGroup[1]",
+    "dVehicle.VehicleCertificationLevelsGroup[2]",
+    "dVehicle.VehicleGroup[0]",
+    "dVehicle.VehicleGroup[1]",
+    "dVehicle.VehicleGroup[2]",
+    "dVehicle.VehicleGroup[3]",
+    "dVehicle.YearGroup[0]",
+    "dVehicle.YearGroup[1]",
+    "dVehicle.YearGroup[2]"
+  ],
+  "global_timestamp_keys": [
+    "DemographicReport[0]"
+  ],
+  "global_placeholder_descriptors": {
+    "Patient Care Report Number": [
+      "2025-EMS-1-Allergy_v351.html",
+      "2025-EMS-2-HeatStroke_v351.html",
+      "2025-EMS-3-PediatricAsthma_v351.html",
+      "2025-EMS-4-ArmTrauma_v351.html",
+      "2025-EMS-5-MentalHealthCrisis_v351.html"
+    ],
+    "Software Creator": [
+      "2025-EMS-1-Allergy_v351.html",
+      "2025-EMS-2-HeatStroke_v351.html",
+      "2025-EMS-3-PediatricAsthma_v351.html",
+      "2025-EMS-4-ArmTrauma_v351.html",
+      "2025-EMS-5-MentalHealthCrisis_v351.html"
+    ],
+    "Software Name": [
+      "2025-EMS-1-Allergy_v351.html",
+      "2025-EMS-2-HeatStroke_v351.html",
+      "2025-EMS-3-PediatricAsthma_v351.html",
+      "2025-EMS-4-ArmTrauma_v351.html",
+      "2025-EMS-5-MentalHealthCrisis_v351.html"
+    ],
+    "Software Version": [
+      "2025-EMS-1-Allergy_v351.html",
+      "2025-EMS-2-HeatStroke_v351.html",
+      "2025-EMS-3-PediatricAsthma_v351.html",
+      "2025-EMS-4-ArmTrauma_v351.html",
+      "2025-EMS-5-MentalHealthCrisis_v351.html"
+    ]
+  },
+  "per_case": {
+    "2025-DEM-1_v351.html": {
+      "root_tag": "DEMDataSet",
+      "cell_count": 1312,
+      "uuid_keys": [
+        "dAgency.AgencyServiceGroup[0]",
+        "dAgency.AgencyServiceGroup[1]",
+        "dAgency.AgencyYearGroup[0]",
+        "dAgency.AgencyYearGroup[1]",
+        "dConfiguration.ConfigurationGroup[0]",
+        "dConfiguration.ConfigurationGroup[1]",
+        "dConfiguration.MedicationGroup[0]",
+        "dConfiguration.MedicationGroup[1]",
+        "dConfiguration.MedicationGroup[2]",
+        "dConfiguration.MedicationGroup[3]",
+        "dConfiguration.MedicationGroup[4]",
+        "dConfiguration.ProcedureGroup[0]",
+        "dConfiguration.ProcedureGroup[1]",
+        "dConfiguration.ProcedureGroup[2]",
+        "dConfiguration.ProcedureGroup[3]",
+        "dConfiguration.ProcedureGroup[4]",
+        "dContact.ContactInfoGroup[0]",
+        "dContact.ContactInfoGroup[1]",
+        "dContact.ContactInfoGroup[2]",
+        "dDevice.DeviceGroup[0]",
+        "dDevice.DeviceGroup[1]",
+        "dDevice.DeviceGroup[2]",
+        "dFacility.FacilityGroup[0]",
+        "dFacility.FacilityGroup[1]",
+        "dFacility.FacilityGroup[2]",
+        "dFacility.FacilityGroup[3]",
+        "dFacility.FacilityGroup[4]",
+        "dFacility.FacilityGroup[5]",
+        "dFacility.FacilityGroup[6]",
+        "dFacilityGroup[0]",
+        "dFacilityGroup[1]",
+        "dFacilityGroup[2]",
+        "dFacilityGroup[3]",
+        "dLocation.LocationGroup[0]",
+        "dLocation.LocationGroup[1]",
+        "dLocation.LocationGroup[2]",
+        "dPersonnel.CertificationLevelGroup[0]",
+        "dPersonnel.CertificationLevelGroup[1]",
+        "dPersonnel.CertificationLevelGroup[2]",
+        "dPersonnel.CertificationLevelGroup[3]",
+        "dPersonnel.CertificationLevelGroup[4]",
+        "dPersonnel.CertificationLevelGroup[5]",
+        "dPersonnel.CertificationLevelGroup[6]",
+        "dPersonnel.ImmunizationsGroup[0]",
+        "dPersonnel.ImmunizationsGroup[1]",
+        "dPersonnel.ImmunizationsGroup[2]",
+        "dPersonnel.ImmunizationsGroup[3]",
+        "dPersonnel.LicensureGroup[0]",
+        "dPersonnel.LicensureGroup[1]",
+        "dPersonnel.LicensureGroup[2]",
+        "dPersonnel.LicensureGroup[3]",
+        "dPersonnel.LicensureGroup[4]",
+        "dPersonnel.LicensureGroup[5]",
+        "dPersonnel.PersonnelGroup[0]",
+        "dPersonnel.PersonnelGroup[1]",
+        "dPersonnel.PersonnelGroup[2]",
+        "dPersonnel.PersonnelGroup[3]",
+        "dPersonnel.PersonnelGroup[4]",
+        "dVehicle.VehicleCertificationLevelsGroup[0]",
+        "dVehicle.VehicleCertificationLevelsGroup[1]",
+        "dVehicle.VehicleCertificationLevelsGroup[2]",
+        "dVehicle.VehicleGroup[0]",
+        "dVehicle.VehicleGroup[1]",
+        "dVehicle.VehicleGroup[2]",
+        "dVehicle.VehicleGroup[3]",
+        "dVehicle.YearGroup[0]",
+        "dVehicle.YearGroup[1]",
+        "dVehicle.YearGroup[2]"
+      ],
+      "timestamp_keys": [
+        "DemographicReport[0]"
+      ],
+      "placeholders": []
+    },
+    "2025-EMS-1-Allergy_v351.html": {
+      "root_tag": "EMSDataSet",
+      "cell_count": 614,
+      "uuid_keys": [
+        "PatientCareReport[0]"
+      ],
+      "timestamp_keys": [],
+      "placeholders": [
+        "Patient Care Report Number",
+        "Software Creator",
+        "Software Name",
+        "Software Version"
+      ]
+    },
+    "2025-EMS-2-HeatStroke_v351.html": {
+      "root_tag": "EMSDataSet",
+      "cell_count": 429,
+      "uuid_keys": [
+        "PatientCareReport[0]"
+      ],
+      "timestamp_keys": [],
+      "placeholders": [
+        "Patient Care Report Number",
+        "Software Creator",
+        "Software Name",
+        "Software Version"
+      ]
+    },
+    "2025-EMS-3-PediatricAsthma_v351.html": {
+      "root_tag": "EMSDataSet",
+      "cell_count": 616,
+      "uuid_keys": [
+        "PatientCareReport[0]"
+      ],
+      "timestamp_keys": [],
+      "placeholders": [
+        "Patient Care Report Number",
+        "Software Creator",
+        "Software Name",
+        "Software Version"
+      ]
+    },
+    "2025-EMS-4-ArmTrauma_v351.html": {
+      "root_tag": "EMSDataSet",
+      "cell_count": 641,
+      "uuid_keys": [
+        "PatientCareReport[0]"
+      ],
+      "timestamp_keys": [],
+      "placeholders": [
+        "Patient Care Report Number",
+        "Software Creator",
+        "Software Name",
+        "Software Version"
+      ]
+    },
+    "2025-EMS-5-MentalHealthCrisis_v351.html": {
+      "root_tag": "EMSDataSet",
+      "cell_count": 511,
+      "uuid_keys": [
+        "PatientCareReport[0]"
+      ],
+      "timestamp_keys": [],
+      "placeholders": [
+        "Patient Care Report Number",
+        "Software Creator",
+        "Software Name",
+        "Software Version"
+      ]
+    }
+  }
+}

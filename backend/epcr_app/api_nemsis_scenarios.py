@@ -58,6 +58,7 @@ _PRETESTING_FILES: dict[str, str] = {
 }
 
 _2025_CTA_FILES: dict[str, str] = {
+    "2025_DEM_1": "2025-DEM-1_v351.xml",
     "2025_EMS_1": "2025-EMS-1-Allergy_v351.xml",
     "2025_EMS_2": "2025-EMS-2-HeatStroke_v351.xml",
     "2025_EMS_3": "2025-EMS-3-PediatricAsthma_v351.xml",
@@ -76,6 +77,21 @@ _TAC_PASSWORD = os.environ.get(
 _TAC_ORGANIZATION = os.environ.get("NEMSIS_CTA_ORGANIZATION", "")
 
 _2025_CTA_SCENARIOS: list[dict[str, Any]] = [
+    {
+        "scenario_code": "2025_DEM_1",
+        "title": "2025 CTA DEM 1 — Agency Demographics",
+        "description": "Official 2025 CTA PASS case for demographic agency validation.",
+        "year": 2025,
+        "category": "DEM",
+        "pretesting_file": "2025-DEM-1_v351.xml",
+        "agency_info": {
+            "state_code": "12",
+            "agency_number": "351-T0495",
+            "agency_name": _OFFICIAL_2025_CTA_AGENCY_NAME,
+        },
+        "field_overrides": {},
+        "custom_elements": {},
+    },
     {
         "scenario_code": "2025_EMS_1",
         "title": "2025 CTA EMS 1 — Allergy / Anaphylaxis",

@@ -110,6 +110,7 @@ class CtaSubmissionClient:
         endpoint: str | None = None,
         username: str | None = None,
         password: str | None = None,
+        organization: str | None = None,
         client_factory: Any | None = None,
     ) -> None:
         """Initialize CTA client configuration.
@@ -118,6 +119,7 @@ class CtaSubmissionClient:
             endpoint: Optional CTA SOAP endpoint.
             username: Optional CTA username.
             password: Optional CTA password.
+            organization: Optional CTA organization/vendor name.
             client_factory: Optional callable returning an `httpx.AsyncClient`.
 
         Returns:
@@ -140,7 +142,7 @@ class CtaSubmissionClient:
             "NEMSIS_TAC_PASSWORD",
             "NEMSIS_SOAP_PASSWORD",
         )
-        self._organization = _resolve_env_value(
+        self._organization = organization or _resolve_env_value(
             "NEMSIS_CTA_ORGANIZATION",
             "NEMSIS_TAC_ORGANIZATION",
         )
