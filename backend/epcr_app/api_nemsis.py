@@ -3,19 +3,23 @@ from __future__ import annotations
 import logging
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
 from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from epcr_app.db import get_session
+from epcr_app.dependencies import CurrentUser, get_current_user
 from epcr_app.models import NemsisMappingRecord
 from epcr_app.nemsis.service import AllergyVerticalSliceService
 from epcr_app.services import ChartService
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/api/v1/epcr/nemsis", tags=["nemsis-validation"])
+router = APIRouter(
+    prefix="/api/v1/epcr/nemsis",
+    tags=["nemsis-validation"],
+)
 
 
 # 🔒 MUST match builder + FIELD_RULES
@@ -106,13 +110,9 @@ class AllergyVerticalSliceResponse(BaseModel):
     cta_parsed_result_path: str
 
 
-def _require_header(value: str | None, name: str) -> str:
-    if not value or not value.strip():
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"{name} header required",
-        )
-    return value.strip()
+def _tenant_id(current_user: CurrentUser) -> str:
+    """Return the authenticated tenant identifier from JWT context."""
+    return str(current_user.tenant_id)
 
 
 def _build_blockers(missing_fields: list[str]) -> list[BlockerDetail]:
@@ -135,10 +135,10 @@ def _section_from_field(nemsis_field: str) -> str:
 @router.get("/mapping-summary", response_model=MappingSummaryResponse)
 async def get_mapping_summary(
     chart_id: str = Query(...),
-    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ):
-    tenant_id = _require_header(x_tenant_id, "X-Tenant-ID")
+    tenant_id = _tenant_id(current_user)
 
     from epcr_app.models import Chart
 
@@ -196,10 +196,10 @@ async def get_mapping_summary(
 @router.post("/validate", response_model=ValidationResponse)
 async def validate_chart(
     chart_id: str = Query(...),
-    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ):
-    tenant_id = _require_header(x_tenant_id, "X-Tenant-ID")
+    tenant_id = _tenant_id(current_user)
 
     compliance = await ChartService.check_nemsis_compliance(
         session=session,
@@ -223,10 +223,10 @@ async def validate_chart(
 @router.get("/readiness", response_model=ReadinessResponse)
 async def get_readiness(
     chart_id: str = Query(...),
-    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ):
-    tenant_id = _require_header(x_tenant_id, "X-Tenant-ID")
+    tenant_id = _tenant_id(current_user)
 
     compliance = await ChartService.check_nemsis_compliance(
         session=session,
@@ -249,10 +249,10 @@ async def get_readiness(
 async def get_export_preview(
     chart_id: str = Query(...),
     state_dataset: str | None = Query(default=None),
-    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ):
-    tenant_id = _require_header(x_tenant_id, "X-Tenant-ID")
+    tenant_id = _tenant_id(current_user)
 
     compliance = await ChartService.check_nemsis_compliance(
         session=session,
@@ -280,22 +280,19 @@ async def get_export_preview(
 @router.post("/vertical-slice/allergy", response_model=AllergyVerticalSliceResponse)
 async def build_allergy_vertical_slice(
     payload: AllergyVerticalSliceRequest,
-    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
 ):
     """Build the locked official Allergy CTA vertical slice end to end.
 
     Args:
         payload: Runtime settings for the single supported Allergy case.
-        x_tenant_id: Tenant header required for governance/audit consistency.
 
     Returns:
         AllergyVerticalSliceResponse: Full artifact, validation, and CTA evidence payload.
 
     Raises:
-        HTTPException: If the tenant header is missing or the vertical slice fails.
+        HTTPException: If the vertical slice fails.
     """
 
-    _require_header(x_tenant_id, "X-Tenant-ID")
     service = AllergyVerticalSliceService()
     try:
         result = await service.run(
