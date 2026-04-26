@@ -13,10 +13,26 @@ from epcr_app.nemsis.cta_client import CtaSubmissionClient
 from epcr_app.nemsis.service import AllergyVerticalSliceService
 from epcr_app.nemsis.template_loader import LOCKED_TACTICAL_TEST_KEY, OfficialTemplateLoader
 
-
 NEMSIS_NS = {"nem": "http://www.nemsis.org"}
 
+_WORKSPACE_ROOT = Path(__file__).resolve().parents[3]
+_CTA_XML_DIR = (
+    _WORKSPACE_ROOT
+    / "Adaptix-EPCR-Service"
+    / "nemsis_test"
+    / "assets"
+    / "cta"
+    / "cta_uploaded_package"
+    / "v3.5.1 C&S for vendors"
+)
+_cta_available = _CTA_XML_DIR.exists() and any(_CTA_XML_DIR.glob("2025-EMS-*.xml"))
+_skip_no_cta = pytest.mark.skipif(
+    not _cta_available,
+    reason="NEMSIS CTA vendor XML templates not present on disk",
+)
 
+
+@_skip_no_cta
 @pytest.mark.asyncio
 async def test_allergy_vertical_slice_builds_and_validates_official_artifact() -> None:
     """Build the official Allergy slice and prove the locked validation path is real.
@@ -144,6 +160,7 @@ async def test_cta_client_can_submit_when_integration_enabled_with_mocked_networ
     assert result.response_status == "accepted"
 
 
+@_skip_no_cta
 def test_allergy_vertical_slice_api_endpoint_returns_evidence_payload() -> None:
     """Verify the public API route exposes the locked Allergy vertical slice response.
 

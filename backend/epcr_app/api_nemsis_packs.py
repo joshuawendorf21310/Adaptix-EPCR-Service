@@ -17,11 +17,12 @@ import logging
 from enum import Enum
 from typing import Any
 
-from fastapi import APIRouter, Depends, File, Header, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from epcr_app.db import get_session
+from epcr_app.dependencies import CurrentUser, get_current_user
 from epcr_app.nemsis_pack_manager import PackManager
 
 logger = logging.getLogger(__name__)
@@ -81,15 +82,6 @@ class CreatePackRequest(BaseModel):
 # Helpers
 # -------------------------
 
-def _require_non_empty_header(value: str | None, name: str) -> str:
-    if not value or not value.strip():
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"{name} header required",
-        )
-    return value.strip()
-
-
 def _value_error_status(exc: ValueError) -> int:
     message = str(exc).lower()
     if "not found" in message:
@@ -113,12 +105,11 @@ def _validate_file_type(file_name: str) -> None:
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_pack(
     body: CreatePackRequest,
-    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
-    x_user_id: str | None = Header(default=None, alias="X-User-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict[str, Any]:
-    tenant_id = _require_non_empty_header(x_tenant_id, "X-Tenant-ID")
-    user_id = _require_non_empty_header(x_user_id, "X-User-ID")
+    tenant_id = str(current_user.tenant_id)
+    user_id = str(current_user.user_id)
 
     try:
         manager = PackManager(session)
@@ -141,10 +132,10 @@ async def create_pack(
 
 @router.get("/", status_code=status.HTTP_200_OK)
 async def list_packs(
-    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> list[dict[str, Any]]:
-    tenant_id = _require_non_empty_header(x_tenant_id, "X-Tenant-ID")
+    tenant_id = str(current_user.tenant_id)
 
     manager = PackManager(session)
     return await manager.list_packs(tenant_id=tenant_id)
@@ -153,10 +144,10 @@ async def list_packs(
 @router.get("/{pack_id}", status_code=status.HTTP_200_OK)
 async def get_pack(
     pack_id: str,
-    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict[str, Any]:
-    tenant_id = _require_non_empty_header(x_tenant_id, "X-Tenant-ID")
+    tenant_id = str(current_user.tenant_id)
 
     manager = PackManager(session)
     return await manager.get_pack(pack_id=pack_id, tenant_id=tenant_id)
@@ -165,12 +156,11 @@ async def get_pack(
 @router.post("/{pack_id}/stage", status_code=status.HTTP_200_OK)
 async def stage_pack(
     pack_id: str,
-    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
-    x_user_id: str | None = Header(default=None, alias="X-User-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict[str, Any]:
-    tenant_id = _require_non_empty_header(x_tenant_id, "X-Tenant-ID")
-    user_id = _require_non_empty_header(x_user_id, "X-User-ID")
+    tenant_id = str(current_user.tenant_id)
+    user_id = str(current_user.user_id)
 
     manager = PackManager(session)
     pack = await manager.get_pack(pack_id, tenant_id)
@@ -185,12 +175,11 @@ async def stage_pack(
 @router.post("/{pack_id}/activate", status_code=status.HTTP_200_OK)
 async def activate_pack(
     pack_id: str,
-    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
-    x_user_id: str | None = Header(default=None, alias="X-User-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict[str, Any]:
-    tenant_id = _require_non_empty_header(x_tenant_id, "X-Tenant-ID")
-    user_id = _require_non_empty_header(x_user_id, "X-User-ID")
+    tenant_id = str(current_user.tenant_id)
+    user_id = str(current_user.user_id)
 
     manager = PackManager(session)
     pack = await manager.get_pack(pack_id, tenant_id)
@@ -213,12 +202,11 @@ async def activate_pack(
 @router.post("/{pack_id}/archive", status_code=status.HTTP_200_OK)
 async def archive_pack(
     pack_id: str,
-    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
-    x_user_id: str | None = Header(default=None, alias="X-User-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict[str, Any]:
-    tenant_id = _require_non_empty_header(x_tenant_id, "X-Tenant-ID")
-    user_id = _require_non_empty_header(x_user_id, "X-User-ID")
+    tenant_id = str(current_user.tenant_id)
+    user_id = str(current_user.user_id)
 
     manager = PackManager(session)
     pack = await manager.get_pack(pack_id, tenant_id)
@@ -234,12 +222,10 @@ async def archive_pack(
 async def upload_file(
     pack_id: str,
     file: UploadFile = File(...),
-    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
-    x_user_id: str | None = Header(default=None, alias="X-User-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict[str, Any]:
-    tenant_id = _require_non_empty_header(x_tenant_id, "X-Tenant-ID")
-    _require_non_empty_header(x_user_id, "X-User-ID")
+    tenant_id = str(current_user.tenant_id)
 
     manager = PackManager(session)
     pack = await manager.get_pack(pack_id, tenant_id)
@@ -267,10 +253,10 @@ async def upload_file(
 @router.get("/{pack_id}/files", status_code=status.HTTP_200_OK)
 async def list_pack_files(
     pack_id: str,
-    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> list[dict[str, Any]]:
-    tenant_id = _require_non_empty_header(x_tenant_id, "X-Tenant-ID")
+    tenant_id = str(current_user.tenant_id)
 
     manager = PackManager(session)
     return await manager.list_pack_files(pack_id, tenant_id)
@@ -279,10 +265,10 @@ async def list_pack_files(
 @router.get("/{pack_id}/completeness", status_code=status.HTTP_200_OK)
 async def get_pack_completeness(
     pack_id: str,
-    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict[str, Any]:
-    tenant_id = _require_non_empty_header(x_tenant_id, "X-Tenant-ID")
+    tenant_id = str(current_user.tenant_id)
 
     manager = PackManager(session)
     return await manager.get_pack_completeness(pack_id, tenant_id)

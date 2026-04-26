@@ -17,12 +17,13 @@ from pathlib import Path
 from typing import Any
 
 import httpx
-from fastapi import APIRouter, Depends, Header, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from epcr_app.db import get_session
+from epcr_app.dependencies import CurrentUser, get_current_user
 from epcr_app.models_nemsis_core import (
     NemsisScenario,
     NemsisSubmissionResult,
@@ -325,18 +326,6 @@ def _stamp_pretesting_xml(raw_xml: str, scenario_code: str) -> str:
     return stamped
 
 
-def _require_tenant(value: str | None) -> str:
-    if not value or not value.strip():
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-Tenant-ID header required")
-    return value.strip()
-
-
-def _require_user(value: str | None) -> str:
-    if not value or not value.strip():
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-User-ID header required")
-    return value.strip()
-
-
 def _generate_pretesting_xml_or_500(scenario_id: str, scenario: dict[str, Any]) -> bytes:
     if scenario["scenario_code"] in _2025_CTA_FILES:
         return _build_template_resolved_xml(scenario)
@@ -524,17 +513,16 @@ async def _submit_via_soap_tac(
 
 @router.get("/", response_model=list[_ScenarioSummary], summary="List all TAC compliance scenarios")
 async def list_scenarios(
-    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> list[dict[str, Any]]:
     db_states: dict[str, NemsisScenario] = {}
 
-    if x_tenant_id:
-        tenant_id = _require_tenant(x_tenant_id)
-        result = await session.execute(select(NemsisScenario).where(NemsisScenario.tenant_id == tenant_id))
-        rows = result.scalars().all()
-        for row in rows:
-            db_states[row.scenario_code] = row
+    tenant_id = str(current_user.tenant_id)
+    result = await session.execute(select(NemsisScenario).where(NemsisScenario.tenant_id == tenant_id))
+    rows = result.scalars().all()
+    for row in rows:
+        db_states[row.scenario_code] = row
 
     summaries: list[dict[str, Any]] = []
     for scenario in _ALL_SCENARIOS:
@@ -570,9 +558,9 @@ async def get_scenario(scenario_id: str) -> dict[str, Any]:
 @router.post("/{scenario_id}/generate", response_model=_GenerateResponse, summary="Generate NEMSIS XML for a TAC compliance scenario")
 async def generate_scenario_xml(
     scenario_id: str,
-    x_tenant_id: str = Header(..., alias="X-Tenant-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
 ) -> dict[str, Any]:
-    _require_tenant(x_tenant_id)
+    _ = current_user
     scenario = _find_scenario(scenario_id)
     if scenario is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Scenario '{scenario_id}' not found in the TAC scenario suite.")
@@ -597,9 +585,9 @@ async def generate_scenario_xml(
 @router.post("/{scenario_id}/validate", response_model=_ValidateResponse, summary="Generate and validate NEMSIS XML for a TAC compliance scenario")
 async def validate_scenario_xml(
     scenario_id: str,
-    x_tenant_id: str = Header(..., alias="X-Tenant-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
 ) -> dict[str, Any]:
-    _require_tenant(x_tenant_id)
+    _ = current_user
     scenario = _find_scenario(scenario_id)
     if scenario is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Scenario '{scenario_id}' not found in the TAC scenario suite.")
@@ -629,12 +617,11 @@ async def validate_scenario_xml(
 @router.post("/{scenario_id}/submit", response_model=_SubmitResponse, summary="Generate, validate, and submit a TAC compliance scenario to the NEMSIS TAC endpoint")
 async def submit_scenario(
     scenario_id: str,
-    x_tenant_id: str = Header(..., alias="X-Tenant-ID"),
-    x_user_id: str = Header(..., alias="X-User-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict[str, Any]:
-    tenant_id = _require_tenant(x_tenant_id)
-    user_id = _require_user(x_user_id)
+    tenant_id = str(current_user.tenant_id)
+    user_id = str(current_user.user_id)
     scenario = _find_scenario(scenario_id)
     if scenario is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Scenario '{scenario_id}' not found in the TAC scenario suite.")
@@ -750,10 +737,10 @@ async def submit_scenario(
 @router.get("/{scenario_id}/evidence", summary="Get execution evidence for a TAC compliance scenario")
 async def get_scenario_evidence(
     scenario_id: str,
-    x_tenant_id: str = Header(..., alias="X-Tenant-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict[str, Any]:
-    tenant_id = _require_tenant(x_tenant_id)
+    tenant_id = str(current_user.tenant_id)
     if _find_scenario(scenario_id) is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Scenario '{scenario_id}' not found in the TAC scenario suite.")
 

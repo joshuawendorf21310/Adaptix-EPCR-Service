@@ -1,4 +1,3 @@
-```python
 """Gravity-level compatibility exports for structured extraction models.
 
 Authoritative source:
@@ -92,4 +91,3 @@ def _validate() -> None:
 
 
 _validate()
-```

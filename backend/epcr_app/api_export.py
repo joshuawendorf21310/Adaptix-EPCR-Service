@@ -1,5 +1,5 @@
 """NEMSIS export API routes with full lifecycle endpoints."""
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, Response, status
+from fastapi import APIRouter, Depends, Query, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from adaptix_contracts.schemas.nemsis_exports import (
@@ -11,26 +11,16 @@ from adaptix_contracts.schemas.nemsis_exports import (
     RetryExportResponse,
 )
 from epcr_app.db import get_session
+from epcr_app.dependencies import CurrentUser, get_current_user
 from epcr_app.services_export import NemsisExportService
 
 router = APIRouter(prefix="/api/v1/epcr/nemsis", tags=["nemsis-exports"])
 
 
-def require_header(value: str | None, name: str) -> str:
-    """Validate and extract required header value."""
-    if not value or not value.strip():
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"{name} header required",
-        )
-    return value.strip()
-
-
 @router.post("/export-generate", response_model=GenerateExportResponse, status_code=201)
 async def generate_export(
     request: GenerateExportRequest,
-    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
-    x_user_id: str | None = Header(default=None, alias="X-User-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> GenerateExportResponse:
     """Generate NEMSIS export with readiness validation and lifecycle state.
@@ -38,13 +28,10 @@ async def generate_export(
     Creates export attempt with full audit trail. If chart is not ready,
     returns blocked status. If ready, proceeds through generation states.
     """
-    tenant_id = require_header(x_tenant_id, "X-Tenant-ID")
-    user_id = require_header(x_user_id, "X-User-ID")
-
     return await NemsisExportService.generate_export(
         session=session,
-        tenant_id=tenant_id,
-        user_id=user_id,
+        tenant_id=str(current_user.tenant_id),
+        user_id=str(current_user.user_id),
         request=request,
     )
 
@@ -54,18 +41,16 @@ async def get_export_history(
     chart_id: str = Query(..., description="Chart identifier"),
     limit: int = Query(20, ge=1, le=100, description="Result limit"),
     offset: int = Query(0, ge=0, description="Result offset"),
-    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> ExportHistoryResponse:
     """Get paginated export history for chart with total count.
     
     Returns all attempts ordered by creation time (newest first).
     """
-    tenant_id = require_header(x_tenant_id, "X-Tenant-ID")
-
     return await NemsisExportService.get_export_history(
         session=session,
-        tenant_id=tenant_id,
+        tenant_id=str(current_user.tenant_id),
         chart_id=chart_id,
         limit=limit,
         offset=offset,
@@ -75,18 +60,16 @@ async def get_export_history(
 @router.get("/export/{export_id}", response_model=ExportDetailResponse, status_code=200)
 async def get_export_detail(
     export_id: int,
-    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> ExportDetailResponse:
     """Get full export detail with readiness snapshot, artifact, and failure reason.
     
     Provides complete inspection view for operator review and audit.
     """
-    tenant_id = require_header(x_tenant_id, "X-Tenant-ID")
-
     return await NemsisExportService.get_export_detail(
         session=session,
-        tenant_id=tenant_id,
+        tenant_id=str(current_user.tenant_id),
         export_id=export_id,
     )
 
@@ -95,8 +78,7 @@ async def get_export_detail(
 async def retry_export(
     export_id: int,
     request: RetryExportRequest,
-    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
-    x_user_id: str | None = Header(default=None, alias="X-User-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> RetryExportResponse:
     """Retry failed export with readiness re-check.
@@ -105,13 +87,10 @@ async def retry_export(
     Creates new attempt with retry count incremented. If chart no longer ready,
     returns blocked status in new attempt.
     """
-    tenant_id = require_header(x_tenant_id, "X-Tenant-ID")
-    user_id = require_header(x_user_id, "X-User-ID")
-
     return await NemsisExportService.retry_export(
         session=session,
-        tenant_id=tenant_id,
-        user_id=user_id,
+        tenant_id=str(current_user.tenant_id),
+        user_id=str(current_user.user_id),
         export_id=export_id,
         request=request,
     )
@@ -120,14 +99,13 @@ async def retry_export(
 @router.get("/export/{export_id}/artifact", status_code=200)
 async def get_export_artifact(
     export_id: int,
-    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> Response:
     """Return the raw XML artifact bytes and checksum for an export attempt."""
-    tenant_id = require_header(x_tenant_id, "X-Tenant-ID")
     xml_bytes, file_name, mime_type, checksum = await NemsisExportService.get_export_artifact(
         session=session,
-        tenant_id=tenant_id,
+        tenant_id=str(current_user.tenant_id),
         export_id=export_id,
     )
     return Response(

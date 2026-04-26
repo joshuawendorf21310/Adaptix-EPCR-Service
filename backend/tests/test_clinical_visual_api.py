@@ -1,7 +1,7 @@
 """API tests for the structured CPAE/VAS/ARCOS workflow routes."""
 from __future__ import annotations
 
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import pytest
 import pytest_asyncio
@@ -54,7 +54,12 @@ def client(session_factory):
             yield session
 
     async def override_get_current_user() -> CurrentUser:
-        return CurrentUser(user_id=uuid4(), tenant_id=uuid4(), email="tester@example.com", roles=["clinician"])
+        return CurrentUser(
+            user_id=UUID(USER_ID),
+            tenant_id=UUID(TENANT_ID),
+            email="tester@example.com",
+            roles=["clinician"],
+        )
 
     app.dependency_overrides[get_session] = override_get_session
     app.dependency_overrides[get_current_user] = override_get_current_user

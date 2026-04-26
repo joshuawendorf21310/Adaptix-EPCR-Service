@@ -29,6 +29,9 @@ VENDOR_HTML_DIR = (
 )
 OFFICIAL_XML_DIR = WORKSPACE_ROOT / "Adaptix-Core-Service" / "cta_upload"
 OFFICIAL_AGENCY_NAME = "Okaloosa County Emergency Medical Services"
+
+_cta_available = OFFICIAL_XML_DIR.exists() and any(OFFICIAL_XML_DIR.glob("2025-EMS-*.xml"))
+
 SCENARIOS = {
     "2025-EMS-1-Allergy_v351": {
         "html": VENDOR_HTML_DIR / "2025-EMS-1-Allergy_v351.html",
@@ -115,6 +118,7 @@ def _find_text(root: ET.Element, field_name: str) -> str:
     return result.strip() if result else ""
 
 
+@pytest.mark.skipif(not _cta_available, reason="NEMSIS CTA vendor XML templates not present")
 @pytest.mark.parametrize("scenario_id,paths", SCENARIOS.items())
 def test_vendor_html_tac_keys_match_generated_xml(scenario_id: str, paths: dict[str, Path]) -> None:
     """Use vendor HTML package as the authoritative source of TAC incident and response keys."""
@@ -126,6 +130,7 @@ def test_vendor_html_tac_keys_match_generated_xml(scenario_id: str, paths: dict[
     assert _find_text(generated_root, "eResponse.04") == expected_response
 
 
+@pytest.mark.skipif(not _cta_available, reason="NEMSIS CTA vendor XML templates not present")
 @pytest.mark.parametrize("scenario_id,paths", SCENARIOS.items())
 def test_generated_xml_matches_official_reference_xml(scenario_id: str, paths: dict[str, Path]) -> None:
     """Compare generated XML against the official XML reference file for every stable leaf field."""
@@ -154,6 +159,7 @@ def test_generated_xml_matches_official_reference_xml(scenario_id: str, paths: d
     )
 
 
+@pytest.mark.skipif(not _cta_available, reason="NEMSIS CTA vendor XML templates not present")
 @pytest.mark.parametrize("scenario_id,paths", SCENARIOS.items())
 def test_generated_xml_preserves_agency_identity(scenario_id: str, paths: dict[str, Path]) -> None:
     """Ensure generated XML preserves the official CTA agency identity."""
@@ -165,6 +171,7 @@ def test_generated_xml_preserves_agency_identity(scenario_id: str, paths: dict[s
     assert _find_text(generated_root, "eResponse.02") == OFFICIAL_AGENCY_NAME
 
 
+@pytest.mark.skipif(not _cta_available, reason="NEMSIS CTA vendor XML templates not present")
 def test_vendor_html_suite_covers_all_five_2025_cta_scenarios() -> None:
     """Protect against accidental loss of any official 2025 CTA scenario coverage."""
     assert set(SCENARIOS) == {

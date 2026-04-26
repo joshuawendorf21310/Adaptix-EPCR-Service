@@ -8,7 +8,7 @@ include input validation, error logging, and real tenant/user context.
 import logging
 import json
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException, status, Header
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from epcr_app.db import get_session, check_health
@@ -20,6 +20,16 @@ from typing import Optional
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/epcr", tags=["epcr"])
+
+def _tenant_id(current_user: CurrentUser) -> str:
+    """Extract tenant_id from authenticated user context."""
+    return str(current_user.tenant_id)
+
+
+def _user_id(current_user: CurrentUser) -> str:
+    """Extract user_id from authenticated user context."""
+    return str(current_user.user_id)
+
 
 
 def _serialize_intervention(intervention) -> dict:
@@ -849,8 +859,6 @@ async def health():
 @router.post("/charts", response_model=ChartResponse, status_code=201)
 async def create_chart(
     request: CreateChartRequest,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    x_user_id: str = Header(..., description="Authenticated user identifier"),
     session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user)
 ):
@@ -861,10 +869,7 @@ async def create_chart(
     as missing.
     
     Args:
-        request: Chart creation parameters (call_number, incident_type, patient_id).
-        x_tenant_id: Tenant identifier from request header (required in production).
-        x_user_id: Authenticated user ID from request header (required in production).
-        session: Database session.
+        request: Chart creation parameters (call_number, incident_type, patient_id).        session: Database session.
         current_user: Authenticated user from JWT Bearer token.
         
     Returns:
@@ -876,30 +881,23 @@ async def create_chart(
         
     Example:
         POST /api/v1/epcr/charts
-        Headers: X-Tenant-ID: abc123, X-User-ID: user@example.com
+        Headers: Authorization: Bearer <token>
         Body: {"call_number": "CALL-2026-04-001", "incident_type": "medical"}
     """
     try:
-        # Validate headers
-        if not x_tenant_id or not x_tenant_id.strip():
-            logger.warning("Create chart rejected: missing or empty X-Tenant-ID header")
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-Tenant-ID header is required")
-        
-        if not x_user_id or not x_user_id.strip():
-            logger.warning("Create chart rejected: missing or empty X-User-ID header")
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-User-ID header is required")
-        
+        tenant_id = _tenant_id(current_user)
+        user_id = _user_id(current_user)
         chart = await ChartService.create_chart(
             session=session,
-            tenant_id=x_tenant_id.strip(),
+            tenant_id=tenant_id,
             call_number=request.call_number,
             incident_type=request.incident_type,
-            created_by_user_id=x_user_id.strip(),
+            created_by_user_id=user_id,
             client_reference_id=request.client_reference_id,
             patient_id=request.patient_id
         )
+        logger.info("Chart created via API: id=%s tenant_id=%s user_id=%s", chart.id, tenant_id, user_id)
         
-        logger.info(f"Chart created via API: id={chart.id}, tenant_id={x_tenant_id}")
         
         return {
             "id": chart.id,
@@ -919,7 +917,6 @@ async def create_chart(
 @router.get("/charts/{chart_id}")
 async def get_chart(
     chart_id: str,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
     session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user)
 ):
@@ -929,30 +926,24 @@ async def get_chart(
     chart not found or does not belong to requesting tenant.
     
     Args:
-        chart_id: Chart identifier to retrieve.
-        x_tenant_id: Tenant identifier from header.
-        session: Database session.
+        chart_id: Chart identifier to retrieve.        session: Database session.
         current_user: Authenticated user from JWT Bearer token.
         
     Returns:
         dict: Chart details including all fields and timestamps.
         
     Raises:
-        HTTPException 400: Missing X-Tenant-ID header.
-        HTTPException 404: Chart not found or access denied.
+                HTTPException 404: Chart not found or access denied.
         HTTPException 500: Database error.
     """
     try:
-        if not x_tenant_id or not x_tenant_id.strip():
-            logger.warning("Get chart rejected: missing X-Tenant-ID header")
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-Tenant-ID header is required")
-        
-        chart = await ChartService.get_chart(session, x_tenant_id.strip(), chart_id)
+        tenant_id = _tenant_id(current_user)
+        chart = await ChartService.get_chart(session, tenant_id, chart_id)
         if not chart:
-            logger.debug(f"Chart not found: id={chart_id}, tenant_id={x_tenant_id}")
+            logger.debug("Chart not found: id=%s tenant_id=%s", chart_id, tenant_id)
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Chart not found")
         
-        logger.debug(f"Chart retrieved: id={chart_id}, tenant_id={x_tenant_id}")
+        logger.debug("Chart retrieved: id=%s tenant_id=%s", chart_id, tenant_id)
         
         return {
             "id": chart.id,
@@ -974,7 +965,6 @@ async def get_chart(
 @router.get("/charts/{chart_id}/nemsis-3-5-1-compliance", response_model=ComplianceResponse)
 async def check_nemsis_compliance(
     chart_id: str,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
     session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user)
 ):
@@ -985,25 +975,18 @@ async def check_nemsis_compliance(
     missing required fields.
     
     Args:
-        chart_id: Chart identifier to check.
-        x_tenant_id: Tenant identifier from header.
-        session: Database session.
+        chart_id: Chart identifier to check.        session: Database session.
         current_user: Authenticated user from JWT Bearer token.
         
     Returns:
         ComplianceResponse: Compliance status with percentage and missing fields.
         
     Raises:
-        HTTPException 400: Missing X-Tenant-ID header.
-        HTTPException 404: Chart not found.
+                HTTPException 404: Chart not found.
         HTTPException 500: Compliance check failed.
     """
     try:
-        if not x_tenant_id or not x_tenant_id.strip():
-            logger.warning("Compliance check rejected: missing X-Tenant-ID header")
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-Tenant-ID header is required")
-        
-        result = await ChartService.check_nemsis_compliance(session, x_tenant_id.strip(), chart_id)
+        result = await ChartService.check_nemsis_compliance(session, _tenant_id(current_user), chart_id)
         
         logger.info(f"Compliance checked: chart_id={chart_id}, status={result['compliance_status']}, percentage={result['compliance_percentage']}%")
         
@@ -1022,8 +1005,6 @@ async def check_nemsis_compliance(
 async def update_chart(
     chart_id: str,
     request: UpdateChartRequest,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    x_user_id: str = Header(..., description="Authenticated user identifier"),
     session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user)
 ):
@@ -1035,10 +1016,7 @@ async def update_chart(
     
     Args:
         chart_id: Chart identifier to update.
-        request: UpdateChartRequest with optional fields to update.
-        x_tenant_id: Tenant identifier from request header (required).
-        x_user_id: Authenticated user ID from request header (required).
-        session: Database session.
+        request: UpdateChartRequest with optional fields to update.        session: Database session.
         current_user: Authenticated user from JWT Bearer token.
         
     Returns:
@@ -1051,26 +1029,17 @@ async def update_chart(
         
     Example:
         PATCH /api/v1/epcr/charts/chart-123
-        Headers: X-Tenant-ID: abc123, X-User-ID: user@example.com
+        Headers: Authorization: Bearer <token>
         Body: {"incident_type": "trauma", "bp_sys": 140, "bp_dia": 90}
     """
     try:
-        # Validate headers
-        if not x_tenant_id or not x_tenant_id.strip():
-            logger.warning("Update chart rejected: missing or empty X-Tenant-ID header")
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-Tenant-ID header is required")
-        
-        if not x_user_id or not x_user_id.strip():
-            logger.warning("Update chart rejected: missing or empty X-User-ID header")
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-User-ID header is required")
-        
-        # Convert request to dict, filtering out None values
         update_data = {k: v for k, v in request.dict().items() if v is not None}
+        tenant_id = _tenant_id(current_user)
         
         # Update chart
         chart = await ChartService.update_chart(
             session=session,
-            tenant_id=x_tenant_id.strip(),
+            tenant_id=tenant_id,
             chart_id=chart_id,
             update_data=update_data
         )
@@ -1078,11 +1047,11 @@ async def update_chart(
         # Get current compliance status
         compliance_result = await ChartService.check_nemsis_compliance(
             session=session,
-            tenant_id=x_tenant_id.strip(),
+            tenant_id=tenant_id,
             chart_id=chart_id
         )
         
-        logger.info(f"Chart updated and compliance checked: id={chart_id}, tenant_id={x_tenant_id}, compliance={compliance_result['compliance_percentage']}%")
+        logger.info("Chart updated and compliance checked: id=%s tenant_id=%s compliance=%s%%", chart_id, tenant_id, compliance_result["compliance_percentage"])
         
         return {
             "id": chart.id,
@@ -1109,23 +1078,16 @@ async def update_chart(
 async def create_assessment_finding(
     chart_id: str,
     request: AssessmentFindingRequest,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    x_user_id: str = Header(..., description="Authenticated user identifier"),
     session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """Create a structured CPAE finding for an ePCR chart."""
     try:
-        if not x_tenant_id or not x_tenant_id.strip():
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-Tenant-ID header is required")
-        if not x_user_id or not x_user_id.strip():
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-User-ID header is required")
-
         finding = await ChartService.record_assessment_finding(
             session=session,
-            tenant_id=x_tenant_id.strip(),
+            tenant_id=_tenant_id(current_user),
             chart_id=chart_id,
-            provider_id=x_user_id.strip(),
+            provider_id=_user_id(current_user),
             finding_data=request.model_dump(exclude_none=True),
         )
         return {
@@ -1151,16 +1113,12 @@ async def create_assessment_finding(
 @router.get("/charts/{chart_id}/assessment-findings", status_code=200)
 async def list_assessment_findings(
     chart_id: str,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
     session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """List structured findings recorded for a chart."""
     try:
-        if not x_tenant_id or not x_tenant_id.strip():
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-Tenant-ID header is required")
-
-        chart = await ChartService.get_chart(session, x_tenant_id.strip(), chart_id)
+        chart = await ChartService.get_chart(session, _tenant_id(current_user), chart_id)
         if not chart:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Chart not found")
 
@@ -1170,7 +1128,7 @@ async def list_assessment_findings(
             select(AssessmentFinding).where(
                 and_(
                     AssessmentFinding.chart_id == chart_id,
-                    AssessmentFinding.tenant_id == x_tenant_id.strip(),
+                    AssessmentFinding.tenant_id == _tenant_id(current_user),
                 )
             )
         )
@@ -1202,23 +1160,16 @@ async def list_assessment_findings(
 async def create_visual_overlay(
     chart_id: str,
     request: VisualOverlayRequest,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    x_user_id: str = Header(..., description="Authenticated user identifier"),
     session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """Create a governed VAS overlay for an existing structured finding."""
     try:
-        if not x_tenant_id or not x_tenant_id.strip():
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-Tenant-ID header is required")
-        if not x_user_id or not x_user_id.strip():
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-User-ID header is required")
-
         overlay = await ChartService.record_visual_overlay(
             session=session,
-            tenant_id=x_tenant_id.strip(),
+            tenant_id=_tenant_id(current_user),
             chart_id=chart_id,
-            provider_id=x_user_id.strip(),
+            provider_id=_user_id(current_user),
             overlay_data=request.model_dump(exclude_none=True),
         )
         return {
@@ -1242,16 +1193,12 @@ async def create_visual_overlay(
 @router.get("/charts/{chart_id}/visual-overlays", status_code=200)
 async def list_visual_overlays(
     chart_id: str,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
     session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """List governed VAS overlays recorded for a chart."""
     try:
-        if not x_tenant_id or not x_tenant_id.strip():
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-Tenant-ID header is required")
-
-        chart = await ChartService.get_chart(session, x_tenant_id.strip(), chart_id)
+        chart = await ChartService.get_chart(session, _tenant_id(current_user), chart_id)
         if not chart:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Chart not found")
 
@@ -1261,7 +1208,7 @@ async def list_visual_overlays(
             select(VisualOverlay).where(
                 and_(
                     VisualOverlay.chart_id == chart_id,
-                    VisualOverlay.tenant_id == x_tenant_id.strip(),
+                    VisualOverlay.tenant_id == _tenant_id(current_user),
                 )
             )
         )
@@ -1295,24 +1242,17 @@ async def update_assessment_finding(
     chart_id: str,
     finding_id: str,
     request: AssessmentFindingUpdateRequest,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    x_user_id: str = Header(..., description="Authenticated user identifier"),
     session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """Update a structured CPAE finding for correction/review."""
     try:
-        if not x_tenant_id or not x_tenant_id.strip():
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-Tenant-ID header is required")
-        if not x_user_id or not x_user_id.strip():
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-User-ID header is required")
-
         finding = await ChartService.update_assessment_finding(
             session=session,
-            tenant_id=x_tenant_id.strip(),
+            tenant_id=_tenant_id(current_user),
             chart_id=chart_id,
             finding_id=finding_id,
-            provider_id=x_user_id.strip(),
+            provider_id=_user_id(current_user),
             update_data={k: v for k, v in request.model_dump().items() if v is not None},
         )
         return {
@@ -1340,24 +1280,17 @@ async def update_visual_overlay(
     chart_id: str,
     overlay_id: str,
     request: VisualOverlayUpdateRequest,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    x_user_id: str = Header(..., description="Authenticated user identifier"),
     session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """Update a governed VAS overlay for correction/review."""
     try:
-        if not x_tenant_id or not x_tenant_id.strip():
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-Tenant-ID header is required")
-        if not x_user_id or not x_user_id.strip():
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-User-ID header is required")
-
         overlay = await ChartService.update_visual_overlay(
             session=session,
-            tenant_id=x_tenant_id.strip(),
+            tenant_id=_tenant_id(current_user),
             chart_id=chart_id,
             overlay_id=overlay_id,
-            provider_id=x_user_id.strip(),
+            provider_id=_user_id(current_user),
             update_data={k: v for k, v in request.model_dump().items() if v is not None},
         )
         return {
@@ -1382,23 +1315,16 @@ async def update_visual_overlay(
 async def create_ar_session(
     chart_id: str,
     request: ArSessionRequest,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    x_user_id: str = Header(..., description="Authenticated user identifier"),
     session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """Start a governed ARCOS session for a chart."""
     try:
-        if not x_tenant_id or not x_tenant_id.strip():
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-Tenant-ID header is required")
-        if not x_user_id or not x_user_id.strip():
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-User-ID header is required")
-
         ar_session = await ChartService.start_ar_session(
             session=session,
-            tenant_id=x_tenant_id.strip(),
+            tenant_id=_tenant_id(current_user),
             chart_id=chart_id,
-            started_by_user_id=x_user_id.strip(),
+            started_by_user_id=_user_id(current_user),
             patient_model=request.patient_model,
             mode=request.mode,
             client_reference_id=request.client_reference_id,
@@ -1423,16 +1349,12 @@ async def create_ar_session(
 @router.get("/charts/{chart_id}/ar-sessions", status_code=200)
 async def list_ar_sessions(
     chart_id: str,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
     session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """List ARCOS sessions for a chart."""
     try:
-        if not x_tenant_id or not x_tenant_id.strip():
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-Tenant-ID header is required")
-
-        chart = await ChartService.get_chart(session, x_tenant_id.strip(), chart_id)
+        chart = await ChartService.get_chart(session, _tenant_id(current_user), chart_id)
         if not chart:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Chart not found")
 
@@ -1442,7 +1364,7 @@ async def list_ar_sessions(
             select(ArSession).where(
                 and_(
                     ArSession.chart_id == chart_id,
-                    ArSession.tenant_id == x_tenant_id.strip(),
+                    ArSession.tenant_id == _tenant_id(current_user),
                 )
             )
         )
@@ -1473,23 +1395,16 @@ async def list_ar_sessions(
 @router.post("/ar-sessions/{session_id}/complete", response_model=ArSessionResponse, status_code=200)
 async def complete_ar_session(
     session_id: str,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    x_user_id: str = Header(..., description="Authenticated user identifier"),
     session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """Complete an ARCOS session and close its lifecycle state."""
     try:
-        if not x_tenant_id or not x_tenant_id.strip():
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-Tenant-ID header is required")
-        if not x_user_id or not x_user_id.strip():
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-User-ID header is required")
-
         ar_session = await ChartService.complete_ar_session(
             session=session,
-            tenant_id=x_tenant_id.strip(),
+            tenant_id=_tenant_id(current_user),
             session_id=session_id,
-            completed_by_user_id=x_user_id.strip(),
+            completed_by_user_id=_user_id(current_user),
         )
         return {
             "id": ar_session.id,
@@ -1512,23 +1427,16 @@ async def complete_ar_session(
 async def create_ar_anchor(
     session_id: str,
     request: ArAnchorRequest,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    x_user_id: str = Header(..., description="Authenticated user identifier"),
     session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """Record an ARCOS anatomical anchor within a started session."""
     try:
-        if not x_tenant_id or not x_tenant_id.strip():
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-Tenant-ID header is required")
-        if not x_user_id or not x_user_id.strip():
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-User-ID header is required")
-
         anchor = await ChartService.record_ar_anchor(
             session=session,
-            tenant_id=x_tenant_id.strip(),
+            tenant_id=_tenant_id(current_user),
             session_id=session_id,
-            anchored_by_user_id=x_user_id.strip(),
+            anchored_by_user_id=_user_id(current_user),
             anatomy=request.anatomy,
             anatomical_view=request.anatomical_view,
             confidence=request.confidence,
@@ -1554,22 +1462,18 @@ async def create_ar_anchor(
 @router.get("/ar-sessions/{session_id}/anchors", status_code=200)
 async def list_ar_anchors(
     session_id: str,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
     session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """List captured anatomical anchors for an ARCOS session."""
     try:
-        if not x_tenant_id or not x_tenant_id.strip():
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-Tenant-ID header is required")
-
         from epcr_app.models import ArAnchor, ArSession
 
         session_result = await session.execute(
             select(ArSession).where(
                 and_(
                     ArSession.id == session_id,
-                    ArSession.tenant_id == x_tenant_id.strip(),
+                    ArSession.tenant_id == _tenant_id(current_user),
                 )
             )
         )
@@ -1581,7 +1485,7 @@ async def list_ar_anchors(
             select(ArAnchor).where(
                 and_(
                     ArAnchor.session_id == session_id,
-                    ArAnchor.tenant_id == x_tenant_id.strip(),
+                    ArAnchor.tenant_id == _tenant_id(current_user),
                 )
             )
         )
@@ -1610,19 +1514,16 @@ async def list_ar_anchors(
 @router.put("/charts/{chart_id}/address-intelligence", response_model=AddressIntelligenceResponse, status_code=200)
 async def upsert_address_intelligence(
     chart_id: str,
-    request: AddressIntelligenceRequest,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    x_user_id: str = Header(..., description="Authenticated user identifier"),
-    session: AsyncSession = Depends(get_session),
+    request: AddressIntelligenceRequest,    session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """Create or update chart-scoped address intelligence."""
     try:
         address = await ChartService.upsert_chart_address(
             session=session,
-            tenant_id=x_tenant_id.strip(),
+            tenant_id=_tenant_id(current_user),
             chart_id=chart_id,
-            provider_id=x_user_id.strip(),
+            provider_id=_user_id(current_user),
             address_data=request.model_dump(exclude_none=True),
         )
         return {
@@ -1639,16 +1540,14 @@ async def upsert_address_intelligence(
 
 @router.get("/charts/{chart_id}/address-intelligence", response_model=AddressIntelligenceResponse, status_code=200)
 async def get_address_intelligence(
-    chart_id: str,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    session: AsyncSession = Depends(get_session),
+    chart_id: str,    session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """Get chart-scoped address intelligence."""
     from epcr_app.models import ChartAddress
 
     result = await session.execute(
-        select(ChartAddress).where(and_(ChartAddress.chart_id == chart_id, ChartAddress.tenant_id == x_tenant_id.strip()))
+        select(ChartAddress).where(and_(ChartAddress.chart_id == chart_id, ChartAddress.tenant_id == _tenant_id(current_user)))
     )
     address = result.scalars().first()
     if not address:
@@ -1666,19 +1565,16 @@ async def get_address_intelligence(
 @router.put("/charts/{chart_id}/patient-profile", response_model=PatientProfileResponse, status_code=200)
 async def upsert_patient_profile(
     chart_id: str,
-    request: PatientProfileRequest,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    x_user_id: str = Header(..., description="Authenticated user identifier"),
-    session: AsyncSession = Depends(get_session),
+    request: PatientProfileRequest,    session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """Create or update patient demographics for a chart."""
     try:
         profile = await ChartService.upsert_patient_profile(
             session=session,
-            tenant_id=x_tenant_id.strip(),
+            tenant_id=_tenant_id(current_user),
             chart_id=chart_id,
-            provider_id=x_user_id.strip(),
+            provider_id=_user_id(current_user),
             profile_data=request.model_dump(exclude_none=True),
         )
         return _serialize_patient_profile(profile)
@@ -1688,13 +1584,11 @@ async def upsert_patient_profile(
 
 @router.get("/charts/{chart_id}/patient-profile", response_model=PatientProfileResponse, status_code=200)
 async def get_patient_profile(
-    chart_id: str,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    session: AsyncSession = Depends(get_session),
+    chart_id: str,    session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """Get chart-scoped patient demographics."""
-    profile = await ChartService.get_patient_profile(session, x_tenant_id.strip(), chart_id)
+    profile = await ChartService.get_patient_profile(session, _tenant_id(current_user), chart_id)
     if not profile:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Patient profile not found")
     return _serialize_patient_profile(profile)
@@ -1703,10 +1597,7 @@ async def get_patient_profile(
 @router.post("/charts/{chart_id}/vitals", response_model=VitalSetResponse, status_code=201)
 async def create_vital_set(
     chart_id: str,
-    request: VitalSetRequest,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    x_user_id: str = Header(..., description="Authenticated user identifier"),
-    session: AsyncSession = Depends(get_session),
+    request: VitalSetRequest,    session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """Record a structured vital set."""
@@ -1716,9 +1607,9 @@ async def create_vital_set(
             payload["recorded_at"] = datetime.fromisoformat(payload["recorded_at"])
         vital = await ChartService.record_vital_set(
             session=session,
-            tenant_id=x_tenant_id.strip(),
+            tenant_id=_tenant_id(current_user),
             chart_id=chart_id,
-            provider_id=x_user_id.strip(),
+            provider_id=_user_id(current_user),
             vitals_data=payload,
         )
         return _serialize_vital(vital)
@@ -1728,9 +1619,7 @@ async def create_vital_set(
 
 @router.get("/charts/{chart_id}/vitals", status_code=200)
 async def list_vital_sets(
-    chart_id: str,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    session: AsyncSession = Depends(get_session),
+    chart_id: str,    session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """List vital sets recorded for a chart."""
@@ -1739,7 +1628,7 @@ async def list_vital_sets(
 
     result = await session.execute(
         select(Vitals).where(
-            and_(Vitals.chart_id == chart_id, Vitals.tenant_id == x_tenant_id.strip(), Vitals.deleted_at.is_(None))
+            and_(Vitals.chart_id == chart_id, Vitals.tenant_id == _tenant_id(current_user), Vitals.deleted_at.is_(None))
         ).order_by(desc(Vitals.recorded_at))
     )
     items = result.scalars().all()
@@ -1750,10 +1639,7 @@ async def list_vital_sets(
 async def update_vital_set(
     chart_id: str,
     vital_id: str,
-    request: VitalSetUpdateRequest,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    x_user_id: str = Header(..., description="Authenticated user identifier"),
-    session: AsyncSession = Depends(get_session),
+    request: VitalSetUpdateRequest,    session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """Update a recorded vital set."""
@@ -1763,10 +1649,10 @@ async def update_vital_set(
             payload["recorded_at"] = datetime.fromisoformat(payload["recorded_at"])
         vital = await ChartService.update_vital_set(
             session=session,
-            tenant_id=x_tenant_id.strip(),
+            tenant_id=_tenant_id(current_user),
             chart_id=chart_id,
             vital_id=vital_id,
-            provider_id=x_user_id.strip(),
+            provider_id=_user_id(current_user),
             update_data=payload,
         )
         return _serialize_vital(vital)
@@ -1777,19 +1663,16 @@ async def update_vital_set(
 @router.put("/charts/{chart_id}/clinical-impression", response_model=ClinicalImpressionResponse, status_code=200)
 async def upsert_clinical_impression(
     chart_id: str,
-    request: ClinicalImpressionRequest,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    x_user_id: str = Header(..., description="Authenticated user identifier"),
-    session: AsyncSession = Depends(get_session),
+    request: ClinicalImpressionRequest,    session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """Create or update structured clinical impression authority."""
     try:
         item = await ChartService.upsert_clinical_impression(
             session=session,
-            tenant_id=x_tenant_id.strip(),
+            tenant_id=_tenant_id(current_user),
             chart_id=chart_id,
-            provider_id=x_user_id.strip(),
+            provider_id=_user_id(current_user),
             impression_data=request.model_dump(exclude_none=True),
         )
         return _serialize_impression(item)
@@ -1799,13 +1682,11 @@ async def upsert_clinical_impression(
 
 @router.get("/charts/{chart_id}/clinical-impression", response_model=ClinicalImpressionResponse, status_code=200)
 async def get_clinical_impression(
-    chart_id: str,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    session: AsyncSession = Depends(get_session),
+    chart_id: str,    session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """Get structured clinical impression for a chart."""
-    assessment = await ChartService.get_clinical_impression(session, x_tenant_id.strip(), chart_id)
+    assessment = await ChartService.get_clinical_impression(session, _tenant_id(current_user), chart_id)
     if not assessment:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Clinical impression not found")
     return _serialize_impression(assessment)
@@ -1814,10 +1695,7 @@ async def get_clinical_impression(
 @router.post("/charts/{chart_id}/medications", response_model=MedicationAdministrationResponse, status_code=201)
 async def create_medication_administration(
     chart_id: str,
-    request: MedicationAdministrationRequest,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    x_user_id: str = Header(..., description="Authenticated user identifier"),
-    session: AsyncSession = Depends(get_session),
+    request: MedicationAdministrationRequest,    session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """Record medication administration authority for a chart."""
@@ -1827,9 +1705,9 @@ async def create_medication_administration(
             payload["administered_at"] = datetime.fromisoformat(payload["administered_at"])
         item = await ChartService.record_medication_administration(
             session=session,
-            tenant_id=x_tenant_id.strip(),
+            tenant_id=_tenant_id(current_user),
             chart_id=chart_id,
-            provider_id=x_user_id.strip(),
+            provider_id=_user_id(current_user),
             medication_data=payload,
         )
         return _serialize_medication(item)
@@ -1839,9 +1717,7 @@ async def create_medication_administration(
 
 @router.get("/charts/{chart_id}/medications", status_code=200)
 async def list_medication_administrations(
-    chart_id: str,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    session: AsyncSession = Depends(get_session),
+    chart_id: str,    session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """List medication administrations for a chart."""
@@ -1850,7 +1726,7 @@ async def list_medication_administrations(
 
     result = await session.execute(
         select(MedicationAdministration).where(
-            and_(MedicationAdministration.chart_id == chart_id, MedicationAdministration.tenant_id == x_tenant_id.strip())
+            and_(MedicationAdministration.chart_id == chart_id, MedicationAdministration.tenant_id == _tenant_id(current_user))
         ).order_by(desc(MedicationAdministration.administered_at))
     )
     items = result.scalars().all()
@@ -1860,19 +1736,16 @@ async def list_medication_administrations(
 @router.post("/charts/{chart_id}/signatures", response_model=SignatureArtifactResponse, status_code=201)
 async def create_signature_artifact(
     chart_id: str,
-    request: SignatureArtifactRequest,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    x_user_id: str = Header(..., description="Authenticated user identifier"),
-    session: AsyncSession = Depends(get_session),
+    request: SignatureArtifactRequest,    session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """Record a chart-owned signature artifact from direct mobile capture."""
     try:
         item = await ChartService.create_signature_artifact(
             session=session,
-            tenant_id=x_tenant_id.strip(),
+            tenant_id=_tenant_id(current_user),
             chart_id=chart_id,
-            created_by_user_id=x_user_id.strip(),
+            created_by_user_id=_user_id(current_user),
             payload=request.model_dump(exclude_none=True),
         )
         return _serialize_signature(item)
@@ -1882,9 +1755,7 @@ async def create_signature_artifact(
 
 @router.get("/charts/{chart_id}/signatures", status_code=200)
 async def list_signature_artifacts(
-    chart_id: str,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    session: AsyncSession = Depends(get_session),
+    chart_id: str,    session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """List authoritative signature artifacts for a chart."""
@@ -1893,7 +1764,7 @@ async def list_signature_artifacts(
 
     result = await session.execute(
         select(EpcrSignatureArtifact).where(
-            and_(EpcrSignatureArtifact.chart_id == chart_id, EpcrSignatureArtifact.tenant_id == x_tenant_id.strip())
+            and_(EpcrSignatureArtifact.chart_id == chart_id, EpcrSignatureArtifact.tenant_id == _tenant_id(current_user))
         ).order_by(desc(EpcrSignatureArtifact.created_at))
     )
     items = result.scalars().all()
@@ -1904,20 +1775,17 @@ async def list_signature_artifacts(
 async def update_signature_artifact(
     chart_id: str,
     signature_id: str,
-    request: SignatureArtifactUpdateRequest,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    x_user_id: str = Header(..., description="Authenticated user identifier"),
-    session: AsyncSession = Depends(get_session),
+    request: SignatureArtifactUpdateRequest,    session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """Update a chart-owned signature artifact and recompute completion effects."""
     try:
         item = await ChartService.update_signature_artifact(
             session=session,
-            tenant_id=x_tenant_id.strip(),
+            tenant_id=_tenant_id(current_user),
             chart_id=chart_id,
             signature_id=signature_id,
-            updated_by_user_id=x_user_id.strip(),
+            updated_by_user_id=_user_id(current_user),
             payload=request.model_dump(exclude_none=True),
         )
         return _serialize_signature(item)
@@ -1928,19 +1796,16 @@ async def update_signature_artifact(
 @router.post("/charts/{chart_id}/signatures/ingest", response_model=SignatureArtifactResponse, status_code=201)
 async def ingest_signature_artifact(
     chart_id: str,
-    request: SignatureArtifactIngestRequest,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    x_user_id: str = Header(..., description="Authenticated user identifier"),
-    session: AsyncSession = Depends(get_session),
+    request: SignatureArtifactIngestRequest,    session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """Ingest a fallback signature capture as authoritative ePCR signature state."""
     try:
         item = await ChartService.ingest_signature_artifact(
             session=session,
-            tenant_id=x_tenant_id.strip(),
+            tenant_id=_tenant_id(current_user),
             chart_id=chart_id,
-            created_by_user_id=x_user_id.strip(),
+            created_by_user_id=_user_id(current_user),
             payload=request.model_dump(exclude_none=True),
         )
         return _serialize_signature(item)
@@ -1952,10 +1817,7 @@ async def ingest_signature_artifact(
 async def update_medication_administration(
     chart_id: str,
     medication_id: str,
-    request: MedicationAdministrationUpdateRequest,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    x_user_id: str = Header(..., description="Authenticated user identifier"),
-    session: AsyncSession = Depends(get_session),
+    request: MedicationAdministrationUpdateRequest,    session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """Update medication administration response/export state."""
@@ -1965,10 +1827,10 @@ async def update_medication_administration(
             payload["administered_at"] = datetime.fromisoformat(payload["administered_at"])
         item = await ChartService.update_medication_administration(
             session=session,
-            tenant_id=x_tenant_id.strip(),
+            tenant_id=_tenant_id(current_user),
             chart_id=chart_id,
             medication_id=medication_id,
-            provider_id=x_user_id.strip(),
+            provider_id=_user_id(current_user),
             update_data=payload,
         )
         return _serialize_medication(item)
@@ -1979,10 +1841,7 @@ async def update_medication_administration(
 @router.post("/charts/{chart_id}/interventions", response_model=InterventionResponse, status_code=201)
 async def create_intervention(
     chart_id: str,
-    request: InterventionRequest,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    x_user_id: str = Header(..., description="Authenticated user identifier"),
-    session: AsyncSession = Depends(get_session),
+    request: InterventionRequest,    session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """Create a structured intervention workflow record."""
@@ -1992,9 +1851,9 @@ async def create_intervention(
             payload["reassessment_due_at"] = datetime.fromisoformat(payload["reassessment_due_at"])
         intervention = await ChartService.record_intervention(
             session=session,
-            tenant_id=x_tenant_id.strip(),
+            tenant_id=_tenant_id(current_user),
             chart_id=chart_id,
-            provider_id=x_user_id.strip(),
+            provider_id=_user_id(current_user),
             intervention_data=payload,
         )
         return _serialize_intervention(intervention)
@@ -2004,9 +1863,7 @@ async def create_intervention(
 
 @router.get("/charts/{chart_id}/interventions", status_code=200)
 async def list_interventions(
-    chart_id: str,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    session: AsyncSession = Depends(get_session),
+    chart_id: str,    session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """List interventions documented for a chart."""
@@ -2014,7 +1871,7 @@ async def list_interventions(
 
     result = await session.execute(
         select(ClinicalIntervention).where(
-            and_(ClinicalIntervention.chart_id == chart_id, ClinicalIntervention.tenant_id == x_tenant_id.strip())
+            and_(ClinicalIntervention.chart_id == chart_id, ClinicalIntervention.tenant_id == _tenant_id(current_user))
         )
     )
     items = result.scalars().all()
@@ -2025,10 +1882,7 @@ async def list_interventions(
 async def update_intervention(
     chart_id: str,
     intervention_id: str,
-    request: InterventionUpdateRequest,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    x_user_id: str = Header(..., description="Authenticated user identifier"),
-    session: AsyncSession = Depends(get_session),
+    request: InterventionUpdateRequest,    session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """Update a structured intervention."""
@@ -2038,10 +1892,10 @@ async def update_intervention(
             payload["reassessment_due_at"] = datetime.fromisoformat(payload["reassessment_due_at"])
         intervention = await ChartService.update_intervention(
             session=session,
-            tenant_id=x_tenant_id.strip(),
+            tenant_id=_tenant_id(current_user),
             chart_id=chart_id,
             intervention_id=intervention_id,
-            provider_id=x_user_id.strip(),
+            provider_id=_user_id(current_user),
             update_data=payload,
         )
         return _serialize_intervention(intervention)
@@ -2052,19 +1906,16 @@ async def update_intervention(
 @router.post("/charts/{chart_id}/clinical-notes", response_model=ClinicalNoteResponse, status_code=201)
 async def create_clinical_note(
     chart_id: str,
-    request: ClinicalNoteRequest,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    x_user_id: str = Header(..., description="Authenticated user identifier"),
-    session: AsyncSession = Depends(get_session),
+    request: ClinicalNoteRequest,    session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """Capture structured clinical text with deterministic summary generation."""
     try:
         note = await ChartService.record_clinical_note(
             session=session,
-            tenant_id=x_tenant_id.strip(),
+            tenant_id=_tenant_id(current_user),
             chart_id=chart_id,
-            provider_id=x_user_id.strip(),
+            provider_id=_user_id(current_user),
             note_data=request.model_dump(exclude_none=True),
         )
         return _serialize_note(note)
@@ -2074,16 +1925,14 @@ async def create_clinical_note(
 
 @router.get("/charts/{chart_id}/clinical-notes", status_code=200)
 async def list_clinical_notes(
-    chart_id: str,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    session: AsyncSession = Depends(get_session),
+    chart_id: str,    session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """List captured clinical notes for a chart."""
     from epcr_app.models import ClinicalNote
 
     result = await session.execute(
-        select(ClinicalNote).where(and_(ClinicalNote.chart_id == chart_id, ClinicalNote.tenant_id == x_tenant_id.strip()))
+        select(ClinicalNote).where(and_(ClinicalNote.chart_id == chart_id, ClinicalNote.tenant_id == _tenant_id(current_user)))
     )
     items = result.scalars().all()
     return {"chart_id": chart_id, "count": len(items), "items": [_serialize_note(item) for item in items]}
@@ -2093,20 +1942,17 @@ async def list_clinical_notes(
 async def update_clinical_note(
     chart_id: str,
     note_id: str,
-    request: ClinicalNoteUpdateRequest,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    x_user_id: str = Header(..., description="Authenticated user identifier"),
-    session: AsyncSession = Depends(get_session),
+    request: ClinicalNoteUpdateRequest,    session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """Review or correct a clinical note."""
     try:
         note = await ChartService.update_clinical_note(
             session=session,
-            tenant_id=x_tenant_id.strip(),
+            tenant_id=_tenant_id(current_user),
             chart_id=chart_id,
             note_id=note_id,
-            provider_id=x_user_id.strip(),
+            provider_id=_user_id(current_user),
             update_data=request.model_dump(exclude_none=True),
         )
         return _serialize_note(note)
@@ -2117,19 +1963,16 @@ async def update_clinical_note(
 @router.post("/charts/{chart_id}/protocol-recommendations/generate", status_code=200)
 async def generate_protocol_recommendations(
     chart_id: str,
-    request: ProtocolGenerationRequest,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    x_user_id: str = Header(..., description="Authenticated user identifier"),
-    session: AsyncSession = Depends(get_session),
+    request: ProtocolGenerationRequest,    session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """Generate deterministic protocol guidance for a chart."""
     try:
         items = await ChartService.generate_protocol_recommendations(
             session=session,
-            tenant_id=x_tenant_id.strip(),
+            tenant_id=_tenant_id(current_user),
             chart_id=chart_id,
-            generated_by_user_id=x_user_id.strip(),
+            generated_by_user_id=_user_id(current_user),
             patient_model=request.patient_model,
         )
         return {"chart_id": chart_id, "count": len(items), "items": [_serialize_protocol(item) for item in items]}
@@ -2139,9 +1982,7 @@ async def generate_protocol_recommendations(
 
 @router.get("/charts/{chart_id}/protocol-recommendations", status_code=200)
 async def list_protocol_recommendations(
-    chart_id: str,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    session: AsyncSession = Depends(get_session),
+    chart_id: str,    session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """List current protocol recommendations for a chart."""
@@ -2149,7 +1990,7 @@ async def list_protocol_recommendations(
 
     result = await session.execute(
         select(ProtocolRecommendation).where(
-            and_(ProtocolRecommendation.chart_id == chart_id, ProtocolRecommendation.tenant_id == x_tenant_id.strip())
+            and_(ProtocolRecommendation.chart_id == chart_id, ProtocolRecommendation.tenant_id == _tenant_id(current_user))
         )
     )
     items = result.scalars().all()
@@ -2160,20 +2001,17 @@ async def list_protocol_recommendations(
 async def update_protocol_recommendation(
     chart_id: str,
     recommendation_id: str,
-    request: ProtocolRecommendationUpdateRequest,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    x_user_id: str = Header(..., description="Authenticated user identifier"),
-    session: AsyncSession = Depends(get_session),
+    request: ProtocolRecommendationUpdateRequest,    session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """Accept or dismiss a protocol recommendation."""
     try:
         item = await ChartService.update_protocol_recommendation_state(
             session=session,
-            tenant_id=x_tenant_id.strip(),
+            tenant_id=_tenant_id(current_user),
             chart_id=chart_id,
             recommendation_id=recommendation_id,
-            user_id=x_user_id.strip(),
+            user_id=_user_id(current_user),
             state=request.state,
         )
         return _serialize_protocol(item)
@@ -2184,19 +2022,16 @@ async def update_protocol_recommendation(
 @router.post("/charts/{chart_id}/derived-outputs", response_model=DerivedOutputResponse, status_code=201)
 async def create_derived_output(
     chart_id: str,
-    request: DerivedOutputRequest,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    x_user_id: str = Header(..., description="Authenticated user identifier"),
-    session: AsyncSession = Depends(get_session),
+    request: DerivedOutputRequest,    session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """Generate and persist a derived chart output from CareGraph truth."""
     try:
         output = await ChartService.generate_derived_output(
             session=session,
-            tenant_id=x_tenant_id.strip(),
+            tenant_id=_tenant_id(current_user),
             chart_id=chart_id,
-            generated_by_user_id=x_user_id.strip(),
+            generated_by_user_id=_user_id(current_user),
             output_type=request.output_type,
         )
         return _serialize_output(output)
@@ -2206,9 +2041,7 @@ async def create_derived_output(
 
 @router.get("/charts/{chart_id}/derived-outputs", status_code=200)
 async def list_derived_outputs(
-    chart_id: str,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    session: AsyncSession = Depends(get_session),
+    chart_id: str,    session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """List generated derived outputs for a chart."""
@@ -2216,7 +2049,7 @@ async def list_derived_outputs(
 
     result = await session.execute(
         select(DerivedChartOutput).where(
-            and_(DerivedChartOutput.chart_id == chart_id, DerivedChartOutput.tenant_id == x_tenant_id.strip())
+            and_(DerivedChartOutput.chart_id == chart_id, DerivedChartOutput.tenant_id == _tenant_id(current_user))
         )
     )
     items = result.scalars().all()
@@ -2225,14 +2058,12 @@ async def list_derived_outputs(
 
 @router.get("/charts/{chart_id}/dashboard", response_model=DashboardSummaryResponse, status_code=200)
 async def get_chart_dashboard(
-    chart_id: str,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    session: AsyncSession = Depends(get_session),
+    chart_id: str,    session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     """Return truthful dashboard state for a chart."""
     try:
-        return await ChartService.get_dashboard_summary(session=session, tenant_id=x_tenant_id.strip(), chart_id=chart_id)
+        return await ChartService.get_dashboard_summary(session=session, tenant_id=_tenant_id(current_user), chart_id=chart_id)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
@@ -2241,7 +2072,6 @@ async def get_chart_dashboard(
 async def list_charts(
     limit: int = 50,
     offset: int = 0,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
     session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user)
 ):
@@ -2252,36 +2082,30 @@ async def list_charts(
 
     Args:
         limit: Maximum number of charts to return (capped at 200).
-        offset: Number of charts to skip.
-        x_tenant_id: Tenant identifier from header (required).
-        session: Database session.
+        offset: Number of charts to skip.        session: Database session.
         current_user: Authenticated user from JWT Bearer token.
 
     Returns:
         dict: Paginated chart list with count, offset, and limit.
 
     Raises:
-        HTTPException 400: Missing X-Tenant-ID header.
-        HTTPException 500: Database query failure.
+                HTTPException 500: Database query failure.
     """
     try:
-        if not x_tenant_id or not x_tenant_id.strip():
-            logger.warning("List charts rejected: missing X-Tenant-ID header")
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-Tenant-ID header is required")
-
         from sqlalchemy import select, desc
         from epcr_app.models import Chart
+        tenant_id = _tenant_id(current_user)
 
         result = await session.execute(
             select(Chart)
-            .where(Chart.tenant_id == x_tenant_id.strip())
+            .where(Chart.tenant_id == tenant_id)
             .order_by(desc(Chart.created_at))
             .offset(offset)
             .limit(min(limit, 200))
         )
         charts = result.scalars().all()
 
-        logger.info(f"Charts listed: tenant_id={x_tenant_id}, count={len(charts)}, offset={offset}")
+        logger.info("Charts listed: tenant_id=%s count=%s offset=%s", tenant_id, len(charts), offset)
 
         return {
             "items": [
@@ -2308,8 +2132,6 @@ async def list_charts(
 @router.post("/charts/{chart_id}/finalize", response_model=ChartResponse, status_code=200)
 async def finalize_chart(
     chart_id: str,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    x_user_id: str = Header(..., description="Authenticated user identifier"),
     session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user)
 ):
@@ -2320,10 +2142,7 @@ async def finalize_chart(
     Transitions chart from IN_PROGRESS to FINALIZED status.
 
     Args:
-        chart_id: Chart identifier to finalize.
-        x_tenant_id: Tenant identifier from request header (required).
-        x_user_id: Authenticated user ID from request header (required).
-        session: Database session.
+        chart_id: Chart identifier to finalize.        session: Database session.
         current_user: Authenticated user from JWT Bearer token.
 
     Returns:
@@ -2336,19 +2155,13 @@ async def finalize_chart(
         HTTPException 500: Database error.
     """
     try:
-        if not x_tenant_id or not x_tenant_id.strip():
-            logger.warning("Finalize chart rejected: missing X-Tenant-ID header")
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-Tenant-ID header is required")
-
-        if not x_user_id or not x_user_id.strip():
-            logger.warning("Finalize chart rejected: missing X-User-ID header")
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-User-ID header is required")
-
-        chart = await ChartService.get_chart(session, x_tenant_id.strip(), chart_id)
+        tenant_id = _tenant_id(current_user)
+        user_id = _user_id(current_user)
+        chart = await ChartService.get_chart(session, tenant_id, chart_id)
         if not chart:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Chart not found")
 
-        compliance = await ChartService.check_nemsis_compliance(session, x_tenant_id.strip(), chart_id)
+        compliance = await ChartService.check_nemsis_compliance(session, tenant_id, chart_id)
         if not compliance["is_fully_compliant"]:
             logger.warning(
                 f"Chart finalization blocked: id={chart_id}, missing={compliance['missing_mandatory_fields']}"
@@ -2368,19 +2181,21 @@ async def finalize_chart(
         await session.commit()
 
         from epcr_app.domain_events import publish_chart_finalized
-        publish_chart_finalized(chart_id, x_tenant_id.strip(), getattr(chart, "call_number", chart_id))
+        publish_chart_finalized(chart_id, tenant_id, getattr(chart, "call_number", chart_id))
 
         try:
             from core_app.events import EventBusService
             # Publish epcr.chart.finalized event to core event bus
             # If core DB is unavailable, log the failure but do NOT block chart finalization
             logger.info(
-                f"Chart finalized, event publication: chart_id={chart_id} tenant_id={x_tenant_id}"
+                "Chart finalized, event publication: chart_id=%s tenant_id=%s",
+                chart_id,
+                tenant_id,
             )
         except Exception as _ev_err:
             logger.warning(f"Event publication skipped (non-blocking): {_ev_err}")
 
-        logger.info(f"Chart finalized: id={chart_id}, tenant_id={x_tenant_id}, user_id={x_user_id}")
+        logger.info("Chart finalized: id=%s tenant_id=%s user_id=%s", chart_id, tenant_id, user_id)
 
         return {
             "id": chart.id,
@@ -2402,8 +2217,6 @@ async def record_nemsis_field(
     nemsis_field: str,
     nemsis_value: str,
     source: str = "manual",
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
-    x_user_id: str = Header(..., description="Authenticated user identifier"),
     session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user)
 ):
@@ -2416,10 +2229,7 @@ async def record_nemsis_field(
         chart_id: Chart identifier.
         nemsis_field: NEMSIS field identifier (e.g. eRecord.01).
         nemsis_value: Value to record.
-        source: Value source: manual, ocr, device, or system.
-        x_tenant_id: Tenant identifier from header (required).
-        x_user_id: Authenticated user ID from header (required).
-        session: Database session.
+        source: Value source: manual, ocr, device, or system.        session: Database session.
         current_user: Authenticated user from JWT Bearer token.
 
     Returns:
@@ -2431,14 +2241,9 @@ async def record_nemsis_field(
         HTTPException 500: Database error.
     """
     try:
-        if not x_tenant_id or not x_tenant_id.strip():
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-Tenant-ID header is required")
-        if not x_user_id or not x_user_id.strip():
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-User-ID header is required")
-
         record = await ChartService.record_nemsis_field(
             session=session,
-            tenant_id=x_tenant_id.strip(),
+            tenant_id=_tenant_id(current_user),
             chart_id=chart_id,
             nemsis_field=nemsis_field,
             nemsis_value=nemsis_value,
@@ -2466,7 +2271,6 @@ async def record_nemsis_field(
 @router.get("/charts/{chart_id}/nemsis-fields")
 async def list_nemsis_fields(
     chart_id: str,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
     session: AsyncSession = Depends(get_session),
     current_user: CurrentUser = Depends(get_current_user)
 ):
@@ -2476,27 +2280,21 @@ async def list_nemsis_fields(
     providing full export history and audit trail visibility.
 
     Args:
-        chart_id: Chart identifier.
-        x_tenant_id: Tenant identifier from header (required).
-        session: Database session.
+        chart_id: Chart identifier.        session: Database session.
         current_user: Authenticated user from JWT Bearer token.
 
     Returns:
         dict: All NEMSIS field records for the chart plus compliance summary.
 
     Raises:
-        HTTPException 400: Missing X-Tenant-ID.
-        HTTPException 404: Chart not found.
+                HTTPException 404: Chart not found.
         HTTPException 500: Database error.
     """
     try:
-        if not x_tenant_id or not x_tenant_id.strip():
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="X-Tenant-ID header is required")
-
         from sqlalchemy import select as _select
         from epcr_app.models import NemsisMappingRecord as _NMR
 
-        chart = await ChartService.get_chart(session, x_tenant_id.strip(), chart_id)
+        chart = await ChartService.get_chart(session, _tenant_id(current_user), chart_id)
         if not chart:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Chart not found")
 
@@ -2504,7 +2302,7 @@ async def list_nemsis_fields(
             _select(_NMR).where(_NMR.chart_id == chart_id)
         )
         records = result.scalars().all()
-        compliance = await ChartService.check_nemsis_compliance(session, x_tenant_id.strip(), chart_id)
+        compliance = await ChartService.check_nemsis_compliance(session, _tenant_id(current_user), chart_id)
 
         logger.info(f"NEMSIS fields listed: chart_id={chart_id}, count={len(records)}")
         return {
@@ -2537,33 +2335,25 @@ async def list_nemsis_fields(
 @router.get("/charts/{chart_id}/export-history")
 async def get_export_history(
     chart_id: str,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
     session: AsyncSession = Depends(get_session),
+    current_user: CurrentUser = Depends(get_current_user),
 ):
     """List all NEMSIS export attempts for a chart ordered newest first.
 
     Returns truthful empty list if no exports have been attempted.
 
     Args:
-        chart_id: Chart identifier.
-        x_tenant_id: Tenant identifier from header.
-        session: Database session.
+        chart_id: Chart identifier.        session: Database session.
 
     Returns:
         dict: Export history records with status and timestamps.
 
     Raises:
-        HTTPException 400: Missing X-Tenant-ID header.
-        HTTPException 404: Chart not found.
+                HTTPException 404: Chart not found.
         HTTPException 500: Database error.
     """
     try:
-        if not x_tenant_id or not x_tenant_id.strip():
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="X-Tenant-ID header is required",
-            )
-        chart = await ChartService.get_chart(session, x_tenant_id.strip(), chart_id)
+        chart = await ChartService.get_chart(session, _tenant_id(current_user), chart_id)
         if not chart:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Chart not found")
         from sqlalchemy import select, desc
@@ -2602,31 +2392,23 @@ async def get_export_history(
 @router.get("/charts/{chart_id}/audit-log")
 async def get_audit_log(
     chart_id: str,
-    x_tenant_id: str = Header(..., description="Tenant identifier"),
     session: AsyncSession = Depends(get_session),
+    current_user: CurrentUser = Depends(get_current_user),
 ):
     """List all audit log entries for a chart ordered newest first.
 
     Args:
-        chart_id: Chart identifier.
-        x_tenant_id: Tenant identifier from header.
-        session: Database session.
+        chart_id: Chart identifier.        session: Database session.
 
     Returns:
         dict: Audit log entries for the chart.
 
     Raises:
-        HTTPException 400: Missing X-Tenant-ID header.
-        HTTPException 404: Chart not found.
+                HTTPException 404: Chart not found.
         HTTPException 500: Database error.
     """
     try:
-        if not x_tenant_id or not x_tenant_id.strip():
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="X-Tenant-ID header is required",
-            )
-        chart = await ChartService.get_chart(session, x_tenant_id.strip(), chart_id)
+        chart = await ChartService.get_chart(session, _tenant_id(current_user), chart_id)
         if not chart:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Chart not found")
         from sqlalchemy import select, desc

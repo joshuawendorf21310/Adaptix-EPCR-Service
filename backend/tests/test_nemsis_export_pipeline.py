@@ -7,12 +7,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
+from uuid import uuid4
 
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from epcr_app.api_export import router as export_router
 from epcr_app.db import get_session
+from epcr_app.dependencies import CurrentUser, get_current_user
 from epcr_app.nemsis_xml_builder import NemsisXmlBuilder
 from epcr_app.nemsis_xsd_validator import NemsisXSDValidator
 
@@ -110,11 +112,17 @@ def test_validator_resolves_state_dataset_xsd_from_official_zip(
 def test_export_artifact_endpoint_returns_raw_xml_and_checksum() -> None:
     """Artifact retrieval endpoint should stream raw XML bytes with checksum metadata."""
     app = FastAPI()
+    tenant_id = uuid4()
+    user_id = uuid4()
 
     async def override_session():
         yield object()
 
+    async def override_current_user():
+        return CurrentUser(user_id=user_id, tenant_id=tenant_id, email="ems@example.test")
+
     app.dependency_overrides[get_session] = override_session
+    app.dependency_overrides[get_current_user] = override_current_user
     app.include_router(export_router)
 
     with patch(
@@ -129,10 +137,7 @@ def test_export_artifact_endpoint_returns_raw_xml_and_checksum() -> None:
         ),
     ):
         with TestClient(app) as client:
-            response = client.get(
-                "/api/v1/epcr/nemsis/export/77/artifact",
-                headers={"X-Tenant-ID": "tenant-1"},
-            )
+            response = client.get("/api/v1/epcr/nemsis/export/77/artifact")
 
     assert response.status_code == 200
     assert response.content == b"<?xml version='1.0'?><StateDataSet/>"

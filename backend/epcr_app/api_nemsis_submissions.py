@@ -25,12 +25,13 @@ import uuid
 from datetime import UTC, datetime
 from typing import Any
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from epcr_app.db import get_session
+from epcr_app.dependencies import CurrentUser, get_current_user
 from epcr_app.models import Chart, NemsisMappingRecord
 from epcr_app.models_nemsis_core import NemsisSubmissionResult, NemsisSubmissionStatusHistory
 from epcr_app.nemsis_xml_builder import NemsisBuildError, NemsisXmlBuilder
@@ -73,24 +74,6 @@ class AcceptSubmissionRequest(BaseModel):
     """Request body for accepting a NEMSIS state submission."""
 
     note: str | None = None
-
-
-def _require_header(value: str | None, name: str) -> str:
-    if not value or not value.strip():
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"{name} header required",
-        )
-    return value.strip()
-
-
-def _require_user_id(value: str | None, name: str) -> str:
-    if not value or not value.strip():
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"{name} header required",
-        )
-    return value.strip()
 
 
 async def _write_history(
@@ -313,12 +296,11 @@ async def _build_validated_xml(
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_submission(
     body: CreateSubmissionRequest,
-    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
-    x_user_id: str | None = Header(default=None, alias="X-User-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict[str, Any]:
-    tenant_id = _require_header(x_tenant_id, "X-Tenant-ID")
-    user_id = _require_user_id(x_user_id, "X-User-ID")
+    tenant_id = str(current_user.tenant_id)
+    user_id = str(current_user.user_id)
 
     try:
         submission_number = (
@@ -419,11 +401,11 @@ async def create_submission(
 
 @router.get("/", status_code=status.HTTP_200_OK)
 async def list_submissions(
-    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
     chart_id: str | None = Query(default=None, description="Filter by chart identifier"),
     session: AsyncSession = Depends(get_session),
 ) -> list[dict[str, Any]]:
-    tenant_id = _require_header(x_tenant_id, "X-Tenant-ID")
+    tenant_id = str(current_user.tenant_id)
 
     try:
         stmt = (
@@ -453,10 +435,10 @@ async def list_submissions(
 @router.get("/{submission_id}", status_code=status.HTTP_200_OK)
 async def get_submission(
     submission_id: str,
-    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict[str, Any]:
-    tenant_id = _require_header(x_tenant_id, "X-Tenant-ID")
+    tenant_id = str(current_user.tenant_id)
 
     try:
         result = await session.execute(
@@ -491,12 +473,11 @@ async def get_submission(
 @router.post("/{submission_id}/retry", status_code=status.HTTP_200_OK)
 async def retry_submission(
     submission_id: str,
-    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
-    x_user_id: str | None = Header(default=None, alias="X-User-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict[str, Any]:
-    tenant_id = _require_header(x_tenant_id, "X-Tenant-ID")
-    user_id = _require_user_id(x_user_id, "X-User-ID")
+    tenant_id = str(current_user.tenant_id)
+    user_id = str(current_user.user_id)
 
     try:
         result = await session.execute(
@@ -603,12 +584,11 @@ async def retry_submission(
 async def acknowledge_submission(
     submission_id: str,
     body: AcknowledgeSubmissionRequest,
-    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
-    x_user_id: str | None = Header(default=None, alias="X-User-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict[str, Any]:
-    tenant_id = _require_header(x_tenant_id, "X-Tenant-ID")
-    user_id = _require_user_id(x_user_id, "X-User-ID")
+    tenant_id = str(current_user.tenant_id)
+    user_id = str(current_user.user_id)
 
     try:
         result = await session.execute(
@@ -680,12 +660,11 @@ async def acknowledge_submission(
 async def accept_submission(
     submission_id: str,
     body: AcceptSubmissionRequest,
-    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
-    x_user_id: str | None = Header(default=None, alias="X-User-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict[str, Any]:
-    tenant_id = _require_header(x_tenant_id, "X-Tenant-ID")
-    user_id = _require_user_id(x_user_id, "X-User-ID")
+    tenant_id = str(current_user.tenant_id)
+    user_id = str(current_user.user_id)
 
     try:
         result = await session.execute(
@@ -757,12 +736,11 @@ async def accept_submission(
 async def reject_submission(
     submission_id: str,
     body: RejectSubmissionRequest,
-    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
-    x_user_id: str | None = Header(default=None, alias="X-User-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict[str, Any]:
-    tenant_id = _require_header(x_tenant_id, "X-Tenant-ID")
-    user_id = _require_user_id(x_user_id, "X-User-ID")
+    tenant_id = str(current_user.tenant_id)
+    user_id = str(current_user.user_id)
 
     try:
         result = await session.execute(
@@ -835,10 +813,10 @@ async def reject_submission(
 @router.get("/{submission_id}/history", status_code=status.HTTP_200_OK)
 async def get_submission_history(
     submission_id: str,
-    x_tenant_id: str | None = Header(default=None, alias="X-Tenant-ID"),
+    current_user: CurrentUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> list[dict[str, Any]]:
-    tenant_id = _require_header(x_tenant_id, "X-Tenant-ID")
+    tenant_id = str(current_user.tenant_id)
 
     try:
         sub_result = await session.execute(

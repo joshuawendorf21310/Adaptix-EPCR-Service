@@ -1,711 +1,711 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ns0:EMSDataSet xmlns:ns0="http://www.nemsis.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.nemsis.org https://nemsis.org/media/nemsis_v3/3.5.1.251001CP2/XSDs/NEMSIS_NAT_XSDs/EMSDataSet_v3.xsd">
-  <ns0:Header>
-    <ns0:DemographicGroup>
-      <ns0:dAgency.01>120495</ns0:dAgency.01>
-      <ns0:dAgency.02>351-T0495</ns0:dAgency.02>
-      <ns0:dAgency.04>12</ns0:dAgency.04>
-    </ns0:DemographicGroup>
-    <ns0:PatientCareReport UUID="5246f68e-9b3a-49be-b027-fdeef68a331c">
-      <ns0:eRecord>
-        <ns0:eRecord.01>FQ-2025-EMS-1-Allergy_v351-20260416012804</ns0:eRecord.01>
-        <ns0:eRecord.SoftwareApplicationGroup>
-          <ns0:eRecord.02>FusionEMSQuantum</ns0:eRecord.02>
-          <ns0:eRecord.03>Adaptix ePCR</ns0:eRecord.03>
-          <ns0:eRecord.04>1.0.0</ns0:eRecord.04>
-        </ns0:eRecord.SoftwareApplicationGroup>
-      </ns0:eRecord>
-      <ns0:eResponse>
-        <ns0:eResponse.AgencyGroup>
-          <ns0:eResponse.01>351-T0495</ns0:eResponse.01>
-          <ns0:eResponse.02>Okaloosa County Emergency Medical Services</ns0:eResponse.02>
-        </ns0:eResponse.AgencyGroup>
-        <ns0:eResponse.03>351-241102-005</ns0:eResponse.03>
-        <ns0:eResponse.04>351-241102-005-1</ns0:eResponse.04>
-        <ns0:eResponse.ServiceGroup>
-          <ns0:eResponse.05>2205001</ns0:eResponse.05>
-        </ns0:eResponse.ServiceGroup>
-        <ns0:eResponse.07>2207015</ns0:eResponse.07>
-        <ns0:eResponse.08>2208009</ns0:eResponse.08>
-        <ns0:eResponse.09>2209003</ns0:eResponse.09>
-        <ns0:eResponse.10>2210017</ns0:eResponse.10>
-        <ns0:eResponse.11>2211005</ns0:eResponse.11>
-        <ns0:eResponse.12>2212005</ns0:eResponse.12>
-        <ns0:eResponse.13>1R653</ns0:eResponse.13>
-        <ns0:eResponse.14>Medic 60</ns0:eResponse.14>
-        <ns0:eResponse.16>Laurel Hill Station</ns0:eResponse.16>
-        <ns0:eResponse.17>30.968,-86.458</ns0:eResponse.17>
-        <ns0:eResponse.18>16REV51762618</ns0:eResponse.18>
-        <ns0:eResponse.19>248092.5</ns0:eResponse.19>
-        <ns0:eResponse.20>248111.8</ns0:eResponse.20>
-        <ns0:eResponse.21>248163.9</ns0:eResponse.21>
-        <ns0:eResponse.22>248207.1</ns0:eResponse.22>
-        <ns0:eResponse.23>2223001</ns0:eResponse.23>
-        <ns0:eResponse.24>2224023</ns0:eResponse.24>
-      </ns0:eResponse>
-      <ns0:eDispatch>
-        <ns0:eDispatch.01>2301003</ns0:eDispatch.01>
-        <ns0:eDispatch.02 xsi:nil="true" NV="7701003" />
-        <ns0:eDispatch.04>Covington County Dispatch Center</ns0:eDispatch.04>
-        <ns0:eDispatch.05>2305003</ns0:eDispatch.05>
-      </ns0:eDispatch>
-      <ns0:eCrew>
-        <ns0:eCrew.CrewGroup>
-          <ns0:eCrew.01>EMT470248 - Demetrius Muñoz</ns0:eCrew.01>
-          <ns0:eCrew.02>9925005</ns0:eCrew.02>
-          <ns0:eCrew.03>2403001</ns0:eCrew.03>
-        </ns0:eCrew.CrewGroup>
-        <ns0:eCrew.CrewGroup>
-          <ns0:eCrew.01>PMD668912 - Carol Bosco Raynor</ns0:eCrew.01>
-          <ns0:eCrew.02>9925007</ns0:eCrew.02>
-          <ns0:eCrew.03>2403011</ns0:eCrew.03>
-        </ns0:eCrew.CrewGroup>
-      </ns0:eCrew>
-      <ns0:eTimes>
-        <ns0:eTimes.01 xsi:nil="true" NV="7701001" />
-        <ns0:eTimes.03>2024-10-30T15:08:03-04:00</ns0:eTimes.03>
-        <ns0:eTimes.04>2024-10-30T15:10:00-04:00</ns0:eTimes.04>
-        <ns0:eTimes.05>2024-10-30T15:12:56-04:00</ns0:eTimes.05>
-        <ns0:eTimes.06>2024-10-30T15:28:17-04:00</ns0:eTimes.06>
-        <ns0:eTimes.07>2024-10-30T15:29:05-04:00</ns0:eTimes.07>
-        <ns0:eTimes.08 xsi:nil="true" NV="7701001" />
-        <ns0:eTimes.09>2024-10-30T15:49:21-04:00</ns0:eTimes.09>
-        <ns0:eTimes.11>2024-10-30T16:48:12-04:00</ns0:eTimes.11>
-        <ns0:eTimes.12>2024-10-30T16:51:26-04:00</ns0:eTimes.12>
-        <ns0:eTimes.13>2024-10-30T17:35:02-04:00</ns0:eTimes.13>
-        <ns0:eTimes.15>2024-10-30T17:46:04-04:00</ns0:eTimes.15>
-        <ns0:eTimes.16>2024-10-30T18:05:00-04:00</ns0:eTimes.16>
-      </ns0:eTimes>
-      <ns0:ePatient>
-        <ns0:ePatient.01>49ER1F</ns0:ePatient.01>
-        <ns0:ePatient.PatientNameGroup>
-          <ns0:ePatient.02>Prosacco</ns0:ePatient.02>
-          <ns0:ePatient.03>May</ns0:ePatient.03>
-        </ns0:ePatient.PatientNameGroup>
-        <ns0:ePatient.05>359 Beltvillage Avenue</ns0:ePatient.05>
-        <ns0:ePatient.06>1254716</ns0:ePatient.06>
-        <ns0:ePatient.07>46102</ns0:ePatient.07>
-        <ns0:ePatient.08>46</ns0:ePatient.08>
-        <ns0:ePatient.09>57764</ns0:ePatient.09>
-        <ns0:ePatient.12>480306431</ns0:ePatient.12>
-        <ns0:ePatient.13 xsi:nil="true" NV="7701003" />
-        <ns0:ePatient.14>2514001</ns0:ePatient.14>
-        <ns0:ePatient.AgeGroup>
-          <ns0:ePatient.15>24</ns0:ePatient.15>
-          <ns0:ePatient.16>2516009</ns0:ePatient.16>
-        </ns0:ePatient.AgeGroup>
-        <ns0:ePatient.17>2000-07-31</ns0:ePatient.17>
-        <ns0:ePatient.18 PhoneNumberType="9913003">+1 605 648 2057</ns0:ePatient.18>
-        <ns0:ePatient.19 EmailAddressType="9904001">maypea@oglala.example.net</ns0:ePatient.19>
-        <ns0:ePatient.20>46</ns0:ePatient.20>
-        <ns0:ePatient.21>041680416</ns0:ePatient.21>
-        <ns0:ePatient.25>9919001</ns0:ePatient.25>
-      </ns0:ePatient>
-      <ns0:ePayment>
-        <ns0:ePayment.01>2601021</ns0:ePayment.01>
-        <ns0:ePayment.08>2608003</ns0:ePayment.08>
-        <ns0:ePayment.40>2640001</ns0:ePayment.40>
-        <ns0:ePayment.50>2650003</ns0:ePayment.50>
-        <ns0:ePayment.SupplyItemGroup>
-          <ns0:ePayment.55>22G catheter</ns0:ePayment.55>
-          <ns0:ePayment.56>1</ns0:ePayment.56>
-        </ns0:ePayment.SupplyItemGroup>
-      </ns0:ePayment>
-      <ns0:eScene>
-        <ns0:eScene.01 xsi:nil="true" NV="7701001" />
-        <ns0:eScene.06>2707005</ns0:eScene.06>
-        <ns0:eScene.07>9923001</ns0:eScene.07>
-        <ns0:eScene.08 xsi:nil="true" NV="7701001" />
-        <ns0:eScene.09>Y92.838</ns0:eScene.09>
-        <ns0:eScene.11>31.039,-86.650</ns0:eScene.11>
-        <ns0:eScene.12>16REV3338733972</ns0:eScene.12>
-        <ns0:eScene.14>County Road 4</ns0:eScene.14>
-        <ns0:eScene.15>End of Road 321</ns0:eScene.15>
-        <ns0:eScene.17 xsi:nil="true" NV="7701003" />
-        <ns0:eScene.18>01</ns0:eScene.18>
-        <ns0:eScene.19>36483</ns0:eScene.19>
-        <ns0:eScene.20>2 miles from County Road 4 turn-off</ns0:eScene.20>
-        <ns0:eScene.21>01039</ns0:eScene.21>
-        <ns0:eScene.22>US</ns0:eScene.22>
-        <ns0:eScene.23>01039962900</ns0:eScene.23>
-      </ns0:eScene>
-      <ns0:eSituation>
-        <ns0:eSituation.01 PN="8801029">2024-10-30T14:45:00-04:00</ns0:eSituation.01>
-        <ns0:eSituation.02>9922005</ns0:eSituation.02>
-        <ns0:eSituation.PatientComplaintGroup>
-          <ns0:eSituation.03>2803001</ns0:eSituation.03>
-          <ns0:eSituation.04>Wasp sting</ns0:eSituation.04>
-          <ns0:eSituation.05>45</ns0:eSituation.05>
-          <ns0:eSituation.06>2806003</ns0:eSituation.06>
-        </ns0:eSituation.PatientComplaintGroup>
-        <ns0:eSituation.07>2807011</ns0:eSituation.07>
-        <ns0:eSituation.08>2808011</ns0:eSituation.08>
-        <ns0:eSituation.09>R06.00</ns0:eSituation.09>
-        <ns0:eSituation.10>M79.6</ns0:eSituation.10>
-        <ns0:eSituation.11>T78.40</ns0:eSituation.11>
-        <ns0:eSituation.12>J98.9</ns0:eSituation.12>
-        <ns0:eSituation.13>2813001</ns0:eSituation.13>
-        <ns0:eSituation.WorkRelatedGroup>
-          <ns0:eSituation.14>9922001</ns0:eSituation.14>
-        </ns0:eSituation.WorkRelatedGroup>
-        <ns0:eSituation.17>Y93.G</ns0:eSituation.17>
-        <ns0:eSituation.18>2024-10-30T14:30:00-04:00</ns0:eSituation.18>
-        <ns0:eSituation.20 xsi:nil="true" NV="7701001" />
-      </ns0:eSituation>
-      <ns0:eInjury>
-        <ns0:eInjury.01>T65.9</ns0:eInjury.01>
-        <ns0:eInjury.02>2902007</ns0:eInjury.02>
-        <ns0:eInjury.03>2903025</ns0:eInjury.03>
-        <ns0:eInjury.04 xsi:nil="true" PN="8801015" />
-      </ns0:eInjury>
-      <ns0:eArrest>
-        <ns0:eArrest.01>3001001</ns0:eArrest.01>
-        <ns0:eArrest.02 xsi:nil="true" NV="7701001" />
-        <ns0:eArrest.03 xsi:nil="true" NV="7701001" />
-        <ns0:eArrest.04 xsi:nil="true" NV="7701001" />
-        <ns0:eArrest.07 xsi:nil="true" NV="7701001" />
-        <ns0:eArrest.09 xsi:nil="true" NV="7701001" />
-        <ns0:eArrest.11 xsi:nil="true" NV="7701001" />
-        <ns0:eArrest.12 xsi:nil="true" NV="7701001" />
-        <ns0:eArrest.14 xsi:nil="true" NV="7701001" />
-        <ns0:eArrest.16 xsi:nil="true" NV="7701001" />
-        <ns0:eArrest.17 xsi:nil="true" NV="7701001" />
-        <ns0:eArrest.18 xsi:nil="true" NV="7701001" />
-        <ns0:eArrest.20 xsi:nil="true" NV="7701001" />
-        <ns0:eArrest.21 xsi:nil="true" NV="7701001" />
-        <ns0:eArrest.22 xsi:nil="true" NV="7701001" />
-      </ns0:eArrest>
-      <ns0:eHistory>
-        <ns0:eHistory.01>3101009</ns0:eHistory.01>
-        <ns0:eHistory.05>3105005</ns0:eHistory.05>
-        <ns0:eHistory.06>3264</ns0:eHistory.06>
-        <ns0:eHistory.07>16224551000119108</ns0:eHistory.07>
-        <ns0:eHistory.08 xsi:nil="true" PN="8801023" />
-        <ns0:eHistory.09>3109001</ns0:eHistory.09>
-        <ns0:eHistory.ImmunizationsGroup>
-          <ns0:eHistory.10>9910043</ns0:eHistory.10>
-          <ns0:eHistory.11>2022</ns0:eHistory.11>
-        </ns0:eHistory.ImmunizationsGroup>
-        <ns0:eHistory.CurrentMedsGroup>
-          <ns0:eHistory.12 xsi:nil="true" PN="8801015" />
-        </ns0:eHistory.CurrentMedsGroup>
-        <ns0:eHistory.16>9923001</ns0:eHistory.16>
-        <ns0:eHistory.17>3117001</ns0:eHistory.17>
-        <ns0:eHistory.18>3118001</ns0:eHistory.18>
-        <ns0:eHistory.19>2024-10-30T13:00:00-04:00</ns0:eHistory.19>
-      </ns0:eHistory>
-      <ns0:eNarrative>
-        <ns0:eNarrative.01>Patient was on a camping trip. While setting up camp, she felt a sharp pain on her forearm and realized she had been stung by a wasp. Patient's friend called 911. Upon arrival, we found her pale, with rapid swelling around her face and neck. She was struggling to breathe and showing signs of anaphylactic shock.</ns0:eNarrative.01>
-      </ns0:eNarrative>
-      <ns0:eVitals>
-        <ns0:eVitals.VitalGroup>
-          <ns0:eVitals.01>2024-10-30T15:30:08-04:00</ns0:eVitals.01>
-          <ns0:eVitals.02>9923001</ns0:eVitals.02>
-          <ns0:eVitals.CardiacRhythmGroup>
-            <ns0:eVitals.03 xsi:nil="true" NV="7701003" />
-            <ns0:eVitals.04 xsi:nil="true" NV="7701003" />
-            <ns0:eVitals.05 xsi:nil="true" NV="7701003" />
-          </ns0:eVitals.CardiacRhythmGroup>
-          <ns0:eVitals.BloodPressureGroup>
-            <ns0:eVitals.06>71</ns0:eVitals.06>
-            <ns0:eVitals.07>39</ns0:eVitals.07>
-            <ns0:eVitals.08>3308005</ns0:eVitals.08>
-          </ns0:eVitals.BloodPressureGroup>
-          <ns0:eVitals.HeartRateGroup>
-            <ns0:eVitals.10>143</ns0:eVitals.10>
-            <ns0:eVitals.11>3311007</ns0:eVitals.11>
-          </ns0:eVitals.HeartRateGroup>
-          <ns0:eVitals.12>85</ns0:eVitals.12>
-          <ns0:eVitals.14>28</ns0:eVitals.14>
-          <ns0:eVitals.15>3315003</ns0:eVitals.15>
-          <ns0:eVitals.16 ETCO2Type="3340001">29</ns0:eVitals.16>
-          <ns0:eVitals.18>102</ns0:eVitals.18>
-          <ns0:eVitals.GlasgowScoreGroup>
-            <ns0:eVitals.19>4</ns0:eVitals.19>
-            <ns0:eVitals.20>5</ns0:eVitals.20>
-            <ns0:eVitals.21>6</ns0:eVitals.21>
-            <ns0:eVitals.22>3322003</ns0:eVitals.22>
-            <ns0:eVitals.23>15</ns0:eVitals.23>
-          </ns0:eVitals.GlasgowScoreGroup>
-          <ns0:eVitals.TemperatureGroup>
-            <ns0:eVitals.24>34.2</ns0:eVitals.24>
-            <ns0:eVitals.25>3325013</ns0:eVitals.25>
-          </ns0:eVitals.TemperatureGroup>
-          <ns0:eVitals.26>3326001</ns0:eVitals.26>
-          <ns0:eVitals.PainScaleGroup>
-            <ns0:eVitals.27 xsi:nil="true" NV="7701003" />
-          </ns0:eVitals.PainScaleGroup>
-          <ns0:eVitals.StrokeScaleGroup>
-            <ns0:eVitals.29 xsi:nil="true" NV="7701003" />
-            <ns0:eVitals.30 xsi:nil="true" NV="7701001" />
-          </ns0:eVitals.StrokeScaleGroup>
-          <ns0:eVitals.31 xsi:nil="true" NV="7701001" />
-          <ns0:eVitals.33>10</ns0:eVitals.33>
-        </ns0:eVitals.VitalGroup>
-        <ns0:eVitals.VitalGroup>
-          <ns0:eVitals.01>2024-10-30T15:34:32-04:00</ns0:eVitals.01>
-          <ns0:eVitals.02>9923001</ns0:eVitals.02>
-          <ns0:eVitals.CardiacRhythmGroup>
-            <ns0:eVitals.03 xsi:nil="true" NV="7701003" />
-            <ns0:eVitals.04 xsi:nil="true" NV="7701003" />
-            <ns0:eVitals.05 xsi:nil="true" NV="7701003" />
-          </ns0:eVitals.CardiacRhythmGroup>
-          <ns0:eVitals.BloodPressureGroup>
-            <ns0:eVitals.06>87</ns0:eVitals.06>
-            <ns0:eVitals.07>46</ns0:eVitals.07>
-            <ns0:eVitals.08>3308005</ns0:eVitals.08>
-          </ns0:eVitals.BloodPressureGroup>
-          <ns0:eVitals.HeartRateGroup>
-            <ns0:eVitals.10>124</ns0:eVitals.10>
-            <ns0:eVitals.11>3311007</ns0:eVitals.11>
-          </ns0:eVitals.HeartRateGroup>
-          <ns0:eVitals.12>88</ns0:eVitals.12>
-          <ns0:eVitals.14>23</ns0:eVitals.14>
-          <ns0:eVitals.15>3315009</ns0:eVitals.15>
-          <ns0:eVitals.16 ETCO2Type="3340001">34</ns0:eVitals.16>
-          <ns0:eVitals.18 xsi:nil="true" NV="7701003" />
-          <ns0:eVitals.GlasgowScoreGroup>
-            <ns0:eVitals.19>4</ns0:eVitals.19>
-            <ns0:eVitals.20>5</ns0:eVitals.20>
-            <ns0:eVitals.21>6</ns0:eVitals.21>
-            <ns0:eVitals.22>3322003</ns0:eVitals.22>
-            <ns0:eVitals.23>15</ns0:eVitals.23>
-          </ns0:eVitals.GlasgowScoreGroup>
-          <ns0:eVitals.TemperatureGroup>
-            <ns0:eVitals.24>34.9</ns0:eVitals.24>
-            <ns0:eVitals.25>3325013</ns0:eVitals.25>
-          </ns0:eVitals.TemperatureGroup>
-          <ns0:eVitals.26>3326001</ns0:eVitals.26>
-          <ns0:eVitals.PainScaleGroup>
-            <ns0:eVitals.27 xsi:nil="true" NV="7701003" />
-          </ns0:eVitals.PainScaleGroup>
-          <ns0:eVitals.StrokeScaleGroup>
-            <ns0:eVitals.29 xsi:nil="true" NV="7701003" />
-            <ns0:eVitals.30 xsi:nil="true" NV="7701001" />
-          </ns0:eVitals.StrokeScaleGroup>
-          <ns0:eVitals.31 xsi:nil="true" NV="7701001" />
-          <ns0:eVitals.33>11</ns0:eVitals.33>
-        </ns0:eVitals.VitalGroup>
-        <ns0:eVitals.VitalGroup>
-          <ns0:eVitals.01>2024-10-30T15:40:10-04:00</ns0:eVitals.01>
-          <ns0:eVitals.02>9923001</ns0:eVitals.02>
-          <ns0:eVitals.CardiacRhythmGroup>
-            <ns0:eVitals.03 xsi:nil="true" NV="7701003" />
-            <ns0:eVitals.04 xsi:nil="true" NV="7701003" />
-            <ns0:eVitals.05 xsi:nil="true" NV="7701003" />
-          </ns0:eVitals.CardiacRhythmGroup>
-          <ns0:eVitals.BloodPressureGroup>
-            <ns0:eVitals.06>98</ns0:eVitals.06>
-            <ns0:eVitals.07>62</ns0:eVitals.07>
-            <ns0:eVitals.08>3308005</ns0:eVitals.08>
-          </ns0:eVitals.BloodPressureGroup>
-          <ns0:eVitals.HeartRateGroup>
-            <ns0:eVitals.10>102</ns0:eVitals.10>
-            <ns0:eVitals.11>3311007</ns0:eVitals.11>
-          </ns0:eVitals.HeartRateGroup>
-          <ns0:eVitals.12>91</ns0:eVitals.12>
-          <ns0:eVitals.14>18</ns0:eVitals.14>
-          <ns0:eVitals.15>3315007</ns0:eVitals.15>
-          <ns0:eVitals.16 ETCO2Type="3340001">36</ns0:eVitals.16>
-          <ns0:eVitals.18 xsi:nil="true" NV="7701003" />
-          <ns0:eVitals.GlasgowScoreGroup>
-            <ns0:eVitals.19>4</ns0:eVitals.19>
-            <ns0:eVitals.20>5</ns0:eVitals.20>
-            <ns0:eVitals.21>6</ns0:eVitals.21>
-            <ns0:eVitals.22>3322003</ns0:eVitals.22>
-            <ns0:eVitals.23>15</ns0:eVitals.23>
-          </ns0:eVitals.GlasgowScoreGroup>
-          <ns0:eVitals.TemperatureGroup>
-            <ns0:eVitals.24>36.2</ns0:eVitals.24>
-            <ns0:eVitals.25>3325013</ns0:eVitals.25>
-          </ns0:eVitals.TemperatureGroup>
-          <ns0:eVitals.26>3326001</ns0:eVitals.26>
-          <ns0:eVitals.PainScaleGroup>
-            <ns0:eVitals.27 xsi:nil="true" NV="7701003" />
-          </ns0:eVitals.PainScaleGroup>
-          <ns0:eVitals.StrokeScaleGroup>
-            <ns0:eVitals.29 xsi:nil="true" NV="7701003" />
-            <ns0:eVitals.30 xsi:nil="true" NV="7701001" />
-          </ns0:eVitals.StrokeScaleGroup>
-          <ns0:eVitals.31 xsi:nil="true" NV="7701001" />
-          <ns0:eVitals.33>12</ns0:eVitals.33>
-        </ns0:eVitals.VitalGroup>
-        <ns0:eVitals.VitalGroup>
-          <ns0:eVitals.01>2024-10-30T16:05:26-04:00</ns0:eVitals.01>
-          <ns0:eVitals.02>9923001</ns0:eVitals.02>
-          <ns0:eVitals.CardiacRhythmGroup>
-            <ns0:eVitals.03 xsi:nil="true" NV="7701003" />
-            <ns0:eVitals.04 xsi:nil="true" NV="7701003" />
-            <ns0:eVitals.05 xsi:nil="true" NV="7701003" />
-          </ns0:eVitals.CardiacRhythmGroup>
-          <ns0:eVitals.BloodPressureGroup>
-            <ns0:eVitals.06>108</ns0:eVitals.06>
-            <ns0:eVitals.07>72</ns0:eVitals.07>
-            <ns0:eVitals.08>3308005</ns0:eVitals.08>
-          </ns0:eVitals.BloodPressureGroup>
-          <ns0:eVitals.HeartRateGroup>
-            <ns0:eVitals.10>91</ns0:eVitals.10>
-            <ns0:eVitals.11>3311007</ns0:eVitals.11>
-          </ns0:eVitals.HeartRateGroup>
-          <ns0:eVitals.12>99</ns0:eVitals.12>
-          <ns0:eVitals.14>16</ns0:eVitals.14>
-          <ns0:eVitals.15>3315007</ns0:eVitals.15>
-          <ns0:eVitals.16 ETCO2Type="3340001">40</ns0:eVitals.16>
-          <ns0:eVitals.18 xsi:nil="true" NV="7701003" />
-          <ns0:eVitals.GlasgowScoreGroup>
-            <ns0:eVitals.19>4</ns0:eVitals.19>
-            <ns0:eVitals.20>5</ns0:eVitals.20>
-            <ns0:eVitals.21>6</ns0:eVitals.21>
-            <ns0:eVitals.22>3322003</ns0:eVitals.22>
-            <ns0:eVitals.23>15</ns0:eVitals.23>
-          </ns0:eVitals.GlasgowScoreGroup>
-          <ns0:eVitals.TemperatureGroup>
-            <ns0:eVitals.24>36.8</ns0:eVitals.24>
-            <ns0:eVitals.25>3325013</ns0:eVitals.25>
-          </ns0:eVitals.TemperatureGroup>
-          <ns0:eVitals.26>3326001</ns0:eVitals.26>
-          <ns0:eVitals.PainScaleGroup>
-            <ns0:eVitals.27 xsi:nil="true" NV="7701003" />
-          </ns0:eVitals.PainScaleGroup>
-          <ns0:eVitals.StrokeScaleGroup>
-            <ns0:eVitals.29 xsi:nil="true" NV="7701003" />
-            <ns0:eVitals.30 xsi:nil="true" NV="7701001" />
-          </ns0:eVitals.StrokeScaleGroup>
-          <ns0:eVitals.31 xsi:nil="true" NV="7701001" />
-          <ns0:eVitals.33>12</ns0:eVitals.33>
-        </ns0:eVitals.VitalGroup>
-        <ns0:eVitals.VitalGroup>
-          <ns0:eVitals.01>2024-10-30T16:26:11-04:00</ns0:eVitals.01>
-          <ns0:eVitals.02>9923001</ns0:eVitals.02>
-          <ns0:eVitals.CardiacRhythmGroup>
-            <ns0:eVitals.03 xsi:nil="true" NV="7701003" />
-            <ns0:eVitals.04 xsi:nil="true" NV="7701003" />
-            <ns0:eVitals.05 xsi:nil="true" NV="7701003" />
-          </ns0:eVitals.CardiacRhythmGroup>
-          <ns0:eVitals.BloodPressureGroup>
-            <ns0:eVitals.06>111</ns0:eVitals.06>
-            <ns0:eVitals.07>74</ns0:eVitals.07>
-            <ns0:eVitals.08>3308005</ns0:eVitals.08>
-          </ns0:eVitals.BloodPressureGroup>
-          <ns0:eVitals.HeartRateGroup>
-            <ns0:eVitals.10>85</ns0:eVitals.10>
-            <ns0:eVitals.11>3311007</ns0:eVitals.11>
-          </ns0:eVitals.HeartRateGroup>
-          <ns0:eVitals.12>99</ns0:eVitals.12>
-          <ns0:eVitals.14>15</ns0:eVitals.14>
-          <ns0:eVitals.15>3315007</ns0:eVitals.15>
-          <ns0:eVitals.16 ETCO2Type="3340001">39</ns0:eVitals.16>
-          <ns0:eVitals.18 xsi:nil="true" NV="7701003" />
-          <ns0:eVitals.GlasgowScoreGroup>
-            <ns0:eVitals.19>4</ns0:eVitals.19>
-            <ns0:eVitals.20>5</ns0:eVitals.20>
-            <ns0:eVitals.21>6</ns0:eVitals.21>
-            <ns0:eVitals.22>3322003</ns0:eVitals.22>
-            <ns0:eVitals.23>15</ns0:eVitals.23>
-          </ns0:eVitals.GlasgowScoreGroup>
-          <ns0:eVitals.TemperatureGroup>
-            <ns0:eVitals.24>36.8</ns0:eVitals.24>
-            <ns0:eVitals.25>3325013</ns0:eVitals.25>
-          </ns0:eVitals.TemperatureGroup>
-          <ns0:eVitals.26>3326001</ns0:eVitals.26>
-          <ns0:eVitals.PainScaleGroup>
-            <ns0:eVitals.27 xsi:nil="true" NV="7701003" />
-          </ns0:eVitals.PainScaleGroup>
-          <ns0:eVitals.StrokeScaleGroup>
-            <ns0:eVitals.29 xsi:nil="true" NV="7701003" />
-            <ns0:eVitals.30 xsi:nil="true" NV="7701001" />
-          </ns0:eVitals.StrokeScaleGroup>
-          <ns0:eVitals.31 xsi:nil="true" NV="7701001" />
-          <ns0:eVitals.33>12</ns0:eVitals.33>
-        </ns0:eVitals.VitalGroup>
-        <ns0:eVitals.VitalGroup>
-          <ns0:eVitals.01>2024-10-30T16:45:53-04:00</ns0:eVitals.01>
-          <ns0:eVitals.02>9923001</ns0:eVitals.02>
-          <ns0:eVitals.CardiacRhythmGroup>
-            <ns0:eVitals.03 xsi:nil="true" NV="7701003" />
-            <ns0:eVitals.04 xsi:nil="true" NV="7701003" />
-            <ns0:eVitals.05 xsi:nil="true" NV="7701003" />
-          </ns0:eVitals.CardiacRhythmGroup>
-          <ns0:eVitals.BloodPressureGroup>
-            <ns0:eVitals.06>115</ns0:eVitals.06>
-            <ns0:eVitals.07>75</ns0:eVitals.07>
-            <ns0:eVitals.08>3308005</ns0:eVitals.08>
-          </ns0:eVitals.BloodPressureGroup>
-          <ns0:eVitals.HeartRateGroup>
-            <ns0:eVitals.10>76</ns0:eVitals.10>
-            <ns0:eVitals.11>3311007</ns0:eVitals.11>
-          </ns0:eVitals.HeartRateGroup>
-          <ns0:eVitals.12>99</ns0:eVitals.12>
-          <ns0:eVitals.14>15</ns0:eVitals.14>
-          <ns0:eVitals.15>3315007</ns0:eVitals.15>
-          <ns0:eVitals.16 ETCO2Type="3340001">38</ns0:eVitals.16>
-          <ns0:eVitals.18 xsi:nil="true" NV="7701003" />
-          <ns0:eVitals.GlasgowScoreGroup>
-            <ns0:eVitals.19>4</ns0:eVitals.19>
-            <ns0:eVitals.20>5</ns0:eVitals.20>
-            <ns0:eVitals.21>6</ns0:eVitals.21>
-            <ns0:eVitals.22>3322003</ns0:eVitals.22>
-            <ns0:eVitals.23>15</ns0:eVitals.23>
-          </ns0:eVitals.GlasgowScoreGroup>
-          <ns0:eVitals.TemperatureGroup>
-            <ns0:eVitals.24>36.9</ns0:eVitals.24>
-            <ns0:eVitals.25>3325013</ns0:eVitals.25>
-          </ns0:eVitals.TemperatureGroup>
-          <ns0:eVitals.26>3326001</ns0:eVitals.26>
-          <ns0:eVitals.PainScaleGroup>
-            <ns0:eVitals.27 xsi:nil="true" NV="7701003" />
-          </ns0:eVitals.PainScaleGroup>
-          <ns0:eVitals.StrokeScaleGroup>
-            <ns0:eVitals.29 xsi:nil="true" NV="7701003" />
-            <ns0:eVitals.30 xsi:nil="true" NV="7701001" />
-          </ns0:eVitals.StrokeScaleGroup>
-          <ns0:eVitals.31 xsi:nil="true" NV="7701001" />
-          <ns0:eVitals.33>12</ns0:eVitals.33>
-        </ns0:eVitals.VitalGroup>
-      </ns0:eVitals>
-      <ns0:eExam>
-        <ns0:eExam.01>67.1</ns0:eExam.01>
-        <ns0:eExam.AssessmentGroup>
-          <ns0:eExam.03>2024-10-30T15:31:37-04:00</ns0:eExam.03>
-          <ns0:eExam.04>3504005</ns0:eExam.04>
-          <ns0:eExam.05>3505033</ns0:eExam.05>
-          <ns0:eExam.06>3506053</ns0:eExam.06>
-          <ns0:eExam.07>3507053</ns0:eExam.07>
-          <ns0:eExam.AbdomenGroup>
-            <ns0:eExam.10>3510001</ns0:eExam.10>
-            <ns0:eExam.11>3511037</ns0:eExam.11>
-          </ns0:eExam.AbdomenGroup>
-          <ns0:eExam.12>3512037</ns0:eExam.12>
-          <ns0:eExam.SpineGroup>
-            <ns0:eExam.14>3514029</ns0:eExam.14>
-          </ns0:eExam.SpineGroup>
-          <ns0:eExam.ExtremityGroup>
-            <ns0:eExam.15>3515097</ns0:eExam.15>
-            <ns0:eExam.16>3516079</ns0:eExam.16>
-          </ns0:eExam.ExtremityGroup>
-          <ns0:eExam.ExtremityGroup>
-            <ns0:eExam.15>3515099</ns0:eExam.15>
-            <ns0:eExam.16>3516079</ns0:eExam.16>
-          </ns0:eExam.ExtremityGroup>
-          <ns0:eExam.EyeGroup>
-            <ns0:eExam.17>3517001</ns0:eExam.17>
-            <ns0:eExam.18>3518047</ns0:eExam.18>
-          </ns0:eExam.EyeGroup>
-          <ns0:eExam.LungGroup>
-            <ns0:eExam.22>3522005</ns0:eExam.22>
-            <ns0:eExam.23>3523011</ns0:eExam.23>
-          </ns0:eExam.LungGroup>
-          <ns0:eExam.ChestGroup>
-            <ns0:eExam.24>3524009</ns0:eExam.24>
-            <ns0:eExam.25>3525045</ns0:eExam.25>
-          </ns0:eExam.ChestGroup>
-        </ns0:eExam.AssessmentGroup>
-        <ns0:eExam.AssessmentGroup>
-          <ns0:eExam.03>2024-10-30T16:05:17-04:00</ns0:eExam.03>
-          <ns0:eExam.04>3504011</ns0:eExam.04>
-          <ns0:eExam.05>3505033</ns0:eExam.05>
-          <ns0:eExam.06>3506053</ns0:eExam.06>
-          <ns0:eExam.07>3507029</ns0:eExam.07>
-          <ns0:eExam.AbdomenGroup>
-            <ns0:eExam.10>3510001</ns0:eExam.10>
-            <ns0:eExam.11>3511037</ns0:eExam.11>
-          </ns0:eExam.AbdomenGroup>
-          <ns0:eExam.12>3512037</ns0:eExam.12>
-          <ns0:eExam.SpineGroup>
-            <ns0:eExam.13>3513001</ns0:eExam.13>
-            <ns0:eExam.14>3514027</ns0:eExam.14>
-          </ns0:eExam.SpineGroup>
-          <ns0:eExam.ExtremityGroup>
-            <ns0:eExam.16>3516049</ns0:eExam.16>
-          </ns0:eExam.ExtremityGroup>
-          <ns0:eExam.EyeGroup>
-            <ns0:eExam.17>3517001</ns0:eExam.17>
-            <ns0:eExam.18>3518047</ns0:eExam.18>
-          </ns0:eExam.EyeGroup>
-          <ns0:eExam.LungGroup>
-            <ns0:eExam.22>3522005</ns0:eExam.22>
-            <ns0:eExam.23>3523011</ns0:eExam.23>
-          </ns0:eExam.LungGroup>
-          <ns0:eExam.ChestGroup>
-            <ns0:eExam.24>3524009</ns0:eExam.24>
-            <ns0:eExam.25>3525029</ns0:eExam.25>
-          </ns0:eExam.ChestGroup>
-        </ns0:eExam.AssessmentGroup>
-      </ns0:eExam>
-      <ns0:eProtocols>
-        <ns0:eProtocols.ProtocolGroup>
-          <ns0:eProtocols.01>9914111</ns0:eProtocols.01>
-          <ns0:eProtocols.02>3602003</ns0:eProtocols.02>
-        </ns0:eProtocols.ProtocolGroup>
-      </ns0:eProtocols>
-      <ns0:eMedications>
-        <ns0:eMedications.MedicationGroup>
-          <ns0:eMedications.01>2024-10-30T15:32:45-04:00</ns0:eMedications.01>
-          <ns0:eMedications.02>9923001</ns0:eMedications.02>
-          <ns0:eMedications.03>328316</ns0:eMedications.03>
-          <ns0:eMedications.04>9927063</ns0:eMedications.04>
-          <ns0:eMedications.DosageGroup>
-            <ns0:eMedications.05>0.3</ns0:eMedications.05>
-            <ns0:eMedications.06>3706021</ns0:eMedications.06>
-          </ns0:eMedications.DosageGroup>
-          <ns0:eMedications.07>9916001</ns0:eMedications.07>
-          <ns0:eMedications.08>3708031</ns0:eMedications.08>
-          <ns0:eMedications.09>EMT470248 - Demetrius Muñoz</ns0:eMedications.09>
-          <ns0:eMedications.10>9905005</ns0:eMedications.10>
-          <ns0:eMedications.11>9918005</ns0:eMedications.11>
-        </ns0:eMedications.MedicationGroup>
-        <ns0:eMedications.MedicationGroup>
-          <ns0:eMedications.01>2024-10-30T15:36:14-04:00</ns0:eMedications.01>
-          <ns0:eMedications.02>9923001</ns0:eMedications.02>
-          <ns0:eMedications.03>3498</ns0:eMedications.03>
-          <ns0:eMedications.04>9927023</ns0:eMedications.04>
-          <ns0:eMedications.DosageGroup>
-            <ns0:eMedications.05>50</ns0:eMedications.05>
-            <ns0:eMedications.06>3706021</ns0:eMedications.06>
-          </ns0:eMedications.DosageGroup>
-          <ns0:eMedications.07>9916001</ns0:eMedications.07>
-          <ns0:eMedications.08>3708031</ns0:eMedications.08>
-          <ns0:eMedications.09>PMD668912 - Carol Bosco Raynor</ns0:eMedications.09>
-          <ns0:eMedications.10>9905007</ns0:eMedications.10>
-          <ns0:eMedications.11>9918005</ns0:eMedications.11>
-        </ns0:eMedications.MedicationGroup>
-        <ns0:eMedications.MedicationGroup>
-          <ns0:eMedications.01>2024-10-30T15:39:26-04:00</ns0:eMedications.01>
-          <ns0:eMedications.02>9923001</ns0:eMedications.02>
-          <ns0:eMedications.03>6902</ns0:eMedications.03>
-          <ns0:eMedications.04>9927023</ns0:eMedications.04>
-          <ns0:eMedications.DosageGroup>
-            <ns0:eMedications.05>125</ns0:eMedications.05>
-            <ns0:eMedications.06>3706021</ns0:eMedications.06>
-          </ns0:eMedications.DosageGroup>
-          <ns0:eMedications.07>9916001</ns0:eMedications.07>
-          <ns0:eMedications.08>3708031</ns0:eMedications.08>
-          <ns0:eMedications.09>PMD668912 - Carol Bosco Raynor</ns0:eMedications.09>
-          <ns0:eMedications.10>9905007</ns0:eMedications.10>
-          <ns0:eMedications.11>9918005</ns0:eMedications.11>
-        </ns0:eMedications.MedicationGroup>
-        <ns0:eMedications.MedicationGroup>
-          <ns0:eMedications.01>2024-10-30T15:42:52-04:00</ns0:eMedications.01>
-          <ns0:eMedications.02>9923001</ns0:eMedications.02>
-          <ns0:eMedications.03>7806</ns0:eMedications.03>
-          <ns0:eMedications.04>9927031</ns0:eMedications.04>
-          <ns0:eMedications.DosageGroup>
-            <ns0:eMedications.05>15</ns0:eMedications.05>
-            <ns0:eMedications.06>3706035</ns0:eMedications.06>
-          </ns0:eMedications.DosageGroup>
-          <ns0:eMedications.07>9916001</ns0:eMedications.07>
-          <ns0:eMedications.08>3708031</ns0:eMedications.08>
-          <ns0:eMedications.09>EMT470248 - Demetrius Muñoz</ns0:eMedications.09>
-          <ns0:eMedications.10>9905005</ns0:eMedications.10>
-          <ns0:eMedications.11>9918005</ns0:eMedications.11>
-        </ns0:eMedications.MedicationGroup>
-      </ns0:eMedications>
-      <ns0:eProcedures>
-        <ns0:eProcedures.ProcedureGroup>
-          <ns0:eProcedures.01>2024-10-30T15:33:30-04:00</ns0:eProcedures.01>
-          <ns0:eProcedures.02>9923001</ns0:eProcedures.02>
-          <ns0:eProcedures.03>392230005</ns0:eProcedures.03>
-          <ns0:eProcedures.05>1</ns0:eProcedures.05>
-          <ns0:eProcedures.06>9923003</ns0:eProcedures.06>
-          <ns0:eProcedures.07>3907033</ns0:eProcedures.07>
-          <ns0:eProcedures.08>9916003</ns0:eProcedures.08>
-          <ns0:eProcedures.09>PMD668912 - Carol Bosco Raynor</ns0:eProcedures.09>
-          <ns0:eProcedures.10>9905007</ns0:eProcedures.10>
-          <ns0:eProcedures.11>9918005</ns0:eProcedures.11>
-          <ns0:eProcedures.13>3913017</ns0:eProcedures.13>
-        </ns0:eProcedures.ProcedureGroup>
-        <ns0:eProcedures.ProcedureGroup CorrelationID="c1">
-          <ns0:eProcedures.01>2024-10-30T15:44:19-04:00</ns0:eProcedures.01>
-          <ns0:eProcedures.02>9923001</ns0:eProcedures.02>
-          <ns0:eProcedures.03>182692007</ns0:eProcedures.03>
-          <ns0:eProcedures.05>2</ns0:eProcedures.05>
-          <ns0:eProcedures.06>9923003</ns0:eProcedures.06>
-          <ns0:eProcedures.07>3907033</ns0:eProcedures.07>
-          <ns0:eProcedures.08>9916005</ns0:eProcedures.08>
-          <ns0:eProcedures.09>PMD668912 - Carol Bosco Raynor</ns0:eProcedures.09>
-          <ns0:eProcedures.10>9905007</ns0:eProcedures.10>
-          <ns0:eProcedures.11>9918001</ns0:eProcedures.11>
-          <ns0:eProcedures.12>Allan Ziemann</ns0:eProcedures.12>
-          <ns0:eProcedures.14 xsi:nil="true" NV="7701001" />
-        </ns0:eProcedures.ProcedureGroup>
-      </ns0:eProcedures>
-      <ns0:eAirway>
-        <ns0:eAirway.AirwayGroup>
-          <ns0:eAirway.01>4001001</ns0:eAirway.01>
-          <ns0:eAirway.ConfirmationGroup ProcedureGroupCorrelationID="c1">
-            <ns0:eAirway.02>2024-10-30T15:44:30-04:00</ns0:eAirway.02>
-            <ns0:eAirway.03>4003005</ns0:eAirway.03>
-            <ns0:eAirway.04>4004007</ns0:eAirway.04>
-            <ns0:eAirway.05>28</ns0:eAirway.05>
-            <ns0:eAirway.06>4006005</ns0:eAirway.06>
-            <ns0:eAirway.07>PMD668912 - Carol Bosco Raynor</ns0:eAirway.07>
-          </ns0:eAirway.ConfirmationGroup>
-          <ns0:eAirway.08 xsi:nil="true" PN="8801015" />
-          <ns0:eAirway.09>4009001</ns0:eAirway.09>
-        </ns0:eAirway.AirwayGroup>
-      </ns0:eAirway>
-      <ns0:eDisposition>
-        <ns0:eDisposition.DestinationGroup>
-          <ns0:eDisposition.01>HCA Florida Fort Walton-Destin Hospital</ns0:eDisposition.01>
-          <ns0:eDisposition.02>231002234363</ns0:eDisposition.02>
-          <ns0:eDisposition.03>1000 Marwalt Drive</ns0:eDisposition.03>
-          <ns0:eDisposition.04>2403650</ns0:eDisposition.04>
-          <ns0:eDisposition.05>12</ns0:eDisposition.05>
-          <ns0:eDisposition.06>12091</ns0:eDisposition.06>
-          <ns0:eDisposition.07>32547</ns0:eDisposition.07>
-          <ns0:eDisposition.08>US</ns0:eDisposition.08>
-          <ns0:eDisposition.09>30.454,-86.633</ns0:eDisposition.09>
-          <ns0:eDisposition.10>16REU35236915</ns0:eDisposition.10>
-        </ns0:eDisposition.DestinationGroup>
-        <ns0:eDisposition.11>1</ns0:eDisposition.11>
-        <ns0:eDisposition.IncidentDispositionGroup>
-          <ns0:eDisposition.27>4227001</ns0:eDisposition.27>
-          <ns0:eDisposition.28>4228001</ns0:eDisposition.28>
-          <ns0:eDisposition.29>4229001</ns0:eDisposition.29>
-          <ns0:eDisposition.30>4230001</ns0:eDisposition.30>
-        </ns0:eDisposition.IncidentDispositionGroup>
-        <ns0:eDisposition.13>9909001</ns0:eDisposition.13>
-        <ns0:eDisposition.14>4214013</ns0:eDisposition.14>
-        <ns0:eDisposition.15>9909001</ns0:eDisposition.15>
-        <ns0:eDisposition.16>4216005</ns0:eDisposition.16>
-        <ns0:eDisposition.17>4217001</ns0:eDisposition.17>
-        <ns0:eDisposition.18>4218007</ns0:eDisposition.18>
-        <ns0:eDisposition.19>4219003</ns0:eDisposition.19>
-        <ns0:eDisposition.20>4220019</ns0:eDisposition.20>
-        <ns0:eDisposition.21>4221003</ns0:eDisposition.21>
-        <ns0:eDisposition.22 xsi:nil="true" NV="7701001" />
-        <ns0:eDisposition.23 xsi:nil="true" NV="7701003" />
-        <ns0:eDisposition.HospitalTeamActivationGroup>
-          <ns0:eDisposition.24>4224001</ns0:eDisposition.24>
-          <ns0:eDisposition.25 xsi:nil="true" NV="7701001" />
-        </ns0:eDisposition.HospitalTeamActivationGroup>
-        <ns0:eDisposition.32>4232005</ns0:eDisposition.32>
-      </ns0:eDisposition>
-      <ns0:eOutcome>
-        <ns0:eOutcome.01>01</ns0:eOutcome.01>
-        <ns0:eOutcome.02 xsi:nil="true" NV="7701001" />
-        <ns0:eOutcome.ExternalDataGroup>
-          <ns0:eOutcome.03>4303005</ns0:eOutcome.03>
-          <ns0:eOutcome.04>FWD36056</ns0:eOutcome.04>
-        </ns0:eOutcome.ExternalDataGroup>
-        <ns0:eOutcome.EmergencyDepartmentProceduresGroup>
-          <ns0:eOutcome.09 xsi:nil="true" NV="7701003" />
-          <ns0:eOutcome.19 xsi:nil="true" NV="7701003" />
-        </ns0:eOutcome.EmergencyDepartmentProceduresGroup>
-        <ns0:eOutcome.10>T63.461A</ns0:eOutcome.10>
-        <ns0:eOutcome.11 xsi:nil="true" NV="7701001" />
-        <ns0:eOutcome.HospitalProceduresGroup>
-          <ns0:eOutcome.12 xsi:nil="true" NV="7701001" />
-          <ns0:eOutcome.20 xsi:nil="true" NV="7701001" />
-        </ns0:eOutcome.HospitalProceduresGroup>
-        <ns0:eOutcome.13 xsi:nil="true" NV="7701001" />
-        <ns0:eOutcome.16>2024-11-07T19:08:17-05:00</ns0:eOutcome.16>
-        <ns0:eOutcome.18>2024-11-07T16:54:05-05:00</ns0:eOutcome.18>
-      </ns0:eOutcome>
-      <ns0:eOther>
-        <ns0:eOther.01>9923001</ns0:eOther.01>
-        <ns0:eOther.08>PMD668912 - Carol Bosco Raynor</ns0:eOther.08>
-      </ns0:eOther>
-    </ns0:PatientCareReport>
-  </ns0:Header>
-</ns0:EMSDataSet>
+<EMSDataSet xmlns="http://www.nemsis.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.nemsis.org https://nemsis.org/media/nemsis_v3/3.5.1.251001CP2/XSDs/NEMSIS_NAT_XSDs/EMSDataSet_v3.xsd">
+  <Header>
+    <DemographicGroup>
+      <dAgency.01>120495</dAgency.01>
+      <dAgency.02>351-T0495</dAgency.02>
+      <dAgency.04>12</dAgency.04>
+    </DemographicGroup>
+    <PatientCareReport UUID="5246f68e-9b3a-49be-b027-fdeef68a331c">
+      <eRecord>
+        <eRecord.01>FQ-2025-EMS-1-Allergy_v351-20260416012804</eRecord.01>
+        <eRecord.SoftwareApplicationGroup>
+          <eRecord.02>FusionEMSQuantum</eRecord.02>
+          <eRecord.03>Adaptix ePCR</eRecord.03>
+          <eRecord.04>1.0.0</eRecord.04>
+        </eRecord.SoftwareApplicationGroup>
+      </eRecord>
+      <eResponse>
+        <eResponse.AgencyGroup>
+          <eResponse.01>351-T0495</eResponse.01>
+          <eResponse.02>Okaloosa County Emergency Medical Services</eResponse.02>
+        </eResponse.AgencyGroup>
+        <eResponse.03>351-241102-005</eResponse.03>
+        <eResponse.04>351-241102-005-1</eResponse.04>
+        <eResponse.ServiceGroup>
+          <eResponse.05>2205001</eResponse.05>
+        </eResponse.ServiceGroup>
+        <eResponse.07>2207015</eResponse.07>
+        <eResponse.08>2208009</eResponse.08>
+        <eResponse.09>2209003</eResponse.09>
+        <eResponse.10>2210017</eResponse.10>
+        <eResponse.11>2211005</eResponse.11>
+        <eResponse.12>2212005</eResponse.12>
+        <eResponse.13>1R653</eResponse.13>
+        <eResponse.14>Medic 60</eResponse.14>
+        <eResponse.16>Laurel Hill Station</eResponse.16>
+        <eResponse.17>30.968,-86.458</eResponse.17>
+        <eResponse.18>16REV51762618</eResponse.18>
+        <eResponse.19>248092.5</eResponse.19>
+        <eResponse.20>248111.8</eResponse.20>
+        <eResponse.21>248163.9</eResponse.21>
+        <eResponse.22>248207.1</eResponse.22>
+        <eResponse.23>2223001</eResponse.23>
+        <eResponse.24>2224023</eResponse.24>
+      </eResponse>
+      <eDispatch>
+        <eDispatch.01>2301003</eDispatch.01>
+        <eDispatch.02 xsi:nil="true" NV="7701003" />
+        <eDispatch.04>Covington County Dispatch Center</eDispatch.04>
+        <eDispatch.05>2305003</eDispatch.05>
+      </eDispatch>
+      <eCrew>
+        <eCrew.CrewGroup>
+          <eCrew.01>EMT470248 - Demetrius Muñoz</eCrew.01>
+          <eCrew.02>9925005</eCrew.02>
+          <eCrew.03>2403001</eCrew.03>
+        </eCrew.CrewGroup>
+        <eCrew.CrewGroup>
+          <eCrew.01>PMD668912 - Carol Bosco Raynor</eCrew.01>
+          <eCrew.02>9925007</eCrew.02>
+          <eCrew.03>2403011</eCrew.03>
+        </eCrew.CrewGroup>
+      </eCrew>
+      <eTimes>
+        <eTimes.01 xsi:nil="true" NV="7701001" />
+        <eTimes.03>2024-10-30T15:08:03-04:00</eTimes.03>
+        <eTimes.04>2024-10-30T15:10:00-04:00</eTimes.04>
+        <eTimes.05>2024-10-30T15:12:56-04:00</eTimes.05>
+        <eTimes.06>2024-10-30T15:28:17-04:00</eTimes.06>
+        <eTimes.07>2024-10-30T15:29:05-04:00</eTimes.07>
+        <eTimes.08 xsi:nil="true" NV="7701001" />
+        <eTimes.09>2024-10-30T15:49:21-04:00</eTimes.09>
+        <eTimes.11>2024-10-30T16:48:12-04:00</eTimes.11>
+        <eTimes.12>2024-10-30T16:51:26-04:00</eTimes.12>
+        <eTimes.13>2024-10-30T17:35:02-04:00</eTimes.13>
+        <eTimes.15>2024-10-30T17:46:04-04:00</eTimes.15>
+        <eTimes.16>2024-10-30T18:05:00-04:00</eTimes.16>
+      </eTimes>
+      <ePatient>
+        <ePatient.01>49ER1F</ePatient.01>
+        <ePatient.PatientNameGroup>
+          <ePatient.02>Prosacco</ePatient.02>
+          <ePatient.03>May</ePatient.03>
+        </ePatient.PatientNameGroup>
+        <ePatient.05>359 Beltvillage Avenue</ePatient.05>
+        <ePatient.06>1254716</ePatient.06>
+        <ePatient.07>46102</ePatient.07>
+        <ePatient.08>46</ePatient.08>
+        <ePatient.09>57764</ePatient.09>
+        <ePatient.12>480306431</ePatient.12>
+        <ePatient.13 xsi:nil="true" NV="7701003" />
+        <ePatient.14>2514001</ePatient.14>
+        <ePatient.AgeGroup>
+          <ePatient.15>24</ePatient.15>
+          <ePatient.16>2516009</ePatient.16>
+        </ePatient.AgeGroup>
+        <ePatient.17>2000-07-31</ePatient.17>
+        <ePatient.18 PhoneNumberType="9913003">+1 605 648 2057</ePatient.18>
+        <ePatient.19 EmailAddressType="9904001">maypea@oglala.example.net</ePatient.19>
+        <ePatient.20>46</ePatient.20>
+        <ePatient.21>041680416</ePatient.21>
+        <ePatient.25>9919001</ePatient.25>
+      </ePatient>
+      <ePayment>
+        <ePayment.01>2601021</ePayment.01>
+        <ePayment.08>2608003</ePayment.08>
+        <ePayment.40>2640001</ePayment.40>
+        <ePayment.50>2650003</ePayment.50>
+        <ePayment.SupplyItemGroup>
+          <ePayment.55>22G catheter</ePayment.55>
+          <ePayment.56>1</ePayment.56>
+        </ePayment.SupplyItemGroup>
+      </ePayment>
+      <eScene>
+        <eScene.01 xsi:nil="true" NV="7701001" />
+        <eScene.06>2707005</eScene.06>
+        <eScene.07>9923001</eScene.07>
+        <eScene.08 xsi:nil="true" NV="7701001" />
+        <eScene.09>Y92.838</eScene.09>
+        <eScene.11>31.039,-86.650</eScene.11>
+        <eScene.12>16REV3338733972</eScene.12>
+        <eScene.14>County Road 4</eScene.14>
+        <eScene.15>End of Road 321</eScene.15>
+        <eScene.17 xsi:nil="true" NV="7701003" />
+        <eScene.18>01</eScene.18>
+        <eScene.19>36483</eScene.19>
+        <eScene.20>2 miles from County Road 4 turn-off</eScene.20>
+        <eScene.21>01039</eScene.21>
+        <eScene.22>US</eScene.22>
+        <eScene.23>01039962900</eScene.23>
+      </eScene>
+      <eSituation>
+        <eSituation.01 PN="8801029">2024-10-30T14:45:00-04:00</eSituation.01>
+        <eSituation.02>9922005</eSituation.02>
+        <eSituation.PatientComplaintGroup>
+          <eSituation.03>2803001</eSituation.03>
+          <eSituation.04>Wasp sting</eSituation.04>
+          <eSituation.05>45</eSituation.05>
+          <eSituation.06>2806003</eSituation.06>
+        </eSituation.PatientComplaintGroup>
+        <eSituation.07>2807011</eSituation.07>
+        <eSituation.08>2808011</eSituation.08>
+        <eSituation.09>R06.00</eSituation.09>
+        <eSituation.10>M79.6</eSituation.10>
+        <eSituation.11>T78.40</eSituation.11>
+        <eSituation.12>J98.9</eSituation.12>
+        <eSituation.13>2813001</eSituation.13>
+        <eSituation.WorkRelatedGroup>
+          <eSituation.14>9922001</eSituation.14>
+        </eSituation.WorkRelatedGroup>
+        <eSituation.17>Y93.G</eSituation.17>
+        <eSituation.18>2024-10-30T14:30:00-04:00</eSituation.18>
+        <eSituation.20 xsi:nil="true" NV="7701001" />
+      </eSituation>
+      <eInjury>
+        <eInjury.01>T65.9</eInjury.01>
+        <eInjury.02>2902007</eInjury.02>
+        <eInjury.03>2903025</eInjury.03>
+        <eInjury.04 xsi:nil="true" PN="8801015" />
+      </eInjury>
+      <eArrest>
+        <eArrest.01>3001001</eArrest.01>
+        <eArrest.02 xsi:nil="true" NV="7701001" />
+        <eArrest.03 xsi:nil="true" NV="7701001" />
+        <eArrest.04 xsi:nil="true" NV="7701001" />
+        <eArrest.07 xsi:nil="true" NV="7701001" />
+        <eArrest.09 xsi:nil="true" NV="7701001" />
+        <eArrest.11 xsi:nil="true" NV="7701001" />
+        <eArrest.12 xsi:nil="true" NV="7701001" />
+        <eArrest.14 xsi:nil="true" NV="7701001" />
+        <eArrest.16 xsi:nil="true" NV="7701001" />
+        <eArrest.17 xsi:nil="true" NV="7701001" />
+        <eArrest.18 xsi:nil="true" NV="7701001" />
+        <eArrest.20 xsi:nil="true" NV="7701001" />
+        <eArrest.21 xsi:nil="true" NV="7701001" />
+        <eArrest.22 xsi:nil="true" NV="7701001" />
+      </eArrest>
+      <eHistory>
+        <eHistory.01>3101009</eHistory.01>
+        <eHistory.05>3105005</eHistory.05>
+        <eHistory.06>3264</eHistory.06>
+        <eHistory.07>16224551000119108</eHistory.07>
+        <eHistory.08 xsi:nil="true" PN="8801023" />
+        <eHistory.09>3109001</eHistory.09>
+        <eHistory.ImmunizationsGroup>
+          <eHistory.10>9910043</eHistory.10>
+          <eHistory.11>2022</eHistory.11>
+        </eHistory.ImmunizationsGroup>
+        <eHistory.CurrentMedsGroup>
+          <eHistory.12 xsi:nil="true" PN="8801015" />
+        </eHistory.CurrentMedsGroup>
+        <eHistory.16>9923001</eHistory.16>
+        <eHistory.17>3117001</eHistory.17>
+        <eHistory.18>3118001</eHistory.18>
+        <eHistory.19>2024-10-30T13:00:00-04:00</eHistory.19>
+      </eHistory>
+      <eNarrative>
+        <eNarrative.01>Patient was on a camping trip. While setting up camp, she felt a sharp pain on her forearm and realized she had been stung by a wasp. Patient's friend called 911. Upon arrival, we found her pale, with rapid swelling around her face and neck. She was struggling to breathe and showing signs of anaphylactic shock.</eNarrative.01>
+      </eNarrative>
+      <eVitals>
+        <eVitals.VitalGroup>
+          <eVitals.01>2024-10-30T15:30:08-04:00</eVitals.01>
+          <eVitals.02>9923001</eVitals.02>
+          <eVitals.CardiacRhythmGroup>
+            <eVitals.03 xsi:nil="true" NV="7701003" />
+            <eVitals.04 xsi:nil="true" NV="7701003" />
+            <eVitals.05 xsi:nil="true" NV="7701003" />
+          </eVitals.CardiacRhythmGroup>
+          <eVitals.BloodPressureGroup>
+            <eVitals.06>71</eVitals.06>
+            <eVitals.07>39</eVitals.07>
+            <eVitals.08>3308005</eVitals.08>
+          </eVitals.BloodPressureGroup>
+          <eVitals.HeartRateGroup>
+            <eVitals.10>143</eVitals.10>
+            <eVitals.11>3311007</eVitals.11>
+          </eVitals.HeartRateGroup>
+          <eVitals.12>85</eVitals.12>
+          <eVitals.14>28</eVitals.14>
+          <eVitals.15>3315003</eVitals.15>
+          <eVitals.16 ETCO2Type="3340001">29</eVitals.16>
+          <eVitals.18>102</eVitals.18>
+          <eVitals.GlasgowScoreGroup>
+            <eVitals.19>4</eVitals.19>
+            <eVitals.20>5</eVitals.20>
+            <eVitals.21>6</eVitals.21>
+            <eVitals.22>3322003</eVitals.22>
+            <eVitals.23>15</eVitals.23>
+          </eVitals.GlasgowScoreGroup>
+          <eVitals.TemperatureGroup>
+            <eVitals.24>34.2</eVitals.24>
+            <eVitals.25>3325013</eVitals.25>
+          </eVitals.TemperatureGroup>
+          <eVitals.26>3326001</eVitals.26>
+          <eVitals.PainScaleGroup>
+            <eVitals.27 xsi:nil="true" NV="7701003" />
+          </eVitals.PainScaleGroup>
+          <eVitals.StrokeScaleGroup>
+            <eVitals.29 xsi:nil="true" NV="7701003" />
+            <eVitals.30 xsi:nil="true" NV="7701001" />
+          </eVitals.StrokeScaleGroup>
+          <eVitals.31 xsi:nil="true" NV="7701001" />
+          <eVitals.33>10</eVitals.33>
+        </eVitals.VitalGroup>
+        <eVitals.VitalGroup>
+          <eVitals.01>2024-10-30T15:34:32-04:00</eVitals.01>
+          <eVitals.02>9923001</eVitals.02>
+          <eVitals.CardiacRhythmGroup>
+            <eVitals.03 xsi:nil="true" NV="7701003" />
+            <eVitals.04 xsi:nil="true" NV="7701003" />
+            <eVitals.05 xsi:nil="true" NV="7701003" />
+          </eVitals.CardiacRhythmGroup>
+          <eVitals.BloodPressureGroup>
+            <eVitals.06>87</eVitals.06>
+            <eVitals.07>46</eVitals.07>
+            <eVitals.08>3308005</eVitals.08>
+          </eVitals.BloodPressureGroup>
+          <eVitals.HeartRateGroup>
+            <eVitals.10>124</eVitals.10>
+            <eVitals.11>3311007</eVitals.11>
+          </eVitals.HeartRateGroup>
+          <eVitals.12>88</eVitals.12>
+          <eVitals.14>23</eVitals.14>
+          <eVitals.15>3315009</eVitals.15>
+          <eVitals.16 ETCO2Type="3340001">34</eVitals.16>
+          <eVitals.18 xsi:nil="true" NV="7701003" />
+          <eVitals.GlasgowScoreGroup>
+            <eVitals.19>4</eVitals.19>
+            <eVitals.20>5</eVitals.20>
+            <eVitals.21>6</eVitals.21>
+            <eVitals.22>3322003</eVitals.22>
+            <eVitals.23>15</eVitals.23>
+          </eVitals.GlasgowScoreGroup>
+          <eVitals.TemperatureGroup>
+            <eVitals.24>34.9</eVitals.24>
+            <eVitals.25>3325013</eVitals.25>
+          </eVitals.TemperatureGroup>
+          <eVitals.26>3326001</eVitals.26>
+          <eVitals.PainScaleGroup>
+            <eVitals.27 xsi:nil="true" NV="7701003" />
+          </eVitals.PainScaleGroup>
+          <eVitals.StrokeScaleGroup>
+            <eVitals.29 xsi:nil="true" NV="7701003" />
+            <eVitals.30 xsi:nil="true" NV="7701001" />
+          </eVitals.StrokeScaleGroup>
+          <eVitals.31 xsi:nil="true" NV="7701001" />
+          <eVitals.33>11</eVitals.33>
+        </eVitals.VitalGroup>
+        <eVitals.VitalGroup>
+          <eVitals.01>2024-10-30T15:40:10-04:00</eVitals.01>
+          <eVitals.02>9923001</eVitals.02>
+          <eVitals.CardiacRhythmGroup>
+            <eVitals.03 xsi:nil="true" NV="7701003" />
+            <eVitals.04 xsi:nil="true" NV="7701003" />
+            <eVitals.05 xsi:nil="true" NV="7701003" />
+          </eVitals.CardiacRhythmGroup>
+          <eVitals.BloodPressureGroup>
+            <eVitals.06>98</eVitals.06>
+            <eVitals.07>62</eVitals.07>
+            <eVitals.08>3308005</eVitals.08>
+          </eVitals.BloodPressureGroup>
+          <eVitals.HeartRateGroup>
+            <eVitals.10>102</eVitals.10>
+            <eVitals.11>3311007</eVitals.11>
+          </eVitals.HeartRateGroup>
+          <eVitals.12>91</eVitals.12>
+          <eVitals.14>18</eVitals.14>
+          <eVitals.15>3315007</eVitals.15>
+          <eVitals.16 ETCO2Type="3340001">36</eVitals.16>
+          <eVitals.18 xsi:nil="true" NV="7701003" />
+          <eVitals.GlasgowScoreGroup>
+            <eVitals.19>4</eVitals.19>
+            <eVitals.20>5</eVitals.20>
+            <eVitals.21>6</eVitals.21>
+            <eVitals.22>3322003</eVitals.22>
+            <eVitals.23>15</eVitals.23>
+          </eVitals.GlasgowScoreGroup>
+          <eVitals.TemperatureGroup>
+            <eVitals.24>36.2</eVitals.24>
+            <eVitals.25>3325013</eVitals.25>
+          </eVitals.TemperatureGroup>
+          <eVitals.26>3326001</eVitals.26>
+          <eVitals.PainScaleGroup>
+            <eVitals.27 xsi:nil="true" NV="7701003" />
+          </eVitals.PainScaleGroup>
+          <eVitals.StrokeScaleGroup>
+            <eVitals.29 xsi:nil="true" NV="7701003" />
+            <eVitals.30 xsi:nil="true" NV="7701001" />
+          </eVitals.StrokeScaleGroup>
+          <eVitals.31 xsi:nil="true" NV="7701001" />
+          <eVitals.33>12</eVitals.33>
+        </eVitals.VitalGroup>
+        <eVitals.VitalGroup>
+          <eVitals.01>2024-10-30T16:05:26-04:00</eVitals.01>
+          <eVitals.02>9923001</eVitals.02>
+          <eVitals.CardiacRhythmGroup>
+            <eVitals.03 xsi:nil="true" NV="7701003" />
+            <eVitals.04 xsi:nil="true" NV="7701003" />
+            <eVitals.05 xsi:nil="true" NV="7701003" />
+          </eVitals.CardiacRhythmGroup>
+          <eVitals.BloodPressureGroup>
+            <eVitals.06>108</eVitals.06>
+            <eVitals.07>72</eVitals.07>
+            <eVitals.08>3308005</eVitals.08>
+          </eVitals.BloodPressureGroup>
+          <eVitals.HeartRateGroup>
+            <eVitals.10>91</eVitals.10>
+            <eVitals.11>3311007</eVitals.11>
+          </eVitals.HeartRateGroup>
+          <eVitals.12>99</eVitals.12>
+          <eVitals.14>16</eVitals.14>
+          <eVitals.15>3315007</eVitals.15>
+          <eVitals.16 ETCO2Type="3340001">40</eVitals.16>
+          <eVitals.18 xsi:nil="true" NV="7701003" />
+          <eVitals.GlasgowScoreGroup>
+            <eVitals.19>4</eVitals.19>
+            <eVitals.20>5</eVitals.20>
+            <eVitals.21>6</eVitals.21>
+            <eVitals.22>3322003</eVitals.22>
+            <eVitals.23>15</eVitals.23>
+          </eVitals.GlasgowScoreGroup>
+          <eVitals.TemperatureGroup>
+            <eVitals.24>36.8</eVitals.24>
+            <eVitals.25>3325013</eVitals.25>
+          </eVitals.TemperatureGroup>
+          <eVitals.26>3326001</eVitals.26>
+          <eVitals.PainScaleGroup>
+            <eVitals.27 xsi:nil="true" NV="7701003" />
+          </eVitals.PainScaleGroup>
+          <eVitals.StrokeScaleGroup>
+            <eVitals.29 xsi:nil="true" NV="7701003" />
+            <eVitals.30 xsi:nil="true" NV="7701001" />
+          </eVitals.StrokeScaleGroup>
+          <eVitals.31 xsi:nil="true" NV="7701001" />
+          <eVitals.33>12</eVitals.33>
+        </eVitals.VitalGroup>
+        <eVitals.VitalGroup>
+          <eVitals.01>2024-10-30T16:26:11-04:00</eVitals.01>
+          <eVitals.02>9923001</eVitals.02>
+          <eVitals.CardiacRhythmGroup>
+            <eVitals.03 xsi:nil="true" NV="7701003" />
+            <eVitals.04 xsi:nil="true" NV="7701003" />
+            <eVitals.05 xsi:nil="true" NV="7701003" />
+          </eVitals.CardiacRhythmGroup>
+          <eVitals.BloodPressureGroup>
+            <eVitals.06>111</eVitals.06>
+            <eVitals.07>74</eVitals.07>
+            <eVitals.08>3308005</eVitals.08>
+          </eVitals.BloodPressureGroup>
+          <eVitals.HeartRateGroup>
+            <eVitals.10>85</eVitals.10>
+            <eVitals.11>3311007</eVitals.11>
+          </eVitals.HeartRateGroup>
+          <eVitals.12>99</eVitals.12>
+          <eVitals.14>15</eVitals.14>
+          <eVitals.15>3315007</eVitals.15>
+          <eVitals.16 ETCO2Type="3340001">39</eVitals.16>
+          <eVitals.18 xsi:nil="true" NV="7701003" />
+          <eVitals.GlasgowScoreGroup>
+            <eVitals.19>4</eVitals.19>
+            <eVitals.20>5</eVitals.20>
+            <eVitals.21>6</eVitals.21>
+            <eVitals.22>3322003</eVitals.22>
+            <eVitals.23>15</eVitals.23>
+          </eVitals.GlasgowScoreGroup>
+          <eVitals.TemperatureGroup>
+            <eVitals.24>36.8</eVitals.24>
+            <eVitals.25>3325013</eVitals.25>
+          </eVitals.TemperatureGroup>
+          <eVitals.26>3326001</eVitals.26>
+          <eVitals.PainScaleGroup>
+            <eVitals.27 xsi:nil="true" NV="7701003" />
+          </eVitals.PainScaleGroup>
+          <eVitals.StrokeScaleGroup>
+            <eVitals.29 xsi:nil="true" NV="7701003" />
+            <eVitals.30 xsi:nil="true" NV="7701001" />
+          </eVitals.StrokeScaleGroup>
+          <eVitals.31 xsi:nil="true" NV="7701001" />
+          <eVitals.33>12</eVitals.33>
+        </eVitals.VitalGroup>
+        <eVitals.VitalGroup>
+          <eVitals.01>2024-10-30T16:45:53-04:00</eVitals.01>
+          <eVitals.02>9923001</eVitals.02>
+          <eVitals.CardiacRhythmGroup>
+            <eVitals.03 xsi:nil="true" NV="7701003" />
+            <eVitals.04 xsi:nil="true" NV="7701003" />
+            <eVitals.05 xsi:nil="true" NV="7701003" />
+          </eVitals.CardiacRhythmGroup>
+          <eVitals.BloodPressureGroup>
+            <eVitals.06>115</eVitals.06>
+            <eVitals.07>75</eVitals.07>
+            <eVitals.08>3308005</eVitals.08>
+          </eVitals.BloodPressureGroup>
+          <eVitals.HeartRateGroup>
+            <eVitals.10>76</eVitals.10>
+            <eVitals.11>3311007</eVitals.11>
+          </eVitals.HeartRateGroup>
+          <eVitals.12>99</eVitals.12>
+          <eVitals.14>15</eVitals.14>
+          <eVitals.15>3315007</eVitals.15>
+          <eVitals.16 ETCO2Type="3340001">38</eVitals.16>
+          <eVitals.18 xsi:nil="true" NV="7701003" />
+          <eVitals.GlasgowScoreGroup>
+            <eVitals.19>4</eVitals.19>
+            <eVitals.20>5</eVitals.20>
+            <eVitals.21>6</eVitals.21>
+            <eVitals.22>3322003</eVitals.22>
+            <eVitals.23>15</eVitals.23>
+          </eVitals.GlasgowScoreGroup>
+          <eVitals.TemperatureGroup>
+            <eVitals.24>36.9</eVitals.24>
+            <eVitals.25>3325013</eVitals.25>
+          </eVitals.TemperatureGroup>
+          <eVitals.26>3326001</eVitals.26>
+          <eVitals.PainScaleGroup>
+            <eVitals.27 xsi:nil="true" NV="7701003" />
+          </eVitals.PainScaleGroup>
+          <eVitals.StrokeScaleGroup>
+            <eVitals.29 xsi:nil="true" NV="7701003" />
+            <eVitals.30 xsi:nil="true" NV="7701001" />
+          </eVitals.StrokeScaleGroup>
+          <eVitals.31 xsi:nil="true" NV="7701001" />
+          <eVitals.33>12</eVitals.33>
+        </eVitals.VitalGroup>
+      </eVitals>
+      <eExam>
+        <eExam.01>67.1</eExam.01>
+        <eExam.AssessmentGroup>
+          <eExam.03>2024-10-30T15:31:37-04:00</eExam.03>
+          <eExam.04>3504005</eExam.04>
+          <eExam.05>3505033</eExam.05>
+          <eExam.06>3506053</eExam.06>
+          <eExam.07>3507053</eExam.07>
+          <eExam.AbdomenGroup>
+            <eExam.10>3510001</eExam.10>
+            <eExam.11>3511037</eExam.11>
+          </eExam.AbdomenGroup>
+          <eExam.12>3512037</eExam.12>
+          <eExam.SpineGroup>
+            <eExam.14>3514029</eExam.14>
+          </eExam.SpineGroup>
+          <eExam.ExtremityGroup>
+            <eExam.15>3515097</eExam.15>
+            <eExam.16>3516079</eExam.16>
+          </eExam.ExtremityGroup>
+          <eExam.ExtremityGroup>
+            <eExam.15>3515099</eExam.15>
+            <eExam.16>3516079</eExam.16>
+          </eExam.ExtremityGroup>
+          <eExam.EyeGroup>
+            <eExam.17>3517001</eExam.17>
+            <eExam.18>3518047</eExam.18>
+          </eExam.EyeGroup>
+          <eExam.LungGroup>
+            <eExam.22>3522005</eExam.22>
+            <eExam.23>3523011</eExam.23>
+          </eExam.LungGroup>
+          <eExam.ChestGroup>
+            <eExam.24>3524009</eExam.24>
+            <eExam.25>3525045</eExam.25>
+          </eExam.ChestGroup>
+        </eExam.AssessmentGroup>
+        <eExam.AssessmentGroup>
+          <eExam.03>2024-10-30T16:05:17-04:00</eExam.03>
+          <eExam.04>3504011</eExam.04>
+          <eExam.05>3505033</eExam.05>
+          <eExam.06>3506053</eExam.06>
+          <eExam.07>3507029</eExam.07>
+          <eExam.AbdomenGroup>
+            <eExam.10>3510001</eExam.10>
+            <eExam.11>3511037</eExam.11>
+          </eExam.AbdomenGroup>
+          <eExam.12>3512037</eExam.12>
+          <eExam.SpineGroup>
+            <eExam.13>3513001</eExam.13>
+            <eExam.14>3514027</eExam.14>
+          </eExam.SpineGroup>
+          <eExam.ExtremityGroup>
+            <eExam.16>3516049</eExam.16>
+          </eExam.ExtremityGroup>
+          <eExam.EyeGroup>
+            <eExam.17>3517001</eExam.17>
+            <eExam.18>3518047</eExam.18>
+          </eExam.EyeGroup>
+          <eExam.LungGroup>
+            <eExam.22>3522005</eExam.22>
+            <eExam.23>3523011</eExam.23>
+          </eExam.LungGroup>
+          <eExam.ChestGroup>
+            <eExam.24>3524009</eExam.24>
+            <eExam.25>3525029</eExam.25>
+          </eExam.ChestGroup>
+        </eExam.AssessmentGroup>
+      </eExam>
+      <eProtocols>
+        <eProtocols.ProtocolGroup>
+          <eProtocols.01>9914111</eProtocols.01>
+          <eProtocols.02>3602003</eProtocols.02>
+        </eProtocols.ProtocolGroup>
+      </eProtocols>
+      <eMedications>
+        <eMedications.MedicationGroup>
+          <eMedications.01>2024-10-30T15:32:45-04:00</eMedications.01>
+          <eMedications.02>9923001</eMedications.02>
+          <eMedications.03>328316</eMedications.03>
+          <eMedications.04>9927063</eMedications.04>
+          <eMedications.DosageGroup>
+            <eMedications.05>0.3</eMedications.05>
+            <eMedications.06>3706021</eMedications.06>
+          </eMedications.DosageGroup>
+          <eMedications.07>9916001</eMedications.07>
+          <eMedications.08>3708031</eMedications.08>
+          <eMedications.09>EMT470248 - Demetrius Muñoz</eMedications.09>
+          <eMedications.10>9905005</eMedications.10>
+          <eMedications.11>9918005</eMedications.11>
+        </eMedications.MedicationGroup>
+        <eMedications.MedicationGroup>
+          <eMedications.01>2024-10-30T15:36:14-04:00</eMedications.01>
+          <eMedications.02>9923001</eMedications.02>
+          <eMedications.03>3498</eMedications.03>
+          <eMedications.04>9927023</eMedications.04>
+          <eMedications.DosageGroup>
+            <eMedications.05>50</eMedications.05>
+            <eMedications.06>3706021</eMedications.06>
+          </eMedications.DosageGroup>
+          <eMedications.07>9916001</eMedications.07>
+          <eMedications.08>3708031</eMedications.08>
+          <eMedications.09>PMD668912 - Carol Bosco Raynor</eMedications.09>
+          <eMedications.10>9905007</eMedications.10>
+          <eMedications.11>9918005</eMedications.11>
+        </eMedications.MedicationGroup>
+        <eMedications.MedicationGroup>
+          <eMedications.01>2024-10-30T15:39:26-04:00</eMedications.01>
+          <eMedications.02>9923001</eMedications.02>
+          <eMedications.03>6902</eMedications.03>
+          <eMedications.04>9927023</eMedications.04>
+          <eMedications.DosageGroup>
+            <eMedications.05>125</eMedications.05>
+            <eMedications.06>3706021</eMedications.06>
+          </eMedications.DosageGroup>
+          <eMedications.07>9916001</eMedications.07>
+          <eMedications.08>3708031</eMedications.08>
+          <eMedications.09>PMD668912 - Carol Bosco Raynor</eMedications.09>
+          <eMedications.10>9905007</eMedications.10>
+          <eMedications.11>9918005</eMedications.11>
+        </eMedications.MedicationGroup>
+        <eMedications.MedicationGroup>
+          <eMedications.01>2024-10-30T15:42:52-04:00</eMedications.01>
+          <eMedications.02>9923001</eMedications.02>
+          <eMedications.03>7806</eMedications.03>
+          <eMedications.04>9927031</eMedications.04>
+          <eMedications.DosageGroup>
+            <eMedications.05>15</eMedications.05>
+            <eMedications.06>3706035</eMedications.06>
+          </eMedications.DosageGroup>
+          <eMedications.07>9916001</eMedications.07>
+          <eMedications.08>3708031</eMedications.08>
+          <eMedications.09>EMT470248 - Demetrius Muñoz</eMedications.09>
+          <eMedications.10>9905005</eMedications.10>
+          <eMedications.11>9918005</eMedications.11>
+        </eMedications.MedicationGroup>
+      </eMedications>
+      <eProcedures>
+        <eProcedures.ProcedureGroup>
+          <eProcedures.01>2024-10-30T15:33:30-04:00</eProcedures.01>
+          <eProcedures.02>9923001</eProcedures.02>
+          <eProcedures.03>392230005</eProcedures.03>
+          <eProcedures.05>1</eProcedures.05>
+          <eProcedures.06>9923003</eProcedures.06>
+          <eProcedures.07>3907033</eProcedures.07>
+          <eProcedures.08>9916003</eProcedures.08>
+          <eProcedures.09>PMD668912 - Carol Bosco Raynor</eProcedures.09>
+          <eProcedures.10>9905007</eProcedures.10>
+          <eProcedures.11>9918005</eProcedures.11>
+          <eProcedures.13>3913017</eProcedures.13>
+        </eProcedures.ProcedureGroup>
+        <eProcedures.ProcedureGroup CorrelationID="c1">
+          <eProcedures.01>2024-10-30T15:44:19-04:00</eProcedures.01>
+          <eProcedures.02>9923001</eProcedures.02>
+          <eProcedures.03>182692007</eProcedures.03>
+          <eProcedures.05>2</eProcedures.05>
+          <eProcedures.06>9923003</eProcedures.06>
+          <eProcedures.07>3907033</eProcedures.07>
+          <eProcedures.08>9916005</eProcedures.08>
+          <eProcedures.09>PMD668912 - Carol Bosco Raynor</eProcedures.09>
+          <eProcedures.10>9905007</eProcedures.10>
+          <eProcedures.11>9918001</eProcedures.11>
+          <eProcedures.12>Allan Ziemann</eProcedures.12>
+          <eProcedures.14 xsi:nil="true" NV="7701001" />
+        </eProcedures.ProcedureGroup>
+      </eProcedures>
+      <eAirway>
+        <eAirway.AirwayGroup>
+          <eAirway.01>4001001</eAirway.01>
+          <eAirway.ConfirmationGroup ProcedureGroupCorrelationID="c1">
+            <eAirway.02>2024-10-30T15:44:30-04:00</eAirway.02>
+            <eAirway.03>4003005</eAirway.03>
+            <eAirway.04>4004007</eAirway.04>
+            <eAirway.05>28</eAirway.05>
+            <eAirway.06>4006005</eAirway.06>
+            <eAirway.07>PMD668912 - Carol Bosco Raynor</eAirway.07>
+          </eAirway.ConfirmationGroup>
+          <eAirway.08 xsi:nil="true" PN="8801015" />
+          <eAirway.09>4009001</eAirway.09>
+        </eAirway.AirwayGroup>
+      </eAirway>
+      <eDisposition>
+        <eDisposition.DestinationGroup>
+          <eDisposition.01>HCA Florida Fort Walton-Destin Hospital</eDisposition.01>
+          <eDisposition.02>231002234363</eDisposition.02>
+          <eDisposition.03>1000 Marwalt Drive</eDisposition.03>
+          <eDisposition.04>2403650</eDisposition.04>
+          <eDisposition.05>12</eDisposition.05>
+          <eDisposition.06>12091</eDisposition.06>
+          <eDisposition.07>32547</eDisposition.07>
+          <eDisposition.08>US</eDisposition.08>
+          <eDisposition.09>30.454,-86.633</eDisposition.09>
+          <eDisposition.10>16REU35236915</eDisposition.10>
+        </eDisposition.DestinationGroup>
+        <eDisposition.11>1</eDisposition.11>
+        <eDisposition.IncidentDispositionGroup>
+          <eDisposition.27>4227001</eDisposition.27>
+          <eDisposition.28>4228001</eDisposition.28>
+          <eDisposition.29>4229001</eDisposition.29>
+          <eDisposition.30>4230001</eDisposition.30>
+        </eDisposition.IncidentDispositionGroup>
+        <eDisposition.13>9909001</eDisposition.13>
+        <eDisposition.14>4214013</eDisposition.14>
+        <eDisposition.15>9909001</eDisposition.15>
+        <eDisposition.16>4216005</eDisposition.16>
+        <eDisposition.17>4217001</eDisposition.17>
+        <eDisposition.18>4218007</eDisposition.18>
+        <eDisposition.19>4219003</eDisposition.19>
+        <eDisposition.20>4220019</eDisposition.20>
+        <eDisposition.21>4221003</eDisposition.21>
+        <eDisposition.22 xsi:nil="true" NV="7701001" />
+        <eDisposition.23 xsi:nil="true" NV="7701003" />
+        <eDisposition.HospitalTeamActivationGroup>
+          <eDisposition.24>4224001</eDisposition.24>
+          <eDisposition.25 xsi:nil="true" NV="7701001" />
+        </eDisposition.HospitalTeamActivationGroup>
+        <eDisposition.32>4232005</eDisposition.32>
+      </eDisposition>
+      <eOutcome>
+        <eOutcome.01>01</eOutcome.01>
+        <eOutcome.02 xsi:nil="true" NV="7701001" />
+        <eOutcome.ExternalDataGroup>
+          <eOutcome.03>4303005</eOutcome.03>
+          <eOutcome.04>FWD36056</eOutcome.04>
+        </eOutcome.ExternalDataGroup>
+        <eOutcome.EmergencyDepartmentProceduresGroup>
+          <eOutcome.09 xsi:nil="true" NV="7701003" />
+          <eOutcome.19 xsi:nil="true" NV="7701003" />
+        </eOutcome.EmergencyDepartmentProceduresGroup>
+        <eOutcome.10>T63.461A</eOutcome.10>
+        <eOutcome.11 xsi:nil="true" NV="7701001" />
+        <eOutcome.HospitalProceduresGroup>
+          <eOutcome.12 xsi:nil="true" NV="7701001" />
+          <eOutcome.20 xsi:nil="true" NV="7701001" />
+        </eOutcome.HospitalProceduresGroup>
+        <eOutcome.13 xsi:nil="true" NV="7701001" />
+        <eOutcome.16>2024-11-07T19:08:17-05:00</eOutcome.16>
+        <eOutcome.18>2024-11-07T16:54:05-05:00</eOutcome.18>
+      </eOutcome>
+      <eOther>
+        <eOther.01>9923001</eOther.01>
+        <eOther.08>PMD668912 - Carol Bosco Raynor</eOther.08>
+      </eOther>
+    </PatientCareReport>
+  </Header>
+</EMSDataSet>

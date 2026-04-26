@@ -3,6 +3,8 @@
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
+import pytest
+
 from epcr_app import api_nemsis_scenarios
 from epcr_app.nemsis_template_resolver import resolve_nemsis_template
 
@@ -11,6 +13,11 @@ NEMSIS_NS = {"n": "http://www.nemsis.org"}
 WORKSPACE_ROOT = Path(__file__).resolve().parents[3]
 CTA_UPLOAD_DIR = WORKSPACE_ROOT / "Adaptix-Core-Service" / "cta_upload"
 OFFICIAL_AGENCY_NAME = "Okaloosa County Emergency Medical Services"
+
+_skip_no_cta = pytest.mark.skipif(
+    not CTA_UPLOAD_DIR.exists() or not any(CTA_UPLOAD_DIR.glob("2025-*.xml")),
+    reason="NEMSIS CTA official XML files not present in cta_upload directory",
+)
 
 
 def _parse_xml(path: Path) -> ET.Element:
@@ -40,16 +47,19 @@ def _dem_facility_map() -> tuple[str, dict[str, dict[str, str]]]:
     return agency_name, facilities
 
 
+@_skip_no_cta
 def test_official_2025_dem_contains_agency_identifier_for_ems_derivation():
     dem_root = _parse_xml(CTA_UPLOAD_DIR / "2025-DEM-1_v351.xml")
     assert dem_root.findtext(".//n:dAgency.02", default="", namespaces=NEMSIS_NS) == "351-T0495"
 
 
+@_skip_no_cta
 def test_official_2025_agency_name_contract_matches_export_metadata():
     agency_name, _ = _dem_facility_map()
     assert agency_name == OFFICIAL_AGENCY_NAME
 
 
+@_skip_no_cta
 def test_official_2025_ems_reference_files_use_dem_derived_values():
     agency_name, facilities = _dem_facility_map()
     cases = {
@@ -86,6 +96,7 @@ def test_submission_organization_prefers_configured_cta_account(monkeypatch):
     assert api_nemsis_scenarios._resolve_submission_organization(scenario) == OFFICIAL_AGENCY_NAME
 
 
+@_skip_no_cta
 def test_template_resolution_contract_matches_official_2025_case_keys():
     trauma = resolve_nemsis_template("2025-EMS-4-ArmTrauma_v351")
     mental = resolve_nemsis_template("2025-EMS-5-MentalHealthCrisis_v351")

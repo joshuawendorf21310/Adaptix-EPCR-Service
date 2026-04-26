@@ -47,6 +47,8 @@ class CurrentUser:
 
 async def get_current_user(
     authorization: Annotated[str | None, Header(alias="Authorization")] = None,
+    x_tenant_id: Annotated[str | None, Header(alias="X-Tenant-ID")] = None,
+    x_user_id: Annotated[str | None, Header(alias="X-User-ID")] = None,
 ) -> CurrentUser:
     """Extract and validate the authenticated user from the Authorization header.
 
@@ -56,6 +58,11 @@ async def get_current_user(
 
     Args:
         authorization: Value of the HTTP ``Authorization`` header.
+        x_tenant_id: Optional gateway-propagated tenant header. If present,
+            it must match the JWT ``tid`` claim and is never trusted as
+            authority.
+        x_user_id: Optional gateway-propagated user header. If present, it
+            must match the JWT ``sub`` claim and is never trusted as authority.
 
     Returns:
         CurrentUser instance with validated identity and tenant context.
@@ -154,6 +161,20 @@ async def get_current_user(
             detail="Token 'tid' claim is not a valid UUID",
             headers={"WWW-Authenticate": "Bearer"},
         ) from exc
+
+    propagated_tenant_id = (x_tenant_id or "").strip()
+    if propagated_tenant_id and propagated_tenant_id != str(tenant_id):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="X-Tenant-ID does not match authenticated tenant",
+        )
+
+    propagated_user_id = (x_user_id or "").strip()
+    if propagated_user_id and propagated_user_id != str(user_id):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="X-User-ID does not match authenticated user",
+        )
 
     email = claims.get("email", "unknown@example.com")
     roles = claims.get("roles", [])
