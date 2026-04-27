@@ -24,13 +24,49 @@ from epcr_app.models import Base  # noqa: E402
 
 target_metadata = Base.metadata
 
-_db_url = os.environ.get("EPCR_DATABASE_URL") or os.environ.get("CARE_DATABASE_URL")
+# Accept EPCR_DATABASE_URL (preferred) or CARE_DATABASE_URL (legacy) or
+# DATABASE_URL (the actual ECS secret name in staging/production).
+_db_url = (
+    os.environ.get("EPCR_DATABASE_URL")
+    or os.environ.get("CARE_DATABASE_URL")
+    or os.environ.get("DATABASE_URL")
+)
 if not _db_url:
     raise RuntimeError(
-        "EPCR_DATABASE_URL is not set. "
+        "None of EPCR_DATABASE_URL / CARE_DATABASE_URL / DATABASE_URL is set. "
         "Alembic cannot run without a configured database URL."
     )
-config.set_main_option("sqlalchemy.url", _db_url)
+
+# Normalize scheme + strip libpq-only query params that asyncpg rejects.
+import urllib.parse as _up
+import ssl as _ssl
+
+_LIBPQ_ONLY = {
+    "sslmode", "sslcert", "sslkey", "sslrootcert", "sslcrl",
+    "sslcompression", "channel_binding", "gssencmode", "target_session_attrs",
+}
+if _db_url.startswith("postgres://"):
+    _db_url = _db_url.replace("postgres://", "postgresql+asyncpg://", 1)
+elif _db_url.startswith("postgresql://"):
+    _db_url = _db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+elif _db_url.startswith("postgresql+psycopg://"):
+    _db_url = _db_url.replace("postgresql+psycopg://", "postgresql+asyncpg://", 1)
+
+_p = _up.urlparse(_db_url)
+_qs = _up.parse_qs(_p.query, keep_blank_values=True)
+_sslmode = _qs.get("sslmode", [""])[0].lower()
+_connect_args: dict = {}
+if _sslmode in ("require", "verify-ca", "verify-full", "prefer", "allow"):
+    _ctx = _ssl.create_default_context()
+    _ctx.check_hostname = False
+    _ctx.verify_mode = _ssl.CERT_NONE
+    _connect_args["ssl"] = _ctx
+_qs2 = {k: v for k, v in _qs.items() if k not in _LIBPQ_ONLY}
+_db_url = _up.urlunparse(_p._replace(query=_up.urlencode({k: v[0] for k, v in _qs2.items()})))
+
+# alembic.ini uses ConfigParser interpolation: any '%' in the URL must be
+# doubled to escape it. Pass the URL via raw set in main_options instead.
+config.set_main_option("sqlalchemy.url", _db_url.replace("%", "%%"))
 
 
 def run_migrations_offline() -> None:
