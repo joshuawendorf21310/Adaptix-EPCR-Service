@@ -1,6 +1,8 @@
 name: Build and Push to ECR
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -10,18 +12,95 @@ permissions:
 env:
   AWS_REGION: us-east-1
   ECR_REGISTRY: 793439286972.dkr.ecr.us-east-1.amazonaws.com
+  ECR_REPOSITORY: adaptix-staging-epcr-service
   AWS_ROLE_ARN: arn:aws:iam::793439286972:role/adaptix-staging-github-actions-deploy
+  ECS_CLUSTER: adaptix-staging-cluster
+  ECS_SERVICE: adaptix-staging-epcr
+  CONTAINER_NAME: epcr
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      image_uri: ${{ steps.build.outputs.image_uri }}
     steps:
       - uses: actions/checkout@v4
+
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ env.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
+
       - uses: aws-actions/amazon-ecr-login@v2
+
       - uses: docker/setup-buildx-action@v3
-      - run: |
-          docker buildx build --push --tag ${{ env.ECR_REGISTRY }}/adaptix-staging-epcr-service:latest -f ./backend/Dockerfile.staging ./backend
+
+      - name: Build and push SHA-pinned image
+        id: build
+        run: |
+          SHA="${{ github.sha }}"
+          SHORT_SHA="${SHA:0:8}"
+          IMAGE_TAG="main-${SHORT_SHA}"
+          IMAGE_URI="${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${IMAGE_TAG}"
+
+          docker buildx build \
+            --push \
+            --tag "${IMAGE_URI}" \
+            -f ./backend/Dockerfile.staging \
+            ./backend
+
+          echo "image_uri=${IMAGE_URI}" >> "$GITHUB_OUTPUT"
+          echo "Built and pushed: ${IMAGE_URI}"
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Register new task definition revision with SHA-pinned image
+        id: register-td
+        run: |
+          IMAGE_URI="${{ needs.build.outputs.image_uri }}"
+
+          # Read current task definition
+          CURRENT_TD=$(aws ecs describe-task-definition \
+            --task-definition "${{ env.ECS_SERVICE }}" \
+            --query 'taskDefinition' \
+            --output json)
+
+          # Inject new image into container definition
+          NEW_TD=$(echo "$CURRENT_TD" | python3 -c "
+          import json, sys
+          td = json.load(sys.stdin)
+          for c in td['containerDefinitions']:
+              if c['name'] == '${{ env.CONTAINER_NAME }}':
+                  c['image'] = '$IMAGE_URI'
+          # Strip fields not accepted by register-task-definition
+          for key in ['taskDefinitionArn','revision','status','requiresAttributes',
+                      'compatibilities','registeredAt','registeredBy']:
+              td.pop(key, None)
+          print(json.dumps(td))
+          ")
+
+          NEW_TD_ARN=$(aws ecs register-task-definition \
+            --cli-input-json "$NEW_TD" \
+            --query 'taskDefinition.taskDefinitionArn' \
+            --output text)
+
+          echo "new_td_arn=${NEW_TD_ARN}" >> "$GITHUB_OUTPUT"
+          echo "Registered task definition: ${NEW_TD_ARN}"
+
+      - name: Update ECS service to new task definition
+        run: |
+          aws ecs update-service \
+            --cluster "${{ env.ECS_CLUSTER }}" \
+            --service "${{ env.ECS_SERVICE }}" \
+            --task-definition "${{ steps.register-td.outputs.new_td_arn }}" \
+            --force-new-deployment
+
+          echo "Deployment initiated for ${{ env.ECS_SERVICE }} with ${{ steps.register-td.outputs.new_td_arn }}"
