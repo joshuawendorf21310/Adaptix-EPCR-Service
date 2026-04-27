@@ -16,6 +16,7 @@ Routers included:
 import logging
 from contextlib import asynccontextmanager
 import os
+import asyncio
 
 from epcr_app.env_loader import load_local_env
 
@@ -32,8 +33,14 @@ from epcr_app.api_nemsis_submissions import router as nemsis_submissions_router
 from epcr_app.api_nemsis_validation import router as nemsis_validation_router
 from epcr_app.api_timeline import router as timeline_router
 from epcr_app.db import init_db
+from adaptix_contracts.event_contracts import LocalEventConsumerRegistry
+from epcr_app.background_worker import EventProcessingWorker
+from epcr_app.event_consumers import FireIncidentEventConsumer
 
 logger = logging.getLogger(__name__)
+
+_event_worker: EventProcessingWorker | None = None
+_event_worker_task: asyncio.Task | None = None
 
 
 def _cors_allow_origins() -> list[str]:
@@ -58,15 +65,33 @@ async def lifespan(app: FastAPI):
     Yields:
         None: Control returns to FastAPI during running state.
     """
+    global _event_worker, _event_worker_task
     logger.info("Care service starting: initializing database")
     try:
         await init_db()
+        if os.getenv("CORE_EVENT_BUS_URL") and (os.getenv("CORE_EVENT_BUS_TOKEN") or os.getenv("CORE_PROVISIONING_TOKEN")):
+            registry = LocalEventConsumerRegistry()
+            registry.register("fire.incident.created", FireIncidentEventConsumer.on_incident_created)
+            _event_worker = EventProcessingWorker(event_registry=registry)
+            await _event_worker.initialize()
+            _event_worker_task = asyncio.create_task(_event_worker.run())
+            logger.info("Care event worker started with registrations=%s", registry.list_registrations())
+        else:
+            logger.warning("Care event worker not started; Core event bus configuration is absent")
         logger.info("Care service startup complete")
     except Exception as e:
         logger.error(f"Care service startup failed: {str(e)}", exc_info=True)
         raise
     
     yield
+    if _event_worker is not None:
+        await _event_worker.stop()
+    if _event_worker_task is not None:
+        _event_worker_task.cancel()
+        try:
+            await _event_worker_task
+        except asyncio.CancelledError:
+            pass
     
     logger.info("Care service shutdown")
 

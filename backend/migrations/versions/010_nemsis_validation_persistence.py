@@ -15,7 +15,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = '010_nemsis_validation_persistence'
-down_revision: Union[str, None] = '009_add_nemsis_export_validation_evidence'
+down_revision: Union[str, None] = '009'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -76,7 +76,7 @@ def upgrade() -> None:
         sa.Column('tenant_id', sa.String(36), nullable=False, index=True),
         sa.Column('incident_id', sa.String(36), nullable=False, index=True),
         sa.Column('validation_result_id', sa.String(36), nullable=True, index=True),
-        sa.Column('status', sa.String(32), nullable=False, server_default='pending', index=True),
+        sa.Column('status', sa.String(32), nullable=False, server_default='pending'),
         sa.Column('s3_bucket', sa.String(255), nullable=True),
         sa.Column('s3_key', sa.String(1024), nullable=True),
         sa.Column('file_size_bytes', sa.BigInteger, nullable=True),

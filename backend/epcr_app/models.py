@@ -186,6 +186,23 @@ class Chart(Base):
     nemsis_compliance = relationship("NemsisCompliance", back_populates="chart", uselist=False, cascade="all, delete-orphan")
 
 
+class FireIncidentLink(Base):
+    """Durable receipt of a Fire incident event inside the ePCR domain."""
+
+    __tablename__ = "epcr_fire_incident_links"
+
+    id = Column(String(36), primary_key=True)
+    tenant_id = Column(String(36), index=True, nullable=False)
+    chart_id = Column(String(36), ForeignKey("epcr_charts.id"), nullable=True)
+    fire_incident_id = Column(String(36), index=True, nullable=False)
+    fire_incident_number = Column(String(50), nullable=False)
+    fire_address = Column(Text, nullable=False)
+    fire_incident_type = Column(String(100), nullable=False)
+    link_status = Column(String(50), nullable=False, default="pending")
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False)
+
+
 @event.listens_for(Chart, "before_update")
 def _increment_chart_version(mapper, connection, target):
     target.version = (target.version or 1) + 1

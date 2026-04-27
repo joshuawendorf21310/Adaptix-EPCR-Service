@@ -3,35 +3,42 @@
     "SessionStart": [
       {
         "type": "command",
-        "windows": "python scripts\\agent_governance_runtime.py",
+        "windows": "python .github\\scripts\\agent_governance_runtime.py",
         "timeout": 15
       }
     ],
     "UserPromptSubmit": [
       {
         "type": "command",
-        "windows": "python scripts\\agent_governance_runtime.py",
+        "windows": "python .github\\scripts\\agent_governance_runtime.py",
         "timeout": 15
       }
     ],
     "PreToolUse": [
       {
         "type": "command",
-        "windows": "python scripts\\agent_governance_runtime.py",
+        "windows": "python .github\\scripts\\agent_governance_runtime.py",
         "timeout": 15
       }
     ],
     "PostToolUse": [
       {
         "type": "command",
-        "windows": "python scripts\\agent_governance_runtime.py",
+        "windows": "python .github\\scripts\\agent_governance_runtime.py",
         "timeout": 15
       }
     ],
-    "Stop": [
+    "PreCompact": [
       {
         "type": "command",
-        "windows": "python scripts\\agent_governance_runtime.py",
+        "windows": "python .github\\scripts\\agent_governance_runtime.py",
+        "timeout": 15
+      }
+    ],
+    "TaskComplete": [
+      {
+        "type": "command",
+        "windows": "python .github\\scripts\\agent_governance_runtime.py",
         "timeout": 15
       }
     ]
