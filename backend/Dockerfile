@@ -14,16 +14,14 @@ RUN apt-get update \
 
 RUN pip install --upgrade pip setuptools wheel alembic
 
-COPY contracts/ /contracts/
-RUN pip install /contracts
+COPY pyproject.toml /app/pyproject.toml
+COPY README.md /app/README.md
+COPY epcr_app /app/epcr_app
+COPY migrations /app/migrations
+COPY alembic.ini /app/alembic.ini
 
-COPY epcr/backend/pyproject.toml /app/pyproject.toml
-COPY epcr/backend/README.md /app/README.md
-COPY epcr/backend/epcr_app /app/epcr_app
-COPY epcr/backend/migrations /app/migrations
-COPY epcr/backend/alembic.ini /app/alembic.ini
-
-RUN pip install .
+RUN pip install . \
+    && pip install "adaptix-contracts @ git+https://github.com/joshuawendorf21310/Adaptix-Contracts.git"
 
 RUN adduser --disabled-password --gecos "" appuser \
     && chown -R appuser:appuser /app
