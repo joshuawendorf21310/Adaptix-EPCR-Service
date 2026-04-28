@@ -1,4 +1,4 @@
-"""005_nemsis_validation_persistence
+﻿"""005_nemsis_validation_persistence
 
 Revision ID: 010_nemsis_validation_persistence
 Revises: 009_add_nemsis_export_validation_evidence
@@ -22,6 +22,7 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     """Add NEMSIS validation persistence tables."""
+    op.execute("ALTER TABLE alembic_version ALTER COLUMN version_num TYPE VARCHAR(255)")
     
     # Create nemsis_validation_results table
     op.create_table(

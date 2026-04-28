@@ -18,7 +18,15 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    """Add validator evidence columns to export attempts."""
+    """Add validator evidence columns to export attempts.
+
+    Also widens alembic_version.version_num to VARCHAR(255) so that the next
+    migration (010_nemsis_validation_persistence, 33 chars) can be recorded
+    without hitting the default VARCHAR(32) limit.
+    """
+    # Widen alembic_version column before the next migration writes its ID.
+    op.execute("ALTER TABLE alembic_version ALTER COLUMN version_num TYPE VARCHAR(255)")
+
     op.add_column("epcr_nemsis_export_attempts", sa.Column("xsd_valid", sa.Boolean(), nullable=True))
     op.add_column("epcr_nemsis_export_attempts", sa.Column("schematron_valid", sa.Boolean(), nullable=True))
     op.add_column(
