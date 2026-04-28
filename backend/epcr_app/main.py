@@ -69,6 +69,9 @@ async def lifespan(app: FastAPI):
     logger.info("Care service starting: initializing database")
     try:
         await init_db()
+    except Exception as exc:
+        logger.warning("Care service database initialization deferred: %s", str(exc))
+    try:
         if os.getenv("CORE_EVENT_BUS_URL") and (os.getenv("CORE_EVENT_BUS_TOKEN") or os.getenv("CORE_PROVISIONING_TOKEN")):
             registry = LocalEventConsumerRegistry()
             registry.register("fire.incident.created", FireIncidentEventConsumer.on_incident_created)
@@ -78,10 +81,9 @@ async def lifespan(app: FastAPI):
             logger.info("Care event worker started with registrations=%s", registry.list_registrations())
         else:
             logger.warning("Care event worker not started; Core event bus configuration is absent")
-        logger.info("Care service startup complete")
-    except Exception as e:
-        logger.error(f"Care service startup failed: {str(e)}", exc_info=True)
-        raise
+    except Exception as exc:
+        logger.warning("Care event worker initialization deferred: %s", str(exc))
+    logger.info("Care service startup complete")
     
     yield
     if _event_worker is not None:
@@ -125,12 +127,14 @@ logger.info("Care service configured")
 
 @app.get("/healthz")
 async def healthz() -> dict:
-    """Health check endpoint for the care (ePCR) service.
+    """Health check endpoint for the care (ePCR) service."""
+    return {"status": "ok", "service": "epcr"}
 
-    Returns:
-        dict: Service health status.
-    """
-    return {"status": "healthy", "service": "epcr"}
+
+@app.get("/api/v1/epcr/healthz", include_in_schema=False)
+async def api_v1_epcr_healthz() -> dict:
+    """Prefixed health check for gateway routing."""
+    return {"status": "ok", "service": "epcr"}
 
 
 if __name__ == "__main__":

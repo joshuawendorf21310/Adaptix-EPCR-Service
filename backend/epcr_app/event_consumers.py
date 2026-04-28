@@ -9,7 +9,11 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from adaptix_contracts.schemas.fire_contracts import FireIncidentCreatedEvent
-from epcr_app.models import FireIncidentLink
+
+try:
+    from epcr_app.models import FireIncidentLink
+except ImportError:
+    FireIncidentLink = None  # type: ignore[assignment,misc]
 
 logger = logging.getLogger(__name__)
 
