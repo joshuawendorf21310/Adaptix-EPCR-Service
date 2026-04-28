@@ -9,7 +9,7 @@ ENV PYTHONUNBUFFERED=1 \
 WORKDIR /app
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends build-essential \
+    && apt-get install -y --no-install-recommends build-essential git \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip setuptools wheel alembic
@@ -20,8 +20,7 @@ COPY epcr_app /app/epcr_app
 COPY migrations /app/migrations
 COPY alembic.ini /app/alembic.ini
 
-RUN pip install . \
-    && pip install "adaptix-contracts @ git+https://github.com/joshuawendorf21310/Adaptix-Contracts.git"
+RUN pip install .
 
 RUN adduser --disabled-password --gecos "" appuser \
     && chown -R appuser:appuser /app
