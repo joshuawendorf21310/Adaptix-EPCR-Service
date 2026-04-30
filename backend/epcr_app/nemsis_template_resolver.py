@@ -15,11 +15,15 @@ NAMESPACES = {"n": NEMSIS_NS}
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 _WORKSPACE_ROOT = _REPO_ROOT.parent
+# Baked-in templates COPYed by the Dockerfile via `COPY nemsis /app/nemsis`.
+# This is the production-canonical template root and does not depend on any
+# environment variable, source-tree layout, or sibling repository being mounted.
+_BAKED_CTA_DIR = Path(__file__).resolve().parent.parent / "nemsis" / "templates" / "cta"
 _EPCR_CTA_DIR = _REPO_ROOT / "nemsis_test" / "assets" / "cta" / "cta_uploaded_package" / "v3.5.1 C&S for vendors"
 _CORE_CTA_DIR = _WORKSPACE_ROOT / "Adaptix-Core-Service" / "cta_upload"
 _ENV_CTA_DIR = os.environ.get("NEMSIS_CTA_TEMPLATE_ROOT", "").strip()
 _DEM_REFERENCE_NAME = "2025-DEM-1_v351.xml"
-_DEFAULT_STATE_TEMPLATE = _EPCR_CTA_DIR / "2025-STATE-1_v351.xml"
+_DEFAULT_STATE_TEMPLATE = _BAKED_CTA_DIR / "2025-STATE-1_v351.xml"
 _STATE_TEMPLATE_PATH = os.environ.get("NEMSIS_STATE_TEMPLATE_PATH", "").strip()
 
 _SCENARIO_CODE_ALIASES = {
@@ -308,6 +312,7 @@ def _template_roots() -> list[Path]:
     roots: list[Path] = []
     if _ENV_CTA_DIR:
         roots.append(Path(_ENV_CTA_DIR))
+    roots.append(_BAKED_CTA_DIR)
     roots.append(_EPCR_CTA_DIR)
     roots.append(_CORE_CTA_DIR)
     seen: set[Path] = set()
@@ -330,6 +335,12 @@ def _set_first_value(root: ET.Element, field_name: str, value: str) -> None:
     target = root.find(f".//n:{field_name}", NAMESPACES)
     if target is not None:
         target.text = value
+        # Bug fix: xsi:nil lives in the XSI namespace, not the NEMSIS namespace.
+        # The previous `ns("nil")` produced `{http://www.nemsis.org}nil`, which
+        # never matched the actual `{http://www.w3.org/2001/XMLSchema-instance}nil`
+        # attribute, leaving the element marked as nilled while also carrying
+        # text — an XSD violation. Pop both forms defensively.
+        target.attrib.pop(f"{{{XSI_NS}}}nil", None)
         target.attrib.pop(ns("nil"), None)
         target.attrib.pop("NV", None)
         target.attrib.pop("PN", None)

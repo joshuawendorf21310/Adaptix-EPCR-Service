@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:EMSDataSet xmlns:ns0="http://www.nemsis.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.nemsis.org EMSDataSet_v3.xsd" xsi:type="EMSDataSetType">
+  <ns0:Header>
+    <ns0:DemographicGroup>
+      <ns0:D01_03>US</ns0:D01_03>
+      <ns0:D01_07>911 Response (Scene)</ns0:D01_07>
+    </ns0:DemographicGroup>
+  </ns0:Header>
+  <ns0:PatientCareReport>
+    <ns0:eRecord>
+      <ns0:eRecord.01>PCR-0deda819-ea1e-5524-9920-1c5c49cebfbb</ns0:eRecord.01>
+      <ns0:eRecord.02>Adaptix Platform</ns0:eRecord.02>
+      <ns0:eRecord.03>Adaptix ePCR</ns0:eRecord.03>
+      <ns0:eRecord.04>1.0.0</ns0:eRecord.04>
+    </ns0:eRecord>
+    <ns0:eResponse>
+      <ns0:eResponse.01>DEMO-AGENCY-0001</ns0:eResponse.01>
+      <ns0:eResponse.03>INC-2026-04-29-0001</ns0:eResponse.03>
+      <ns0:eResponse.04>DEMO-2026-04-29-0001</ns0:eResponse.04>
+      <ns0:eResponse.05>2205001</ns0:eResponse.05>
+    </ns0:eResponse>
+    <ns0:eTimes>
+      <ns0:eTimes.01>2026-04-29T13:00:00-04:00</ns0:eTimes.01>
+      <ns0:eTimes.02>2026-04-29T13:01:30-04:00</ns0:eTimes.02>
+      <ns0:eTimes.03>2026-04-29T13:09:45-04:00</ns0:eTimes.03>
+      <ns0:eTimes.04>2026-04-29T13:34:10-04:00</ns0:eTimes.04>
+      <ns0:eTimes.05>2026-04-29T13:51:20-04:00</ns0:eTimes.05>
+    </ns0:eTimes>
+    <ns0:ePatient>
+      <ns0:ePatient.PatientNameGroup />
+      <ns0:ePatient.16>7701003</ns0:ePatient.16>
+    </ns0:ePatient>
+    <ns0:eSituation>
+      <ns0:eSituation.01>2026-04-29T13:22:00+0000</ns0:eSituation.01>
+      <ns0:eSituation.07>2407027</ns0:eSituation.07>
+    </ns0:eSituation>
+    <ns0:eNarrative>
+      <ns0:eNarrative.01>Patient encounter — call DEMO-2026-04-29-0001</ns0:eNarrative.01>
+    </ns0:eNarrative>
+    <ns0:eDisposition>
+      <ns0:eDisposition.DestinationGroup />
+      <ns0:eDisposition.27>4227001</ns0:eDisposition.27>
+      <ns0:eDisposition.28>4228001</ns0:eDisposition.28>
+    </ns0:eDisposition>
+  </ns0:PatientCareReport>
+</ns0:EMSDataSet>

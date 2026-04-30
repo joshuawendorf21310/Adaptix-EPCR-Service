@@ -182,24 +182,32 @@ class NemsisXSDValidator:
             else:
                 try:
                     sch_text = Path(sch_file).read_text(encoding="utf-8", errors="ignore")
-                    if 'queryBinding="xslt2"' in sch_text and not self._saxon_available:
-                        return self._fail(
-                            f"Schematron {Path(sch_file).name} requires saxonche/XSLT2 support",
-                            checksum,
+                    is_xslt2 = 'queryBinding="xslt2"' in sch_text or "queryBinding='xslt2'" in sch_text
+                    if is_xslt2:
+                        if not self._saxon_available:
+                            return self._fail(
+                                f"Schematron {Path(sch_file).name} requires saxonche/XSLT2 support",
+                                checksum,
+                            )
+                        sch_errs, sch_warns = self._run_saxon_schematron(
+                            xml_bytes, sch_file, sch_root
                         )
-                    from lxml.isoschematron import Schematron
+                        schematron_errors.extend(sch_errs)
+                        schematron_warnings.extend(sch_warns)
+                    else:
+                        from lxml.isoschematron import Schematron
 
-                    schematron = Schematron(ET.parse(sch_file), store_report=True)
-                    if not schematron.validate(doc):
-                        report = schematron.validation_report
-                        for el in report.iter():
-                            text = "".join(el.itertext()).strip()
-                            if not text:
-                                continue
-                            if "warning" in (el.get("role") or "").lower():
-                                schematron_warnings.append(text)
-                            else:
-                                schematron_errors.append(text)
+                        schematron = Schematron(ET.parse(sch_file), store_report=True)
+                        if not schematron.validate(doc):
+                            report = schematron.validation_report
+                            for el in report.iter():
+                                text = "".join(el.itertext()).strip()
+                                if not text:
+                                    continue
+                                if "warning" in (el.get("role") or "").lower():
+                                    schematron_warnings.append(text)
+                                else:
+                                    schematron_errors.append(text)
                 except Exception as exc:
                     schematron_errors.append(str(exc))
 
@@ -227,3 +235,136 @@ class NemsisXSDValidator:
         result = self.validate_xml(xml)
         logger.info("validate_export result export_id=%s valid=%s", export_id, result["valid"])
         return result
+
+    # --- Saxon-based ISO Schematron (XSLT2) evaluation -------------------------------
+
+    _SAXON_SKELETON_RELATIVE_CANDIDATES = (
+        "iso-schematron-xslt2",
+        "Schematron/utilities/iso-schematron-xslt2",
+        "utilities/iso-schematron-xslt2",
+    )
+
+    def _find_saxon_skeleton_dir(self, sch_root: str) -> str | None:
+        for rel in self._SAXON_SKELETON_RELATIVE_CANDIDATES:
+            candidate = os.path.join(sch_root, rel)
+            if os.path.isdir(candidate) and os.path.isfile(
+                os.path.join(candidate, "iso_svrl_for_xslt2.xsl")
+            ):
+                return candidate
+        for r, _dirs, files in os.walk(sch_root):
+            if "iso_svrl_for_xslt2.xsl" in files:
+                return r
+        return None
+
+    def _run_saxon_schematron(
+        self,
+        xml_bytes: bytes,
+        sch_file: str,
+        sch_root: str,
+    ) -> tuple[list[str], list[str]]:
+        """Compile schematron via the standard 3-stage XSLT2 pipeline using saxonche
+        and apply the resulting transform to the document. Parse SVRL output for
+        failed-asserts (errors) and successful-reports (warnings)."""
+        skeleton_dir = self._find_saxon_skeleton_dir(sch_root)
+        if not skeleton_dir:
+            return (
+                ["Saxon ISO Schematron skeleton XSLT files not found under "
+                 "NEMSIS_SCHEMATRON_PATH"],
+                [],
+            )
+
+        include_xsl = os.path.join(skeleton_dir, "iso_dsdl_include.xsl")
+        expand_xsl = os.path.join(skeleton_dir, "iso_abstract_expand.xsl")
+        skeleton_xsl = os.path.join(skeleton_dir, "iso_svrl_for_xslt2.xsl")
+
+        for required in (include_xsl, expand_xsl, skeleton_xsl):
+            if not os.path.isfile(required):
+                return ([f"Required Schematron XSLT missing: {required}"], [])
+
+        try:
+            from saxonche import PySaxonProcessor  # type: ignore
+        except Exception as exc:  # pragma: no cover - guarded by _saxon_available
+            return ([f"saxonche unavailable: {exc}"], [])
+
+        try:
+            with PySaxonProcessor(license=False) as proc:
+                xslt = proc.new_xslt30_processor()
+
+                include_exec = xslt.compile_stylesheet(stylesheet_file=include_xsl)
+                expand_exec = xslt.compile_stylesheet(stylesheet_file=expand_xsl)
+                skeleton_exec = xslt.compile_stylesheet(stylesheet_file=skeleton_xsl)
+                # NEMSIS schematron uses xsl:variable / xsl:template inside <sch:schema>;
+                # iso_svrl_for_xslt2 only forwards those when allow-foreign=true.
+                try:
+                    skeleton_exec.set_parameter(
+                        "allow-foreign", proc.make_string_value("true")
+                    )
+                except Exception:
+                    pass
+
+                # Stage 1: dsdl include (input = schematron file)
+                stage1 = include_exec.transform_to_string(source_file=sch_file)
+                if not stage1:
+                    return ([f"Saxon schematron stage1 produced empty output: {include_exec.error_message}"], [])
+
+                # Stage 2: abstract expand
+                stage2_node = proc.parse_xml(xml_text=stage1)
+                stage2 = expand_exec.transform_to_string(xdm_node=stage2_node)
+                if not stage2:
+                    return ([f"Saxon schematron stage2 produced empty output: {expand_exec.error_message}"], [])
+
+                # Stage 3: compile to runnable XSLT
+                stage3_node = proc.parse_xml(xml_text=stage2)
+                compiled_xsl_text = skeleton_exec.transform_to_string(xdm_node=stage3_node)
+                if not compiled_xsl_text:
+                    return ([f"Saxon schematron stage3 produced empty output: {skeleton_exec.error_message}"], [])
+
+                # Apply compiled XSLT to the document → SVRL
+                runnable = xslt.compile_stylesheet(stylesheet_text=compiled_xsl_text)
+                doc_node = proc.parse_xml(xml_text=xml_bytes.decode("utf-8"))
+                svrl_text = runnable.transform_to_string(xdm_node=doc_node)
+        except Exception as exc:
+            return ([f"Saxon schematron pipeline failure: {exc}"], [])
+
+        if not svrl_text:
+            return ([], [])
+
+        return self._parse_svrl(svrl_text)
+
+    @staticmethod
+    def _parse_svrl(svrl_text: str) -> tuple[list[str], list[str]]:
+        errors: list[str] = []
+        warnings: list[str] = []
+        try:
+            import lxml.etree as ET
+
+            root = ET.fromstring(svrl_text.encode("utf-8"))
+        except Exception as exc:
+            return ([f"SVRL parse failure: {exc}"], [])
+
+        ns = {"svrl": "http://purl.oclc.org/dsdl/svrl"}
+        for fa in root.findall(".//svrl:failed-assert", ns):
+            text = "".join(fa.itertext()).strip()
+            role = (fa.get("role") or "").lower()
+            location = fa.get("location") or ""
+            msg = f"{text} [{location}]" if location else text
+            if not msg:
+                continue
+            if "warn" in role or "info" in role:
+                warnings.append(msg)
+            else:
+                errors.append(msg)
+
+        for sr in root.findall(".//svrl:successful-report", ns):
+            text = "".join(sr.itertext()).strip()
+            role = (sr.get("role") or "").lower()
+            location = sr.get("location") or ""
+            msg = f"{text} [{location}]" if location else text
+            if not msg:
+                continue
+            if "error" in role or "fatal" in role:
+                errors.append(msg)
+            else:
+                warnings.append(msg)
+
+        return (errors, warnings)

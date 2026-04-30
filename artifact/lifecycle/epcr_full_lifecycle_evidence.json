@@ -1,0 +1,28 @@
+{
+  "chart_id": "0deda819-ea1e-5524-9920-1c5c49cebfbb",
+  "tenant_id": "11111111-1111-4111-8111-111111111111",
+  "export_id": 18,
+  "status": "generated",
+  "validation_skipped": false,
+  "service_xsd_valid": true,
+  "service_schematron_valid": true,
+  "artifact_bytes": 31220,
+  "artifact_sha256": "b05f09b317e8e13ce94d0c0f75d14357690c76706f118abcf9d87426caf6bbe5",
+  "recorded_checksum": "b05f09b317e8e13ce94d0c0f75d14357690c76706f118abcf9d87426caf6bbe5",
+  "xsd_path": "/app/nemsis/xsd/EMSDataSet_v3.xsd",
+  "lifecycle_steps_proven": [
+    "chart_row",
+    "patient_profile",
+    "assessment",
+    "vitals",
+    "interventions",
+    "medications",
+    "nemsis_mandatory_mappings",
+    "generate_export",
+    "validation_not_skipped",
+    "artifact_round_trip",
+    "sha256_match",
+    "xsd_revalidate_external"
+  ],
+  "verdict": "EPCR_FULL_LIFECYCLE_PASS"
+}

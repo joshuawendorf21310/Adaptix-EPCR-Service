@@ -1,0 +1,7 @@
+HTTP/1.1 200 OK
+date: Wed, 29 Apr 2026 13:47:23 GMT
+server: uvicorn
+content-length: 286
+content-type: application/json
+
+{"id":"0deda819-ea1e-5524-9920-1c5c49cebfbb","call_number":"DEMO-2026-04-29-0001","status":"under_review","incident_type":"medical","patient_id":"db58b63f-10dd-53c2-bd08-19670cc6e682","created_at":"2026-04-29T13:22:00+00:00","updated_at":"2026-04-29T14:00:00+00:00","finalized_at":null}

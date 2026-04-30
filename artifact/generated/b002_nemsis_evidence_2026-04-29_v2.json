@@ -1,0 +1,76 @@
+﻿{
+  "stage": "done",
+  "ok": true,
+  "chart_id": "0deda819-ea1e-5524-9920-1c5c49cebfbb",
+  "tenant_id": "11111111-1111-4111-8111-111111111111",
+  "snapshot": {
+    "ready_for_export": true,
+    "compliance_percentage": null,
+    "missing_mandatory_fields": [],
+    "blocker_count": 0
+  },
+  "generate_response": {
+    "export_id": 9,
+    "chart_id": "0deda819-ea1e-5524-9920-1c5c49cebfbb",
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "scope": "single_record",
+    "nemsis_version": "3.5.1",
+    "state_dataset": null,
+    "success": true,
+    "blocked": false,
+    "status": "generated",
+    "failure_type": null,
+    "status_reason_code": null,
+    "message": "Success",
+    "failure_reason": null,
+    "retry_count": 0,
+    "attempt_sequence": 1,
+    "readiness_snapshot": {
+      "ready_for_export": true,
+      "blocker_count": 0,
+      "warning_count": 0,
+      "readiness_score": null,
+      "mandatory_completion_percentage": null,
+      "missing_mandatory_fields": [],
+      "missing_recommended_fields": [],
+      "blocking_rule_ids": [],
+      "warning_rule_ids": [],
+      "derived_from_validation": true,
+      "captured_at": null
+    },
+    "artifact": {
+      "file_name": null,
+      "mime_type": null,
+      "size_bytes": 31220,
+      "checksum_sha256": "3192f6f060a72079df27baf6cbad4ec4cd2f5cfeea9dda5a76e9a137fc2911fd",
+      "storage_kind": "none",
+      "storage_key": "nemsis/11111111-1111-4111-8111-111111111111/0deda819-ea1e-5524-9920-1c5c49cebfbb/9.xml",
+      "has_xml_payload": false,
+      "xml_base64_included": false,
+      "generated_at": null,
+      "persisted_at": null
+    },
+    "validation": {
+      "valid": null,
+      "xsd_valid": true,
+      "schematron_valid": true,
+      "errors": [],
+      "warnings": [],
+      "validator_asset_version": null,
+      "checksum_sha256": null,
+      "validated_at": null,
+      "validation_duration_ms": null
+    },
+    "created_at": "2026-04-30T04:03:20.481928Z",
+    "updated_at": "2026-04-30T04:03:20.900576Z"
+  },
+  "artifact_bytes": 31220,
+  "artifact_sha256": "3192f6f060a72079df27baf6cbad4ec4cd2f5cfeea9dda5a76e9a137fc2911fd",
+  "xsd_validation": {
+    "valid": true,
+    "xsd_path": "/app/nemsis/xsd/EMSDataSet_v3.xsd",
+    "error_count": 0,
+    "first_errors": []
+  },
+  "error": null
+}
