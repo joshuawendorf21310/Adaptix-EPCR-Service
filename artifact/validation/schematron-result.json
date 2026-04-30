@@ -1,8 +1,8 @@
 {
   "is_valid": true,
-  "schema_path": "C:\\Users\\fusio\\Desktop\\workspace\\Adaptix-EPCR-Service\\nemsis_test\\assets\\schematron\\Schematron\\rules\\SampleEMSDataSet.sch",
-  "compiled_xsl_path": "C:\\Users\\fusio\\Desktop\\workspace\\Adaptix-EPCR-Service\\nemsis_test\\output\\schematron_cache\\SampleEMSDataSet.xsl",
-  "svrl_path": "C:\\Users\\fusio\\Desktop\\workspace\\Adaptix-EPCR-Service\\nemsis_test\\output\\schematron_cache\\SampleEMSDataSet.7905d1b289209256.svrl",
+  "schema_path": "C:\\Users\\fusio\\Desktop\\workspace\\Adaptix-EPCR-Service\\backend\\nemsis\\schematron\\EMSDataSet.sch",
+  "compiled_xsl_path": "C:\\Users\\fusio\\Desktop\\workspace\\Adaptix-EPCR-Service\\backend\\artifact\\validation\\schematron_cache\\EMSDataSet.xsl",
+  "svrl_path": "C:\\Users\\fusio\\Desktop\\workspace\\Adaptix-EPCR-Service\\backend\\artifact\\validation\\schematron_cache\\EMSDataSet.7905d1b289209256.svrl",
   "errors": [],
   "warnings": []
 }

@@ -19,6 +19,7 @@ COPY README.md /app/README.md
 COPY epcr_app /app/epcr_app
 COPY migrations /app/migrations
 COPY alembic.ini /app/alembic.ini
+COPY nemsis /app/nemsis
 
 RUN pip install .
 

@@ -1,0 +1,46 @@
+﻿{
+    "external_xsd_validation":  {
+                                    "sha256":  "7905d1b289209256eeb8f17ab8a864a64694223bd72c65e84d18f353db1f8753",
+                                    "bytes":  31224,
+                                    "xsd_valid":  true,
+                                    "xml":  "artifact/generated/2025-EMS-1-Allergy_v351.xml",
+                                    "xsd":  "nemsis/xsd/EMSDataSet_v3.xsd",
+                                    "method":  "lxml.etree.XMLSchema.validate inside fresh epcr-backend container",
+                                    "error_count":  0
+                                },
+    "generated_at":  "2026-04-29",
+    "verdict":  "PASS for XSD validator + readiness gate; demo seed intentionally short of full export-readiness",
+    "demo_seed":  {
+                      "script":  "scripts/seed_demo_pcr.py",
+                      "result":  "PASS",
+                      "rows_written":  11,
+                      "chart_id":  "0deda819-ea1e-5524-9920-1c5c49cebfbb"
+                  },
+    "phase":  "B-002-NEMSIS",
+    "pipeline":  {
+                     "blocker_count":  13,
+                     "readiness_gate":  "REJECTED ready_for_export=false",
+                     "interpretation":  "production gate working as designed; demo seed is intentionally PARTIALLY_COMPLIANT",
+                     "missing_mandatory_fields":  [
+                                                      "eRecord.01",
+                                                      "eRecord.02",
+                                                      "eRecord.03",
+                                                      "eRecord.04",
+                                                      "eResponse.01",
+                                                      "eResponse.03",
+                                                      "eResponse.04",
+                                                      "eResponse.05",
+                                                      "eTimes.01",
+                                                      "eTimes.02",
+                                                      "eTimes.03",
+                                                      "eTimes.04",
+                                                      "eTimes.05"
+                                                  ]
+                 },
+    "clean_db_rebuild":  {
+                             "method":  "scoped drop+recreate epcr_db (preserved 24 sibling DBs at-head)",
+                             "alembic_head":  "014_recreate_nemsis_export_lifecycle",
+                             "container_status":  "healthy",
+                             "image_rebuild":  "docker compose up -d --build epcr-backend"
+                         }
+}

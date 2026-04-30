@@ -33,6 +33,68 @@ register_namespace("", _NEMSIS_NS)
 register_namespace("xsi", _NEMSIS_XSI)
 
 
+# NEMSIS v2 → v3.5.1 legacy element renames. Sourced from the
+# `<v2Number>` annotations inside the official NEMSIS 3.5.1 XSD set
+# (see `dAgency_v3.xsd` and the per-section *_v3.xsd schemas).
+# Used as a defensive normalisation layer: if any upstream code path
+# (database mapping records, third-party importers, legacy form HTML,
+# etc.) leaks a raw v2 key into builder input, we rename it to the
+# canonical NEMSIS 3.5.1 element name BEFORE XML emission. The strict
+# emitter `_assert_no_legacy_element_keys` then guarantees no raw
+# `D01_*` / `E01_*` style identifiers ever reach the artifact.
+LEGACY_TO_NEMSIS_ELEMENT: dict[str, str] = {
+    "D01_01": "dAgency.02",
+    "D01_03": "dAgency.04",
+}
+
+# Strict regex for raw legacy-format identifiers. Any element name or
+# value-key still matching this pattern after normalisation is treated
+# as a builder bug and aborts the export before S3 upload.
+_LEGACY_KEY_PATTERN = re.compile(r"^[A-Z]\d{2}_\d{2}$")
+
+
+def normalize_element_name(name: str) -> str:
+    """Translate a legacy v2 NEMSIS identifier to its v3.5.1 canonical name.
+
+    Args:
+        name: Element identifier (either v2 raw form like ``D01_03`` or
+            an already-canonical NEMSIS 3.5.1 name like ``dAgency.04``).
+
+    Returns:
+        The canonical NEMSIS 3.5.1 element name, or the input unchanged
+        when no mapping is registered.
+    """
+    return LEGACY_TO_NEMSIS_ELEMENT.get(name, name)
+
+
+def _assert_no_legacy_element_keys(xml_bytes: bytes) -> None:
+    """Raise ``NemsisBuildError`` if any raw v2 legacy element name leaked.
+
+    Scans the rendered XML for tag names matching ``[A-Z]NN_NN`` (the
+    NEMSIS v2 raw-key pattern). If any match is found, the document is
+    not safe to upload and the export must fail rather than silently
+    publish a non-conformant artifact.
+
+    Args:
+        xml_bytes: UTF-8 encoded XML bytes about to be uploaded.
+
+    Raises:
+        NemsisBuildError: If a legacy raw-key tag name is present.
+    """
+    # Match `<NS:KEY` or `<KEY` opening tags whose local-name is the
+    # raw v2 form. Use a non-greedy text scan rather than re-parsing
+    # to avoid coupling this guardrail to namespace prefix variation.
+    text = xml_bytes.decode("utf-8", errors="replace")
+    matches = re.findall(r"<(?:[\w]+:)?([A-Z]\d{2}_\d{2})\b", text)
+    if matches:
+        leaked = sorted(set(matches))
+        raise NemsisBuildError(
+            "NEMSIS builder emitted raw v2 legacy element name(s): "
+            + ", ".join(leaked)
+            + " — register them in LEGACY_TO_NEMSIS_ELEMENT or fix the upstream mapping."
+        )
+
+
 class NemsisBuildError(ValueError):
     """Raised when export XML cannot be built truthfully."""
 
@@ -211,6 +273,7 @@ class NemsisXmlBuilder:
             "custom_elements": self._template_custom_elements(test_case_id),
         }
         xml_bytes, _ = build_nemsis_xml_from_template(test_case_id, chart=chart_payload)
+        _assert_no_legacy_element_keys(xml_bytes)
         return xml_bytes, list(self._warnings)
 
     def build(self) -> tuple[bytes, list[str]]:
@@ -284,6 +347,7 @@ class NemsisXmlBuilder:
 
         xml_declaration = b'<?xml version="1.0" encoding="UTF-8"?>\n'
         xml_bytes = xml_declaration + tostring(root, encoding="utf-8")
+        _assert_no_legacy_element_keys(xml_bytes)
         return xml_bytes, list(self._warnings)
 
     @staticmethod

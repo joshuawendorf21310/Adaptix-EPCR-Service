@@ -11,6 +11,7 @@ Deterministic, invariant-safe lifecycle with:
 import logging
 import os
 from datetime import datetime, timezone
+from uuid import uuid4
 
 import boto3
 from botocore.exceptions import ClientError
@@ -351,26 +352,46 @@ class NemsisExportService:
 
         session.add(attempt)
         await session.flush()
+        await session.commit()
+        attempt_id = attempt.id
+        attempt_chart_id = attempt.chart_id
+        attempt_tenant_id = attempt.tenant_id
+        attempt_created_at = attempt.created_at
 
         attempt.status = ExportLifecycleStatus.GENERATION_IN_PROGRESS.value
 
         try:
             xml, key, checksum, validation = await NemsisExportService._artifact(
-                session, request.chart_id, tenant_id, attempt.id
+                session, request.chart_id, tenant_id, attempt_id
             )
 
-            attempt.status = ExportLifecycleStatus.GENERATED.value
-            attempt.artifact_storage_key = key
-            attempt.artifact_checksum_sha256 = checksum
-            attempt.artifact_size_bytes = len(xml)
-            attempt.completed_at = datetime.now(timezone.utc)
+            now = datetime.now(timezone.utc)
 
-            await session.commit()
+            # Use a fresh session to write the GENERATED transition so we never
+            # touch the original session after the long-running artifact call
+            # (avoids asyncpg greenlet_spawn issues when committing again).
+            from sqlalchemy import update as _sa_update
+            from .db import _get_session_maker, _require_database_url
+
+            async with _get_session_maker(_require_database_url())() as fs:
+                await fs.execute(
+                    _sa_update(NemsisExportAttempt)
+                    .where(NemsisExportAttempt.id == attempt_id)
+                    .values(
+                        status=ExportLifecycleStatus.GENERATED.value,
+                        artifact_storage_key=key,
+                        artifact_checksum_sha256=checksum,
+                        artifact_size_bytes=len(xml),
+                        message="Success",
+                        completed_at=now,
+                    )
+                )
+                await fs.commit()
 
             return GenerateExportResponse(
-                export_id=attempt.id,
-                chart_id=attempt.chart_id,
-                tenant_id=attempt.tenant_id,
+                export_id=attempt_id,
+                chart_id=attempt_chart_id,
+                tenant_id=attempt_tenant_id,
                 success=True,
                 blocked=False,
                 status=ExportLifecycleStatus.GENERATED,
@@ -388,22 +409,48 @@ class NemsisExportService:
                     errors=validation.get("errors", []),
                     warnings=validation.get("warnings", []),
                 ),
-                created_at=attempt.created_at,
-                updated_at=attempt.updated_at,
+                created_at=attempt_created_at or now,
+                updated_at=now,
             )
 
         except Exception as exc:
-            attempt.status = ExportLifecycleStatus.FAILED.value
-            attempt.failure_type = ExportFailureType.GENERATION_ERROR.value
-            attempt.failure_reason = str(exc)
-            attempt.completed_at = datetime.now(timezone.utc)
+            # Roll back the poisoned transaction so the failure-record write uses
+            # a clean session (asyncpg refuses re-use after greenlet errors).
+            try:
+                await session.rollback()
+            except Exception:
+                pass
 
-            await session.commit()
+            from sqlalchemy import update as _sa_update
+
+            from .db import _get_session_maker, _require_database_url
+
+            now = datetime.now(timezone.utc)
+            try:
+                async with _get_session_maker(_require_database_url())() as fs:
+                    await fs.execute(
+                        _sa_update(NemsisExportAttempt)
+                        .where(NemsisExportAttempt.id == attempt_id)
+                        .values(
+                            status=ExportLifecycleStatus.FAILED.value,
+                            failure_type=ExportFailureType.GENERATION_ERROR.value,
+                            failure_reason=str(exc),
+                            message="Failed",
+                            completed_at=now,
+                        )
+                    )
+                    await fs.commit()
+            except Exception as record_exc:
+                logger.error(
+                    "Failed to record export failure for chart %s: %s",
+                    request.chart_id,
+                    record_exc,
+                )
 
             return GenerateExportResponse(
-                export_id=attempt.id,
-                chart_id=attempt.chart_id,
-                tenant_id=attempt.tenant_id,
+                export_id=attempt_id,
+                chart_id=attempt_chart_id,
+                tenant_id=attempt_tenant_id,
                 success=False,
                 blocked=False,
                 status=ExportLifecycleStatus.FAILED,
@@ -411,8 +458,8 @@ class NemsisExportService:
                 message="Failed",
                 failure_reason=str(exc),
                 readiness_snapshot=snapshot,
-                created_at=attempt.created_at,
-                updated_at=attempt.updated_at,
+                created_at=attempt_created_at or now,
+                updated_at=now,
             )
 
     @staticmethod
