@@ -1,36 +1,27 @@
 FROM python:3.11-slim
 
-ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONPATH=/app \
-    PIP_NO_CACHE_DIR=1 \
-    PORT=8000
-
 WORKDIR /app
 
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONPATH=/app
+
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends build-essential git \
+    && apt-get install -y --no-install-recommends curl netcat-openbsd git \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip install --upgrade pip setuptools wheel alembic
-
 COPY pyproject.toml /app/pyproject.toml
-COPY README.md /app/README.md
-COPY epcr_app /app/epcr_app
-COPY migrations /app/migrations
-COPY alembic.ini /app/alembic.ini
-COPY nemsis /app/nemsis
 
-RUN pip install .
+RUN pip install --no-cache-dir --upgrade "pip>=24.0" "setuptools>=70.0" "wheel>=0.43.0" && \
+    pip install --no-cache-dir --no-build-isolation .
 
-RUN adduser --disabled-password --gecos "" appuser \
-    && chown -R appuser:appuser /app
+COPY . /app
 
-USER appuser
+RUN if [ -f /app/entrypoint.sh ]; then chmod +x /app/entrypoint.sh; fi
 
 EXPOSE 8000
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:' + __import__('os').environ.get('PORT', '8000') + '/healthz').read()" || exit 1
+    CMD python -c "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/healthz', timeout=3).status == 200 else 1)"
 
-CMD ["sh", "-c", "alembic upgrade head && uvicorn epcr_app.main:app --host 0.0.0.0 --port ${PORT} --workers 1"]
+CMD ["/app/entrypoint.sh"]

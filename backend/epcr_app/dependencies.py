@@ -97,7 +97,12 @@ async def get_current_user(
         )
 
     public_key = os.environ.get("ADAPTIX_JWT_PUBLIC_KEY", "")
-    options: dict = {}
+    # verify_aud=False: the EPCR service does not rely on the JWT audience claim
+    # for access control. Tenant isolation is enforced via the 'tid' claim.
+    # Keycloak-issued tokens include an 'aud' claim that varies by client configuration;
+    # disabling audience verification here allows any Keycloak-issued token to be
+    # validated against the RS256 public key.
+    options: dict = {"verify_aud": False}
     key: str | dict = public_key
 
     if not public_key:
