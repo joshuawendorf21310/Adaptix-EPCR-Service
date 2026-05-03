@@ -124,3 +124,51 @@ class EPCRClinicalValidationService:
 
     def _generate_summary(self, data: Dict[str, Any]) -> str:
         return self._rule_based_summary(data, [], [])
+
+
+# Adaptix public API adapter
+import uuid as _uuid_cv
+from dataclasses import dataclass as _dc_cv
+from typing import List as _List_cv, Dict as _Dict_cv, Any as _Any_cv
+
+
+@_dc_cv
+class ClinicalContradiction:
+    field_a: str
+    field_b: str
+    description: str
+    severity: str
+    human_review_required: bool = True
+
+
+@_dc_cv
+class ClinicalValidationResult:
+    validation_id: str
+    chart_id: str
+    tenant_id: str
+    actor_id: str
+    contradictions: _List_cv[ClinicalContradiction]
+    missing_fields: _List_cv[str]
+    warnings: _List_cv[str]
+    human_review_required: bool
+    ai_may_not_auto_lock: bool = True
+    ai_may_not_overwrite_facts: bool = True
+
+
+class ClinicalValidationService:
+    def validate(self, chart_id, tenant_id, actor_id, chart_data):
+        contradictions = []
+        missing_fields = []
+        warnings = []
+        medications = chart_data.get('medications', [])
+        allergies = chart_data.get('allergies', [])
+        if medications and allergies:
+            allergy_names = {a.lower() if isinstance(a, str) else a.get('name', '').lower() for a in allergies}
+            for med in medications:
+                med_name = med.lower() if isinstance(med, str) else med.get('name', '').lower()
+                if med_name and med_name in allergy_names:
+                    contradictions.append(ClinicalContradiction(field_a='medications', field_b='allergies', description=f"Medication {med_name!r} conflicts with documented allergy", severity='error', human_review_required=True))
+        required = ['patient_name', 'incident_date', 'dispatch_time', 'arrival_time', 'chief_complaint', 'clinical_impression', 'disposition']
+        missing_fields = [f for f in required if not chart_data.get(f)]
+        human_review = bool(contradictions or missing_fields)
+        return ClinicalValidationResult(validation_id=str(_uuid_cv.uuid4()), chart_id=chart_id, tenant_id=tenant_id, actor_id=actor_id, contradictions=contradictions, missing_fields=missing_fields, warnings=warnings, human_review_required=human_review, ai_may_not_auto_lock=True, ai_may_not_overwrite_facts=True)

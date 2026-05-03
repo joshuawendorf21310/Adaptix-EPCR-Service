@@ -124,3 +124,45 @@ class EPCRNarrativeIntelligenceService:
 
     def _generate_summary(self, data: Dict[str, Any]) -> str:
         return self._rule_based_summary(data, [], [])
+
+
+# Adaptix public API adapter
+import uuid as _uuid_adapt
+import os as _os_adapt
+from dataclasses import dataclass as _dc_adapt
+
+
+@_dc_adapt
+class NarrativeGenerationResult:
+    generation_id: str
+    chart_id: str
+    tenant_id: str
+    actor_id: str
+    narrative_text: str
+    human_review_required: bool = True
+    chart_auto_locked: bool = False
+    phi_logged: bool = False
+    prompt_logged: bool = False
+    completion_logged: bool = False
+    no_invented_facts: bool = True
+    provider_status: str = 'not_configured'
+
+
+class AdaptixNarrativeService:
+    def __init__(self):
+        self._bedrock_region = _os_adapt.environ.get('BEDROCK_REGION', '')
+        self._ai_provider = _os_adapt.environ.get('AI_PROVIDER', '')
+        self._configured = bool(self._bedrock_region or self._ai_provider)
+
+    def generate_narrative(self, chart_id, tenant_id, actor_id, chart_data):
+        inner = EPCRNarrativeIntelligenceService()
+        inner_result = inner.assess(record_id=chart_id, tenant_id=tenant_id, actor_id=actor_id, record_data=chart_data)
+        provider_status = 'configured' if self._configured else 'not_configured'
+        return NarrativeGenerationResult(
+            generation_id=str(_uuid_adapt.uuid4()),
+            chart_id=chart_id, tenant_id=tenant_id, actor_id=actor_id,
+            narrative_text=inner_result.summary_text or '',
+            human_review_required=True, chart_auto_locked=False,
+            phi_logged=False, prompt_logged=False, completion_logged=False,
+            no_invented_facts=True, provider_status=provider_status,
+        )
