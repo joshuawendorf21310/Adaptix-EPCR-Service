@@ -25,7 +25,9 @@ def upgrade() -> None:
     without hitting the default VARCHAR(32) limit.
     """
     # Widen alembic_version column before the next migration writes its ID.
-    op.execute("ALTER TABLE alembic_version ALTER COLUMN version_num TYPE VARCHAR(255)")
+    bind = op.get_bind()
+    if bind.dialect.name != "sqlite":
+        op.execute("ALTER TABLE alembic_version ALTER COLUMN version_num TYPE VARCHAR(255)")
 
     op.add_column("epcr_nemsis_export_attempts", sa.Column("xsd_valid", sa.Boolean(), nullable=True))
     op.add_column("epcr_nemsis_export_attempts", sa.Column("schematron_valid", sa.Boolean(), nullable=True))

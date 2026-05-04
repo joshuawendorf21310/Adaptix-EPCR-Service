@@ -53,16 +53,19 @@ elif _db_url.startswith("postgresql+psycopg://"):
     _db_url = _db_url.replace("postgresql+psycopg://", "postgresql+asyncpg://", 1)
 
 _p = _up.urlparse(_db_url)
-_qs = _up.parse_qs(_p.query, keep_blank_values=True)
-_sslmode = _qs.get("sslmode", [""])[0].lower()
 _connect_args: dict = {}
-if _sslmode in ("require", "verify-ca", "verify-full", "prefer", "allow"):
-    _ctx = _ssl.create_default_context()
-    _ctx.check_hostname = False
-    _ctx.verify_mode = _ssl.CERT_NONE
-    _connect_args["ssl"] = _ctx
-_qs2 = {k: v for k, v in _qs.items() if k not in _LIBPQ_ONLY}
-_db_url = _up.urlunparse(_p._replace(query=_up.urlencode({k: v[0] for k, v in _qs2.items()})))
+if _p.scheme.startswith("postgresql"):
+    _qs = _up.parse_qs(_p.query, keep_blank_values=True)
+    _sslmode = _qs.get("sslmode", [""])[0].lower()
+    if _sslmode in ("require", "verify-ca", "verify-full", "prefer", "allow"):
+        _ctx = _ssl.create_default_context()
+        _ctx.check_hostname = False
+        _ctx.verify_mode = _ssl.CERT_NONE
+        _connect_args["ssl"] = _ctx
+    _qs2 = {k: v for k, v in _qs.items() if k not in _LIBPQ_ONLY}
+    _db_url = _up.urlunparse(
+        _p._replace(query=_up.urlencode({k: v[0] for k, v in _qs2.items()}))
+    )
 
 # alembic.ini uses ConfigParser interpolation: any '%' in the URL must be
 # doubled to escape it. Pass the URL via raw set in main_options instead.

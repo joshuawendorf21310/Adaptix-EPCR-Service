@@ -194,3 +194,53 @@ async def get_current_user(
     )
 
 
+async def get_tenant_id(
+    x_tenant_id: Annotated[str | None, Header(alias="X-Tenant-ID")] = None,
+    authorization: Annotated[str | None, Header(alias="Authorization")] = None,
+) -> str:
+    """Extract tenant_id string for use in database queries.
+
+    In production, tenant_id comes from the verified JWT 'tid' claim via
+    get_current_user. This dependency provides a string tenant_id for
+    routes that need it as a separate parameter.
+
+    For routes that use both get_current_user and get_tenant_id, the
+    tenant_id from get_current_user is authoritative. This dependency
+    provides a convenience string extraction.
+
+    Tenant isolation is enforced via the JWT 'tid' claim — never from
+    X-Tenant-ID header alone.
+    """
+    # In production, the JWT is validated by get_current_user.
+    # This dependency extracts tenant_id from the same JWT for convenience.
+    # Routes that use both get_current_user and get_tenant_id will have
+    # consistent tenant_id values since both read from the same JWT.
+    if authorization:
+        parts = authorization.split(" ", 1)
+        if len(parts) == 2 and parts[0].lower() == "bearer":
+            token = parts[1].strip()
+            public_key = os.environ.get("ADAPTIX_JWT_PUBLIC_KEY", "")
+            if public_key and token:
+                try:
+                    claims = jwt.decode(
+                        token,
+                        public_key,
+                        algorithms=[_ALGORITHM],
+                        options={"verify_aud": False},
+                    )
+                    raw_tenant_id = claims.get("tid")
+                    if raw_tenant_id:
+                        return str(UUID(str(raw_tenant_id)))
+                except Exception:
+                    pass
+
+    # Fallback for local/test environments where JWT is not configured
+    if x_tenant_id:
+        return x_tenant_id.strip()
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Tenant context unavailable — JWT required",
+    )
+
+

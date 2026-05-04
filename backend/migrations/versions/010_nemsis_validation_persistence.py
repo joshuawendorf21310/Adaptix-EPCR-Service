@@ -22,7 +22,9 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     """Add NEMSIS validation persistence tables."""
-    op.execute("ALTER TABLE alembic_version ALTER COLUMN version_num TYPE VARCHAR(255)")
+    bind = op.get_bind()
+    if bind.dialect.name != "sqlite":
+        op.execute("ALTER TABLE alembic_version ALTER COLUMN version_num TYPE VARCHAR(255)")
     
     # Create nemsis_validation_results table
     op.create_table(

@@ -102,7 +102,17 @@ async def init_db():
         SQLAlchemyError: If database initialization fails.
     """
     try:
-        from epcr_app.models import Base
+        from epcr_app.models import Base  # noqa: F401 — registers core tables
+        # Import all new model modules to register their tables with Base.metadata
+        import epcr_app.models_caregraph  # noqa: F401
+        import epcr_app.models_cpae  # noqa: F401
+        import epcr_app.models_vas  # noqa: F401
+        import epcr_app.models_vision  # noqa: F401
+        import epcr_app.models_critical_care  # noqa: F401
+        import epcr_app.models_terminology  # noqa: F401
+        import epcr_app.models_sync  # noqa: F401
+        import epcr_app.models_dashboard  # noqa: F401
+        import epcr_app.models_smart_text  # noqa: F401
         async with _get_engine(_require_database_url()).begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
         logger.info("Database initialized successfully")
