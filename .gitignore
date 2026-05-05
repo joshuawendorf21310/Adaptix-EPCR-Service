@@ -42,3 +42,8 @@ artifact/cta/testing-portal/runs/
 # Local proof JWT keys - generate per developer, never commit real keys
 jwt_priv.pem
 jwt_pub.pem
+
+# Runtime artifacts (not committed)
+artifact/cta/parsed-result.json
+backend/artifact/validation/schematron_cache/
+
