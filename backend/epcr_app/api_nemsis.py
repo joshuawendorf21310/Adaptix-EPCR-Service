@@ -12,6 +12,7 @@ from epcr_app.db import get_session
 from epcr_app.dependencies import CurrentUser, get_current_user
 from epcr_app.models import NemsisMappingRecord
 from epcr_app.nemsis.service import AllergyVerticalSliceService
+from epcr_app.services_export import NemsisExportService
 from epcr_app.services import ChartService
 
 logger = logging.getLogger(__name__)
@@ -120,8 +121,12 @@ def _build_blockers(missing_fields: list[str]) -> list[BlockerDetail]:
         BlockerDetail(
             type="blocker",
             field=field,
-            message=f"Mandatory NEMSIS field '{field}' is not populated",
-            jump_target=field,
+            message=(
+                f"Mandatory NEMSIS field '{field}' is not populated"
+                if "." in field
+                else f"Runtime export prerequisite '{field}' is not configured"
+            ),
+            jump_target=field if "." in field else None,
         )
         for field in missing_fields
     ]
@@ -207,10 +212,11 @@ async def validate_chart(
         chart_id=chart_id,
     )
 
-    blockers = _build_blockers(compliance["missing_mandatory_fields"])
+    snapshot = await NemsisExportService._snapshot(session, chart_id, tenant_id)
+    blockers = _build_blockers(list(snapshot.missing_mandatory_fields))
 
     return ValidationResponse(
-        valid=compliance["is_fully_compliant"],
+        valid=snapshot.ready_for_export,
         chart_id=chart_id,
         state_code="NEMSIS-3.5.1",
         mapped_elements=compliance["mandatory_fields_filled"],
@@ -234,11 +240,12 @@ async def get_readiness(
         chart_id=chart_id,
     )
 
-    blockers = _build_blockers(compliance["missing_mandatory_fields"])
+    snapshot = await NemsisExportService._snapshot(session, chart_id, tenant_id)
+    blockers = _build_blockers(list(snapshot.missing_mandatory_fields))
 
     return ReadinessResponse(
         chart_id=chart_id,
-        ready_for_export=compliance["is_fully_compliant"],
+        ready_for_export=snapshot.ready_for_export,
         blockers=blockers,
         warnings=[],
         mapped_elements=compliance["mandatory_fields_filled"],
@@ -260,10 +267,11 @@ async def get_export_preview(
         chart_id=chart_id,
     )
 
-    blockers = _build_blockers(compliance["missing_mandatory_fields"])
+    snapshot = await NemsisExportService._snapshot(session, chart_id, tenant_id)
+    blockers = _build_blockers(list(snapshot.missing_mandatory_fields))
 
     # 🔒 Preview reflects real export gate
-    can_export = compliance["is_fully_compliant"]
+    can_export = snapshot.ready_for_export
 
     return ExportPreviewResponse(
         chart_id=chart_id,
@@ -273,7 +281,7 @@ async def get_export_preview(
         blockers=blockers,
         warnings=[],
         can_export=can_export,
-        estimated_xml_size_bytes=0,
+        estimated_xml_size_bytes=max(1024, compliance["mandatory_fields_filled"] * 180),
     )
 
 

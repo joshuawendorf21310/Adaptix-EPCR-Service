@@ -11,7 +11,7 @@ import pytest
 import pytest_asyncio
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from epcr_app.models import Base, Chart, NemsisCompliance, ChartStatus, ComplianceStatus
+from epcr_app.models import Base, Chart, NemsisCompliance, ChartStatus, ComplianceStatus, EpcrAuditLog
 from epcr_app.services import ChartService
 from epcr_app.db import check_health
 
@@ -52,6 +52,13 @@ async def test_create_chart_success(test_db):
             select(NemsisCompliance).where(NemsisCompliance.chart_id == chart.id)
         )
         assert compliance.scalars().first() is not None
+
+        audit = await session.execute(
+            select(EpcrAuditLog).where(EpcrAuditLog.chart_id == chart.id)
+        )
+        entries = audit.scalars().all()
+        assert len(entries) == 1
+        assert entries[0].action == "chart_created"
 
 
 @pytest.mark.asyncio

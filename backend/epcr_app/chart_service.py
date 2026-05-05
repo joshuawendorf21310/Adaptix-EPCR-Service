@@ -742,6 +742,18 @@ class ChartService:
             session.add(compliance)
             
             await session.commit()
+            await ChartService.audit(
+                session=session,
+                tenant_id=tenant_id.strip(),
+                chart_id=chart.id,
+                user_id=created_by_user_id.strip(),
+                action="chart_created",
+                detail={
+                    "call_number": chart.call_number,
+                    "incident_type": chart.incident_type,
+                    "patient_id": chart.patient_id,
+                },
+            )
             logger.info(f"Chart created: id={chart.id}, call_number={call_number}, incident_type={incident_type}, tenant_id={tenant_id}")
             return chart
         except SQLAlchemyError as e:

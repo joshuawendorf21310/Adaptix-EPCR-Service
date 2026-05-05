@@ -2179,6 +2179,17 @@ async def finalize_chart(
         chart.status = "finalized"
         chart.finalized_at = datetime.now(UTC)
         await session.commit()
+        await ChartService.audit(
+            session=session,
+            tenant_id=tenant_id,
+            chart_id=chart_id,
+            user_id=user_id,
+            action="chart_finalized",
+            detail={
+                "compliance_percentage": compliance["compliance_percentage"],
+                "mandatory_fields_filled": compliance["mandatory_fields_filled"],
+            },
+        )
 
         from epcr_app.domain_events import publish_chart_finalized
         publish_chart_finalized(chart_id, tenant_id, getattr(chart, "call_number", chart_id))
@@ -2415,7 +2426,10 @@ async def get_audit_log(
         from epcr_app.models import EpcrAuditLog
         result = await session.execute(
             select(EpcrAuditLog)
-            .where(EpcrAuditLog.chart_id == chart_id)
+            .where(
+                EpcrAuditLog.chart_id == chart_id,
+                EpcrAuditLog.tenant_id == _tenant_id(current_user),
+            )
             .order_by(desc(EpcrAuditLog.performed_at))
         )
         entries = result.scalars().all()

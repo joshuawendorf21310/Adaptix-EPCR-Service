@@ -38,6 +38,12 @@ MOCK_COMPLIANCE_BLOCKED = {
 }
 
 
+class SnapshotStub:
+    def __init__(self, ready_for_export: bool, missing_mandatory_fields: list[str]):
+        self.ready_for_export = ready_for_export
+        self.missing_mandatory_fields = missing_mandatory_fields
+
+
 def build_test_client() -> TestClient:
     """Create isolated FastAPI test client with dependency overrides."""
     app = FastAPI()
@@ -70,6 +76,10 @@ class TestValidateRoute:
             "epcr_app.api_nemsis.ChartService.check_nemsis_compliance",
             new_callable=AsyncMock,
             return_value=MOCK_COMPLIANCE_READY,
+        ), patch(
+            "epcr_app.api_nemsis.NemsisExportService._snapshot",
+            new_callable=AsyncMock,
+            return_value=SnapshotStub(True, []),
         ):
             resp = client.post(
                 "/api/v1/epcr/nemsis/validate",
@@ -91,6 +101,10 @@ class TestValidateRoute:
             "epcr_app.api_nemsis.ChartService.check_nemsis_compliance",
             new_callable=AsyncMock,
             return_value=MOCK_COMPLIANCE_BLOCKED,
+        ), patch(
+            "epcr_app.api_nemsis.NemsisExportService._snapshot",
+            new_callable=AsyncMock,
+            return_value=SnapshotStub(False, MOCK_COMPLIANCE_BLOCKED["missing_mandatory_fields"]),
         ):
             resp = client.post(
                 "/api/v1/epcr/nemsis/validate",
@@ -112,6 +126,10 @@ class TestValidateRoute:
             "epcr_app.api_nemsis.ChartService.check_nemsis_compliance",
             new_callable=AsyncMock,
             return_value=MOCK_COMPLIANCE_READY,
+        ), patch(
+            "epcr_app.api_nemsis.NemsisExportService._snapshot",
+            new_callable=AsyncMock,
+            return_value=SnapshotStub(True, []),
         ):
             resp = client.post(
                 "/api/v1/epcr/nemsis/validate",
@@ -132,6 +150,10 @@ class TestReadinessRoute:
             "epcr_app.api_nemsis.ChartService.check_nemsis_compliance",
             new_callable=AsyncMock,
             return_value=MOCK_COMPLIANCE_READY,
+        ), patch(
+            "epcr_app.api_nemsis.NemsisExportService._snapshot",
+            new_callable=AsyncMock,
+            return_value=SnapshotStub(True, []),
         ):
             resp = client.get(
                 "/api/v1/epcr/nemsis/readiness",
@@ -151,6 +173,10 @@ class TestReadinessRoute:
             "epcr_app.api_nemsis.ChartService.check_nemsis_compliance",
             new_callable=AsyncMock,
             return_value=MOCK_COMPLIANCE_BLOCKED,
+        ), patch(
+            "epcr_app.api_nemsis.NemsisExportService._snapshot",
+            new_callable=AsyncMock,
+            return_value=SnapshotStub(False, MOCK_COMPLIANCE_BLOCKED["missing_mandatory_fields"]),
         ):
             resp = client.get(
                 "/api/v1/epcr/nemsis/readiness",
@@ -170,6 +196,10 @@ class TestReadinessRoute:
             "epcr_app.api_nemsis.ChartService.check_nemsis_compliance",
             new_callable=AsyncMock,
             return_value=MOCK_COMPLIANCE_READY,
+        ), patch(
+            "epcr_app.api_nemsis.NemsisExportService._snapshot",
+            new_callable=AsyncMock,
+            return_value=SnapshotStub(True, []),
         ):
             resp = client.get(
                 "/api/v1/epcr/nemsis/readiness",
@@ -190,6 +220,10 @@ class TestExportPreviewRoute:
             "epcr_app.api_nemsis.ChartService.check_nemsis_compliance",
             new_callable=AsyncMock,
             return_value=MOCK_COMPLIANCE_READY,
+        ), patch(
+            "epcr_app.api_nemsis.NemsisExportService._snapshot",
+            new_callable=AsyncMock,
+            return_value=SnapshotStub(True, []),
         ):
             resp = client.get(
                 "/api/v1/epcr/nemsis/export-preview",
@@ -210,6 +244,10 @@ class TestExportPreviewRoute:
             "epcr_app.api_nemsis.ChartService.check_nemsis_compliance",
             new_callable=AsyncMock,
             return_value=MOCK_COMPLIANCE_BLOCKED,
+        ), patch(
+            "epcr_app.api_nemsis.NemsisExportService._snapshot",
+            new_callable=AsyncMock,
+            return_value=SnapshotStub(False, MOCK_COMPLIANCE_BLOCKED["missing_mandatory_fields"]),
         ):
             resp = client.get(
                 "/api/v1/epcr/nemsis/export-preview",
@@ -221,3 +259,29 @@ class TestExportPreviewRoute:
         body = resp.json()
         assert body["can_export"] is False
         assert len(body["blockers"]) == 3
+
+    def test_readiness_includes_runtime_prerequisite_blockers(self) -> None:
+        client = build_test_client()
+
+        with patch(
+            "epcr_app.api_nemsis.ChartService.check_nemsis_compliance",
+            new_callable=AsyncMock,
+            return_value=MOCK_COMPLIANCE_READY,
+        ), patch(
+            "epcr_app.api_nemsis.NemsisExportService._snapshot",
+            new_callable=AsyncMock,
+            return_value=SnapshotStub(False, ["NEMSIS_STATE_CODE", "NEMSIS_EXPORT_S3_BUCKET"]),
+        ):
+            resp = client.get(
+                "/api/v1/epcr/nemsis/readiness",
+                params={"chart_id": "chart-003"},
+                headers={"X-Tenant-ID": TENANT_ID},
+            )
+
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["ready_for_export"] is False
+        assert [blocker["field"] for blocker in body["blockers"]] == [
+            "NEMSIS_STATE_CODE",
+            "NEMSIS_EXPORT_S3_BUCKET",
+        ]

@@ -10,6 +10,7 @@ Deterministic, invariant-safe lifecycle with:
 
 import logging
 import os
+import json
 from datetime import datetime, timezone
 from uuid import uuid4
 
@@ -29,6 +30,7 @@ from adaptix_contracts.schemas.nemsis_exports import (
     ExportLifecycleStatus,
     ExportReadinessSnapshot,
     ExportTriggerSource,
+    ExportValidationIssue,
     ExportValidationMetadata,
     GenerateExportRequest,
     GenerateExportResponse,
@@ -78,6 +80,47 @@ def _get_s3_client():
 # -------------------------
 
 class NemsisExportService:
+
+    @staticmethod
+    def _runtime_readiness_blockers() -> list[str]:
+        blockers: list[str] = []
+        if not (os.environ.get("NEMSIS_STATE_CODE") or "").strip():
+            blockers.append("NEMSIS_STATE_CODE")
+        if not (
+            os.environ.get("NEMSIS_EXPORT_S3_BUCKET")
+            or os.environ.get("FILES_S3_BUCKET")
+            or ""
+        ).strip():
+            blockers.append("NEMSIS_EXPORT_S3_BUCKET")
+        return blockers
+
+    @staticmethod
+    def _validation_issues(messages: list[str], *, warning: bool) -> list[ExportValidationIssue]:
+        level = "warning" if warning else "error"
+        return [ExportValidationIssue(level=level, message=str(message)) for message in messages]
+
+    @staticmethod
+    async def _write_chart_audit(
+        session: AsyncSession,
+        *,
+        tenant_id: str,
+        chart_id: str,
+        user_id: str | None,
+        action: str,
+        detail: dict | None = None,
+    ) -> None:
+        from epcr_app.models import EpcrAuditLog
+
+        session.add(
+            EpcrAuditLog(
+                id=str(uuid4()),
+                chart_id=chart_id,
+                tenant_id=tenant_id,
+                user_id=user_id or "system",
+                action=action,
+                detail_json=json.dumps(detail) if detail else None,
+            )
+        )
 
     # -------------------------
     # Core invariants
@@ -154,8 +197,8 @@ class NemsisExportService:
             valid=(row.xsd_valid is True and (row.schematron_valid is not False)),
             xsd_valid=row.xsd_valid,
             schematron_valid=row.schematron_valid,
-            errors=[],
-            warnings=[],
+            errors=NemsisExportService._validation_issues(list(row.validator_errors or []), warning=False),
+            warnings=NemsisExportService._validation_issues(list(row.validator_warnings or []), warning=True),
             validator_asset_version=row.validator_asset_version,
             checksum_sha256=row.artifact_checksum_sha256,
             validated_at=row.completed_at,
@@ -315,12 +358,17 @@ class NemsisExportService:
             chart_id=chart_id,
         )
 
+        runtime_blockers = NemsisExportService._runtime_readiness_blockers()
+        missing_fields = list(data.get("missing_mandatory_fields", [])) + runtime_blockers
+
         return ExportReadinessSnapshot(
-            ready_for_export=data["is_fully_compliant"],
-            blocker_count=len(data["missing_mandatory_fields"]),
+            ready_for_export=data["is_fully_compliant"] and not runtime_blockers,
+            blocker_count=len(missing_fields),
             warning_count=0,
-            compliance_percentage=data.get("compliance_percentage"),
-            missing_mandatory_fields=data.get("missing_mandatory_fields", []),
+            mandatory_completion_percentage=data.get("compliance_percentage"),
+            missing_mandatory_fields=missing_fields,
+            blocking_rule_ids=runtime_blockers,
+            captured_at=datetime.now(timezone.utc),
         )
 
     # -------------------------
@@ -344,8 +392,10 @@ class NemsisExportService:
             trigger_source=request.trigger_source.value,
             retry_count=0,
             ready_for_export=True,
-            blocker_count=0,
-            warning_count=0,
+            blocker_count=snapshot.blocker_count,
+            warning_count=snapshot.warning_count,
+            compliance_percentage=snapshot.mandatory_completion_percentage,
+            missing_mandatory_fields=list(snapshot.missing_mandatory_fields),
             requested_at=datetime.now(timezone.utc),
             created_by_user_id=user_id,
         )
@@ -379,12 +429,32 @@ class NemsisExportService:
                     .where(NemsisExportAttempt.id == attempt_id)
                     .values(
                         status=ExportLifecycleStatus.GENERATED.value,
+                        artifact_file_name=f"{attempt_chart_id}-{attempt_id}.xml",
+                        artifact_mime_type="application/xml",
                         artifact_storage_key=key,
                         artifact_checksum_sha256=checksum,
                         artifact_size_bytes=len(xml),
+                        xsd_valid=validation.get("xsd_valid"),
+                        schematron_valid=validation.get("schematron_valid"),
+                        validator_errors=validation.get("errors", []),
+                        validator_warnings=validation.get("warnings", []),
+                        validator_asset_version=validation.get("validator_asset_version"),
                         message="Success",
                         completed_at=now,
                     )
+                )
+                await NemsisExportService._write_chart_audit(
+                    fs,
+                    tenant_id=attempt_tenant_id,
+                    chart_id=attempt_chart_id,
+                    user_id=user_id,
+                    action="nemsis_export_generated",
+                    detail={
+                        "export_id": attempt_id,
+                        "storage_key": key,
+                        "checksum_sha256": checksum,
+                        "trigger_source": request.trigger_source.value,
+                    },
                 )
                 await fs.commit()
 
@@ -406,8 +476,8 @@ class NemsisExportService:
                 validation=ExportValidationMetadata(
                     xsd_valid=validation.get("xsd_valid"),
                     schematron_valid=validation.get("schematron_valid"),
-                    errors=validation.get("errors", []),
-                    warnings=validation.get("warnings", []),
+                    errors=NemsisExportService._validation_issues(validation.get("errors", []), warning=False),
+                    warnings=NemsisExportService._validation_issues(validation.get("warnings", []), warning=True),
                 ),
                 created_at=attempt_created_at or now,
                 updated_at=now,
@@ -426,18 +496,58 @@ class NemsisExportService:
             from .db import _get_session_maker, _require_database_url
 
             now = datetime.now(timezone.utc)
+            failure_status = ExportLifecycleStatus.FAILED.value
+            failure_type = ExportFailureType.GENERATION_ERROR.value
+            failure_reason = str(exc)
+            validator_errors: list[str] = []
+            validator_warnings: list[str] = []
+            xsd_valid = None
+            schematron_valid = None
+            validator_asset_version = None
+
+            if isinstance(exc, ExportValidationFailure):
+                failure_status = ExportLifecycleStatus.VALIDATION_FAILED.value
+                failure_type = ExportFailureType.VALIDATION_ERROR.value
+                validator_errors = list(exc.validation.get("errors", []))
+                validator_warnings = list(exc.validation.get("warnings", []))
+                xsd_valid = exc.validation.get("xsd_valid")
+                schematron_valid = exc.validation.get("schematron_valid")
+                validator_asset_version = exc.validation.get("validator_asset_version")
+            elif "NEMSIS_EXPORT_S3_BUCKET not configured" in str(exc):
+                failure_status = ExportLifecycleStatus.PERSISTENCE_FAILED.value
+                failure_type = ExportFailureType.PERSISTENCE_ERROR.value
+
             try:
                 async with _get_session_maker(_require_database_url())() as fs:
                     await fs.execute(
                         _sa_update(NemsisExportAttempt)
                         .where(NemsisExportAttempt.id == attempt_id)
                         .values(
-                            status=ExportLifecycleStatus.FAILED.value,
-                            failure_type=ExportFailureType.GENERATION_ERROR.value,
-                            failure_reason=str(exc),
+                            status=failure_status,
+                            failure_type=failure_type,
+                            failure_reason=failure_reason,
+                            xsd_valid=xsd_valid,
+                            schematron_valid=schematron_valid,
+                            validator_errors=validator_errors,
+                            validator_warnings=validator_warnings,
+                            validator_asset_version=validator_asset_version,
                             message="Failed",
                             completed_at=now,
                         )
+                    )
+                    await NemsisExportService._write_chart_audit(
+                        fs,
+                        tenant_id=attempt_tenant_id,
+                        chart_id=attempt_chart_id,
+                        user_id=user_id,
+                        action="nemsis_export_failed",
+                        detail={
+                            "export_id": attempt_id,
+                            "failure_type": failure_type,
+                            "failure_reason": failure_reason,
+                            "trigger_source": request.trigger_source.value,
+                            "validator_errors": validator_errors,
+                        },
                     )
                     await fs.commit()
             except Exception as record_exc:
@@ -453,10 +563,10 @@ class NemsisExportService:
                 tenant_id=attempt_tenant_id,
                 success=False,
                 blocked=False,
-                status=ExportLifecycleStatus.FAILED,
-                failure_type=ExportFailureType.GENERATION_ERROR,
+                status=ExportLifecycleStatus(failure_status),
+                failure_type=ExportFailureType(failure_type),
                 message="Failed",
-                failure_reason=str(exc),
+                failure_reason=failure_reason,
                 readiness_snapshot=snapshot,
                 created_at=attempt_created_at or now,
                 updated_at=now,
