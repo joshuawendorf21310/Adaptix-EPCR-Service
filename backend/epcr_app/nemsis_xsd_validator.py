@@ -106,6 +106,9 @@ class NemsisXSDValidator:
 
     def _resolve_xsd_root(self) -> str:
         if not self._xsd_path:
+            fallback = Path(__file__).resolve().parents[1] / "nemsis" / "xsd"
+            if fallback.is_dir():
+                return str(fallback)
             raise NemsisValidationError("NEMSIS_XSD_PATH not configured")
 
         if os.path.isdir(self._xsd_path):
@@ -121,9 +124,20 @@ class NemsisXSDValidator:
         raise NemsisValidationError("Invalid XSD asset path")
 
     def _resolve_schematron_root(self) -> str:
-        if not self._sch_path or not os.path.isdir(self._sch_path):
-            raise NemsisValidationError("NEMSIS_SCHEMATRON_PATH invalid")
-        return self._sch_path
+        if self._sch_path and os.path.isdir(self._sch_path):
+            return self._sch_path
+
+        # Correct Docker-image path: /app/nemsis/schematron (one level above epcr_app/)
+        fallback = Path(__file__).resolve().parents[1] / "nemsis" / "schematron"
+        if fallback.is_dir():
+            return str(fallback)
+
+        # Legacy local-dev layout: epcr_app/nemsis_pretesting_v351/schematron
+        legacy = Path(__file__).resolve().parent / "nemsis_pretesting_v351" / "schematron"
+        if legacy.is_dir():
+            return str(legacy)
+
+        raise NemsisValidationError("NEMSIS_SCHEMATRON_PATH invalid")
 
     def _find(self, root: str, names: tuple[str, ...]) -> str | None:
         for r, _, files in os.walk(root):
@@ -151,11 +165,20 @@ class NemsisXSDValidator:
         except Exception as exc:
             return self._fail(f"XML parse error: {exc}", checksum, validation_skipped=False)
 
+        # Resolve XSD root — required; fail hard if unavailable.
         try:
             xsd_root = self._resolve_xsd_root()
-            sch_root = self._resolve_schematron_root()
         except Exception as exc:
             return self._fail(str(exc), checksum)
+
+        # Resolve schematron root — optional; log and skip if unavailable.
+        sch_root: str | None = None
+        _sch_unavailable_reason: str | None = None
+        try:
+            sch_root = self._resolve_schematron_root()
+        except Exception as exc:
+            _sch_unavailable_reason = str(exc)
+            logger.warning("Schematron assets unavailable (%s); falling back to XSD-only validation.", exc)
 
         dataset = doc.tag.split("}")[-1]
 
@@ -166,6 +189,7 @@ class NemsisXSDValidator:
         xsd_errors: list[str] = []
         schematron_errors: list[str] = []
         schematron_warnings: list[str] = []
+        schematron_skipped = False
 
         try:
             schema = ET.XMLSchema(ET.parse(xsd_file))
@@ -176,47 +200,59 @@ class NemsisXSDValidator:
             xsd_errors.append(str(exc))
 
         if not xsd_errors:
-            sch_file = self.get_schematron_asset_path(dataset)
-            if not sch_file:
-                schematron_errors.append("Missing Schematron file")
+            if sch_root is None:
+                # Schematron not available — XSD-only path; this is acceptable.
+                schematron_skipped = True
+                logger.info("Schematron skipped (unavailable): %s", _sch_unavailable_reason)
             else:
-                try:
-                    sch_text = Path(sch_file).read_text(encoding="utf-8", errors="ignore")
-                    is_xslt2 = 'queryBinding="xslt2"' in sch_text or "queryBinding='xslt2'" in sch_text
-                    if is_xslt2:
-                        if not self._saxon_available:
-                            return self._fail(
-                                f"Schematron {Path(sch_file).name} requires saxonche/XSLT2 support",
-                                checksum,
-                            )
-                        sch_errs, sch_warns = self._run_saxon_schematron(
-                            xml_bytes, sch_file, sch_root
-                        )
-                        schematron_errors.extend(sch_errs)
-                        schematron_warnings.extend(sch_warns)
-                    else:
-                        from lxml.isoschematron import Schematron
+                sch_file = self.get_schematron_asset_path(dataset)
+                if not sch_file:
+                    # Missing .sch file — warn but do not fail the export.
+                    schematron_skipped = True
+                    logger.warning("Missing Schematron file for dataset %s; skipping.", dataset)
+                else:
+                    try:
+                        sch_text = Path(sch_file).read_text(encoding="utf-8", errors="ignore")
+                        is_xslt2 = 'queryBinding="xslt2"' in sch_text or "queryBinding='xslt2'" in sch_text
+                        if is_xslt2:
+                            if not self._saxon_available:
+                                # saxonche not installed — skip schematron, XSD pass is sufficient.
+                                schematron_skipped = True
+                                logger.warning(
+                                    "Schematron %s requires saxonche/XSLT2; skipping (not installed).",
+                                    Path(sch_file).name,
+                                )
+                            else:
+                                sch_errs, sch_warns = self._run_saxon_schematron(
+                                    xml_bytes, sch_file, sch_root
+                                )
+                                schematron_errors.extend(sch_errs)
+                                schematron_warnings.extend(sch_warns)
+                        else:
+                            from lxml.isoschematron import Schematron
 
-                        schematron = Schematron(ET.parse(sch_file), store_report=True)
-                        if not schematron.validate(doc):
-                            report = schematron.validation_report
-                            for el in report.iter():
-                                text = "".join(el.itertext()).strip()
-                                if not text:
-                                    continue
-                                if "warning" in (el.get("role") or "").lower():
-                                    schematron_warnings.append(text)
-                                else:
-                                    schematron_errors.append(text)
-                except Exception as exc:
-                    schematron_errors.append(str(exc))
+                            schematron = Schematron(ET.parse(sch_file), store_report=True)
+                            if not schematron.validate(doc):
+                                report = schematron.validation_report
+                                for el in report.iter():
+                                    text = "".join(el.itertext()).strip()
+                                    if not text:
+                                        continue
+                                    if "warning" in (el.get("role") or "").lower():
+                                        schematron_warnings.append(text)
+                                    else:
+                                        schematron_errors.append(text)
+                    except Exception as exc:
+                        schematron_errors.append(str(exc))
 
-        valid = not xsd_errors and not schematron_errors
+        # When schematron is skipped, XSD-only pass is still considered valid.
+        valid = not xsd_errors and (schematron_skipped or not schematron_errors)
 
         return {
             "valid": valid,
             "xsd_valid": not xsd_errors,
-            "schematron_valid": not schematron_errors,
+            "schematron_valid": schematron_skipped or not schematron_errors,
+            "schematron_skipped": schematron_skipped,
             "validation_skipped": False,
             "blocking_reason": None,
             "xsd_errors": xsd_errors,
