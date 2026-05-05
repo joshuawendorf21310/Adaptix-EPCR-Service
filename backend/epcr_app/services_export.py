@@ -257,6 +257,20 @@ class NemsisExportService:
             updated_at=row.updated_at,
         )
 
+    # Terminal states as defined by the contract model_validator:
+    # completed_at is only valid for terminal states (success + failure states)
+    _TERMINAL_STATES = {
+        ExportLifecycleStatus.COMPLETED.value,
+        ExportLifecycleStatus.SUBMISSION_ACCEPTED.value,
+        ExportLifecycleStatus.BLOCKED.value,
+        ExportLifecycleStatus.VALIDATION_FAILED.value,
+        ExportLifecycleStatus.PERSISTENCE_FAILED.value,
+        ExportLifecycleStatus.SUBMISSION_REJECTED.value,
+        ExportLifecycleStatus.RETRIEVAL_FAILED.value,
+        ExportLifecycleStatus.FAILED.value,
+        ExportLifecycleStatus.CANCELED.value,
+    }
+
     @staticmethod
     def _detail(row: NemsisExportAttempt) -> ExportAttemptDetail:
         status_value = NemsisExportService._status(row.status)
@@ -271,6 +285,9 @@ class NemsisExportService:
             ExportLifecycleStatus.CANCELED,
         } and failure_type is None:
             failure_type = ExportFailureType.UNKNOWN
+
+        # completed_at is only valid for terminal states per contracts model_validator
+        is_terminal = row.status in NemsisExportService._TERMINAL_STATES
 
         return ExportAttemptDetail(
             export_id=row.id,
@@ -292,7 +309,7 @@ class NemsisExportService:
             requested_at=row.requested_at,
             generation_started_at=row.started_at,
             generated_at=row.completed_at if row.status == ExportLifecycleStatus.GENERATED.value else None,
-            completed_at=row.completed_at,
+            completed_at=row.completed_at if is_terminal else None,
         )
 
     # -------------------------
