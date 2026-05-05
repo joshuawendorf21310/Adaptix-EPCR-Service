@@ -119,6 +119,8 @@ app.add_middleware(
 )
 
 app.include_router(auth_router)
+# Also mount auth router under gateway-prefixed path for ALB routing
+app.include_router(auth_router, prefix="/api/v1/epcr", include_in_schema=False)
 app.include_router(router)
 app.include_router(export_router)
 app.include_router(nemsis_router)
