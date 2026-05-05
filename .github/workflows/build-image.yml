@@ -17,6 +17,9 @@ env:
   ECS_CLUSTER: adaptix-staging-cluster
   ECS_SERVICE: adaptix-staging-epcr
   CONTAINER_NAME: epcr
+  PROD_ECR_REPOSITORY: adaptix-epcr
+  PROD_ECS_CLUSTER: adaptix-production
+  PROD_ECS_SERVICE: adaptix-production-epcr
 
 jobs:
   build:
@@ -104,3 +107,68 @@ jobs:
             --force-new-deployment
 
           echo "Deployment initiated for ${{ env.ECS_SERVICE }} with ${{ steps.register-td.outputs.new_td_arn }}"
+
+  deploy-production:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push production image to production ECR
+        id: build-prod
+        run: |
+          SHA="${{ github.sha }}"
+          SHORT_SHA="${SHA:0:8}"
+          IMAGE_TAG="prod-${SHORT_SHA}"
+          PROD_IMAGE_URI="${{ env.ECR_REGISTRY }}/${{ env.PROD_ECR_REPOSITORY }}:${IMAGE_TAG}"
+
+          docker buildx build \
+            --push \
+            --tag "${PROD_IMAGE_URI}" \
+            -f ./backend/Dockerfile.staging \
+            ./backend
+
+          echo "prod_image_uri=${PROD_IMAGE_URI}" >> "$GITHUB_OUTPUT"
+          echo "Built and pushed production image: ${PROD_IMAGE_URI}"
+
+      - name: Register production task definition and deploy
+        run: |
+          PROD_IMAGE_URI="${{ steps.build-prod.outputs.prod_image_uri }}"
+
+          CURRENT_TD=$(aws ecs describe-task-definition \
+            --task-definition "${{ env.PROD_ECS_SERVICE }}" \
+            --query 'taskDefinition' \
+            --output json)
+
+          NEW_TD=$(echo "$CURRENT_TD" | python3 -c "
+          import json, sys
+          td = json.load(sys.stdin)
+          for c in td['containerDefinitions']:
+              if c['name'] == '${{ env.CONTAINER_NAME }}':
+                  c['image'] = '${PROD_IMAGE_URI}'
+          for key in ['taskDefinitionArn','revision','status','requiresAttributes',
+                      'compatibilities','registeredAt','registeredBy']:
+              td.pop(key, None)
+          print(json.dumps(td))
+          ")
+
+          NEW_TD_ARN=$(aws ecs register-task-definition \
+            --cli-input-json "$NEW_TD" \
+            --query 'taskDefinition.taskDefinitionArn' \
+            --output text)
+
+          echo "Registered production task definition: ${NEW_TD_ARN}"
+
+          aws ecs update-service \
+            --cluster "${{ env.PROD_ECS_CLUSTER }}" \
+            --service "${{ env.PROD_ECS_SERVICE }}" \
+            --task-definition "${NEW_TD_ARN}" \
+            --force-new-deployment
+
+          echo "Production deployment initiated for ${{ env.PROD_ECS_SERVICE }}"
