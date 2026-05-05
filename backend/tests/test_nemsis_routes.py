@@ -80,6 +80,10 @@ class TestValidateRoute:
             "epcr_app.api_nemsis.NemsisExportService._snapshot",
             new_callable=AsyncMock,
             return_value=SnapshotStub(True, []),
+        ), patch(
+            "epcr_app.api_nemsis.NemsisExportService.validate_export_payload",
+            new_callable=AsyncMock,
+            return_value={"valid": True, "xsd_valid": True, "schematron_valid": True, "errors": [], "warnings": []},
         ):
             resp = client.post(
                 "/api/v1/epcr/nemsis/validate",
@@ -130,6 +134,10 @@ class TestValidateRoute:
             "epcr_app.api_nemsis.NemsisExportService._snapshot",
             new_callable=AsyncMock,
             return_value=SnapshotStub(True, []),
+        ), patch(
+            "epcr_app.api_nemsis.NemsisExportService.validate_export_payload",
+            new_callable=AsyncMock,
+            return_value={"valid": True, "xsd_valid": True, "schematron_valid": True, "errors": [], "warnings": []},
         ):
             resp = client.post(
                 "/api/v1/epcr/nemsis/validate",
