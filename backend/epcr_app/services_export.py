@@ -39,7 +39,7 @@ from adaptix_contracts.schemas.nemsis_exports import (
 )
 from epcr_app.models import Chart, NemsisMappingRecord
 from epcr_app.models_export import NemsisExportAttempt, NemsisExportEvent
-from epcr_app.nemsis_xml_builder import NemsisXmlBuilder
+from epcr_app.nemsis_xml_builder import NemsisBuildError, NemsisXmlBuilder
 from epcr_app.nemsis_xsd_validator import NemsisXSDValidator
 
 logger = logging.getLogger(__name__)
@@ -48,9 +48,18 @@ _VALIDATOR = NemsisXSDValidator()
 
 
 class ExportValidationFailure(ValueError):
-    def __init__(self, message: str, validation: dict) -> None:
+    def __init__(
+        self,
+        message: str,
+        validation: dict,
+        *,
+        xml_bytes: bytes | None = None,
+        checksum: str | None = None,
+    ) -> None:
         super().__init__(message)
         self.validation = validation
+        self.xml_bytes = xml_bytes
+        self.checksum = checksum
 
 
 # -------------------------
@@ -166,9 +175,27 @@ class NemsisExportService:
             missing_mandatory_fields=list(row.missing_mandatory_fields or []),
         )
 
+    _POST_GENERATION_STATUSES = {
+        ExportLifecycleStatus.GENERATED.value,
+        ExportLifecycleStatus.VALIDATION_IN_PROGRESS.value,
+        ExportLifecycleStatus.VALIDATION_FAILED.value,
+        ExportLifecycleStatus.VALIDATION_PASSED.value,
+        ExportLifecycleStatus.PERSISTENCE_IN_PROGRESS.value,
+        ExportLifecycleStatus.PERSISTENCE_FAILED.value,
+        ExportLifecycleStatus.READY_FOR_SUBMISSION.value,
+        ExportLifecycleStatus.QUEUED_FOR_SUBMISSION.value,
+        ExportLifecycleStatus.SUBMISSION_IN_PROGRESS.value,
+        ExportLifecycleStatus.SUBMISSION_PENDING.value,
+        ExportLifecycleStatus.SUBMISSION_ACCEPTED.value,
+        ExportLifecycleStatus.SUBMISSION_REJECTED.value,
+        ExportLifecycleStatus.RETRIEVAL_IN_PROGRESS.value,
+        ExportLifecycleStatus.RETRIEVAL_FAILED.value,
+        ExportLifecycleStatus.COMPLETED.value,
+    }
+
     @staticmethod
     def _artifact_metadata(row: NemsisExportAttempt) -> ExportArtifactMetadata | None:
-        if not any(
+        has_data = any(
             [
                 row.artifact_file_name,
                 row.artifact_mime_type,
@@ -176,7 +203,15 @@ class NemsisExportService:
                 row.artifact_storage_key,
                 row.artifact_checksum_sha256,
             ]
-        ):
+        )
+        if not has_data:
+            # The contract model requires artifact metadata for post-generation
+            # states (e.g. VALIDATION_FAILED).  Return a minimal placeholder so
+            # the Pydantic validator does not reject the response with 500.
+            if row.status in NemsisExportService._POST_GENERATION_STATUSES:
+                return ExportArtifactMetadata(
+                    has_xml_payload=False,
+                )
             return None
         return ExportArtifactMetadata(
             file_name=row.artifact_file_name,
@@ -322,14 +357,31 @@ class NemsisExportService:
         )
 
         builder = NemsisXmlBuilder(chart=chart, mapping_records=mappings)
-        xml_bytes, _ = builder.build()
+        try:
+            xml_bytes, _ = builder.build()
+        except NemsisBuildError as exc:
+            raise ExportValidationFailure(
+                "Validation failed",
+                {
+                    "valid": False,
+                    "xsd_valid": False,
+                    "schematron_valid": False,
+                    "errors": [str(exc)],
+                    "warnings": [],
+                    "validator_asset_version": _VALIDATOR.asset_version,
+                },
+            ) from exc
 
+        checksum = NemsisXmlBuilder.compute_sha256(xml_bytes)
         validation = _VALIDATOR.validate_xml(xml_bytes)
 
         if not validation.get("valid"):
-            raise ExportValidationFailure("Validation failed", validation)
-
-        checksum = NemsisXmlBuilder.compute_sha256(xml_bytes)
+            raise ExportValidationFailure(
+                "Validation failed",
+                validation,
+                xml_bytes=xml_bytes,
+                checksum=checksum,
+            )
 
         s3 = _get_s3_client()
         key = f"nemsis/{tenant_id}/{chart_id}/{attempt_id}.xml"
@@ -505,6 +557,11 @@ class NemsisExportService:
             schematron_valid = None
             validator_asset_version = None
 
+            artifact_file_name: str | None = None
+            artifact_mime_type: str | None = None
+            artifact_size_bytes: int | None = None
+            artifact_checksum_sha256: str | None = None
+
             if isinstance(exc, ExportValidationFailure):
                 failure_status = ExportLifecycleStatus.VALIDATION_FAILED.value
                 failure_type = ExportFailureType.VALIDATION_ERROR.value
@@ -513,6 +570,12 @@ class NemsisExportService:
                 xsd_valid = exc.validation.get("xsd_valid")
                 schematron_valid = exc.validation.get("schematron_valid")
                 validator_asset_version = exc.validation.get("validator_asset_version")
+                # Preserve the XML artifact metadata even on validation failure
+                # so the ExportAttemptDetail contract validator is satisfied.
+                artifact_file_name = f"{attempt_chart_id}-{attempt_id}.xml"
+                artifact_mime_type = "application/xml"
+                artifact_size_bytes = len(exc.xml_bytes or b"") or None
+                artifact_checksum_sha256 = exc.checksum
             elif "NEMSIS_EXPORT_S3_BUCKET not configured" in str(exc):
                 failure_status = ExportLifecycleStatus.PERSISTENCE_FAILED.value
                 failure_type = ExportFailureType.PERSISTENCE_ERROR.value
@@ -531,6 +594,10 @@ class NemsisExportService:
                             validator_errors=validator_errors,
                             validator_warnings=validator_warnings,
                             validator_asset_version=validator_asset_version,
+                            artifact_file_name=artifact_file_name,
+                            artifact_mime_type=artifact_mime_type,
+                            artifact_size_bytes=artifact_size_bytes,
+                            artifact_checksum_sha256=artifact_checksum_sha256,
                             message="Failed",
                             completed_at=now,
                         )
@@ -540,7 +607,11 @@ class NemsisExportService:
                         tenant_id=attempt_tenant_id,
                         chart_id=attempt_chart_id,
                         user_id=user_id,
-                        action="nemsis_export_failed",
+                        action=(
+                            "nemsis_export_validation_failed"
+                            if failure_type == ExportFailureType.VALIDATION_ERROR.value
+                            else "nemsis_export_failed"
+                        ),
                         detail={
                             "export_id": attempt_id,
                             "failure_type": failure_type,
@@ -700,3 +771,42 @@ class NemsisExportService:
             raise HTTPException(500, "Checksum mismatch")
 
         return data, row.artifact_file_name or "export.xml", "application/xml", checksum
+
+    @staticmethod
+    async def validate_export_payload(session: AsyncSession, *, chart_id: str, tenant_id: str) -> dict:
+        chart = (
+            await session.execute(
+                select(Chart).where(
+                    Chart.id == chart_id,
+                    Chart.tenant_id == tenant_id,
+                )
+            )
+        ).scalar_one_or_none()
+
+        if not chart:
+            raise HTTPException(404, "Chart not found")
+
+        mappings = list(
+            (
+                await session.execute(
+                    select(NemsisMappingRecord).where(
+                        NemsisMappingRecord.chart_id == chart_id,
+                        NemsisMappingRecord.tenant_id == tenant_id,
+                    )
+                )
+            ).scalars()
+        )
+
+        try:
+            xml_bytes, _warnings = NemsisXmlBuilder(chart=chart, mapping_records=mappings).build()
+        except NemsisBuildError as exc:
+            return {
+                "valid": False,
+                "xsd_valid": False,
+                "schematron_valid": False,
+                "errors": [str(exc)],
+                "warnings": [],
+                "validator_asset_version": _VALIDATOR.asset_version,
+            }
+
+        return _VALIDATOR.validate_export(xml_bytes)
