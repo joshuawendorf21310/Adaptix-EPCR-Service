@@ -54,10 +54,10 @@ def test_state_dataset_builder_emits_state_dataset_and_mapped_elements(
     assert warnings == []
 
 
-def test_validator_reports_missing_assets_as_deterministic_failure(
+def test_validator_uses_repo_fallback_assets_when_env_is_unset(
     monkeypatch,
 ) -> None:
-    """Validator should fail explicitly when official assets are unavailable."""
+    """Validator should use checked-in validator assets when env wiring is absent."""
     monkeypatch.delenv("NEMSIS_XSD_PATH", raising=False)
     monkeypatch.delenv("NEMSIS_SCHEMATRON_PATH", raising=False)
 
@@ -67,10 +67,9 @@ def test_validator_reports_missing_assets_as_deterministic_failure(
     )
 
     assert result["valid"] is False
-    assert result["validation_skipped"] is True
+    assert result["validation_skipped"] is False
     assert result["xsd_valid"] is False
-    assert result["schematron_valid"] is False
-    assert result["blocking_reason"]
+    assert result["blocking_reason"] is None
     assert result["checksum_sha256"]
     assert result["errors"]
 

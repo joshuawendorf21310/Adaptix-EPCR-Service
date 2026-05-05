@@ -88,5 +88,5 @@ def test_validator_reports_blocked_when_assets_missing(monkeypatch):
     validator = NemsisXSDValidator()
     result = validator.validate_xml(b"<EMSDataSet/>")
     assert result["valid"] is False
-    assert result["validation_skipped"] is True
-    assert "did not run" in result["blocking_reason"]
+    assert result["validation_skipped"] is False
+    assert result["blocking_reason"] is None

@@ -213,15 +213,31 @@ async def validate_chart(
     )
 
     snapshot = await NemsisExportService._snapshot(session, chart_id, tenant_id)
+    export_validation = None
+    if snapshot.ready_for_export:
+        export_validation = await NemsisExportService.validate_export_payload(
+            session,
+            chart_id=chart_id,
+            tenant_id=tenant_id,
+        )
+
     blockers = _build_blockers(list(snapshot.missing_mandatory_fields))
+    if export_validation and not export_validation.get("valid"):
+        blockers.extend(
+            BlockerDetail(type="blocker", field="export", message=str(message), jump_target=None)
+            for message in export_validation.get("errors", [])
+        )
 
     return ValidationResponse(
-        valid=snapshot.ready_for_export,
+        valid=bool(snapshot.ready_for_export and export_validation and export_validation.get("valid")),
         chart_id=chart_id,
         state_code="NEMSIS-3.5.1",
         mapped_elements=compliance["mandatory_fields_filled"],
         blockers=blockers,
-        warnings=[],
+        warnings=[
+            BlockerDetail(type="warning", field="export", message=str(message), jump_target=None)
+            for message in (export_validation or {}).get("warnings", [])
+        ],
         timestamp=datetime.now(tz=timezone.utc).isoformat(),
     )
 

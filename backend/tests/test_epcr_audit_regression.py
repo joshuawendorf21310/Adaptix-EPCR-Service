@@ -169,7 +169,7 @@ async def test_generate_export_failure_persists_validation_details_and_audit(tes
                 .order_by(EpcrAuditLog.performed_at.asc())
             )
         ).scalars().all()
-        assert audit_entries[-1].action == "nemsis_export_failed"
+        assert audit_entries[-1].action == "nemsis_export_validation_failed"
 
 
 @pytest.mark.asyncio
