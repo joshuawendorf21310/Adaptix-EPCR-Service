@@ -10,7 +10,7 @@ from datetime import UTC, datetime
 from typing import Any
 from uuid import uuid4
 
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.orm import Session, joinedload
 
 from epcr_app.models_nemsis_validation import (
@@ -150,7 +150,7 @@ class NEMSISValidationRepository:
                 NEMSISValidationResult.incident_id == incident_id,
                 NEMSISValidationResult.deleted_at.is_(None),
             )
-            .order_by(NEMSISValidationResult.created_at.desc())
+            .order_by(NEMSISValidationResult.created_at.desc(), text("rowid DESC"))
             .limit(limit)
         )
         return list(self.db.execute(stmt).scalars().all())
