@@ -140,6 +140,71 @@ def test_submit_endpoint_reports_unavailable(workspace_app) -> None:
         assert resp.json()["status"] == "submission_unavailable"
 
 
+def test_duplicate_call_number_same_tenant_returns_409(workspace_app) -> None:
+    """Same tenant cannot reuse a call_number — must return 409 with a
+    deterministic error code instead of a 500 IntegrityError."""
+    with TestClient(workspace_app) as client:
+        first = client.post(
+            "/api/v1/epcr/chart-workspaces",
+            json={"call_number": "DUP-CALL-001", "incident_type": "medical"},
+        )
+        assert first.status_code == 201, first.text
+
+        second = client.post(
+            "/api/v1/epcr/chart-workspaces",
+            json={"call_number": "DUP-CALL-001", "incident_type": "medical"},
+        )
+        assert second.status_code == 409, second.text
+        body = second.json()
+        detail = body.get("detail", body)
+        assert detail.get("code") == "chart_call_number_conflict"
+        assert detail.get("call_number") == "DUP-CALL-001"
+
+
+def test_same_call_number_across_tenants_is_allowed(workspace_app) -> None:
+    """Different tenants can reuse the same call_number — the previous
+    global UNIQUE constraint incorrectly blocked this."""
+    from epcr_app.dependencies import get_current_user
+
+    with TestClient(workspace_app) as client:
+        first = client.post(
+            "/api/v1/epcr/chart-workspaces",
+            json={"call_number": "CROSS-TENANT-001", "incident_type": "medical"},
+        )
+        assert first.status_code == 201, first.text
+
+    # Swap the dependency to a different tenant and re-issue with the
+    # same call_number; this must succeed under the new composite
+    # (tenant_id, call_number) constraint.
+    def _other_tenant_user():
+        return SimpleNamespace(
+            tenant_id="tenant-other",
+            user_id="user-other",
+            email="other@x",
+            roles=["paramedic"],
+        )
+
+    workspace_app.dependency_overrides[get_current_user] = _other_tenant_user
+    try:
+        with TestClient(workspace_app) as client:
+            second = client.post(
+                "/api/v1/epcr/chart-workspaces",
+                json={"call_number": "CROSS-TENANT-001", "incident_type": "medical"},
+            )
+            assert second.status_code == 201, second.text
+    finally:
+        # Restore the original tenant dependency for any subsequent
+        # tests sharing the fixture instance.
+        def _default_user():
+            return SimpleNamespace(
+                tenant_id="tenant-api",
+                user_id="user-api",
+                email="api@x",
+                roles=["paramedic"],
+            )
+        workspace_app.dependency_overrides[get_current_user] = _default_user
+
+
 def test_protected_nemsis_files_have_zero_diff() -> None:
     """Slice 3B+ NEMSIS files must remain untouched by the workspace agent."""
     import subprocess

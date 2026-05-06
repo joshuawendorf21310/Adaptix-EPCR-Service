@@ -6,7 +6,20 @@ compliance tracking for emergency patient care records.
 """
 from datetime import datetime, UTC
 from enum import Enum
-from sqlalchemy import Column, String, DateTime, Integer, Text, ForeignKey, Boolean, Float, Enum as SQLEnum, text, event
+from sqlalchemy import (
+    Column,
+    String,
+    DateTime,
+    Integer,
+    Text,
+    ForeignKey,
+    Boolean,
+    Float,
+    Enum as SQLEnum,
+    text,
+    event,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
@@ -154,10 +167,17 @@ class Chart(Base):
         nemsis_compliance: NemsisCompliance compliance tracking record.
     """
     __tablename__ = "epcr_charts"
-    
+    __table_args__ = (
+        UniqueConstraint(
+            "tenant_id",
+            "call_number",
+            name="uq_epcr_charts_tenant_call_number",
+        ),
+    )
+
     id = Column(String(36), primary_key=True, index=True)
     tenant_id = Column(String(36), index=True, nullable=False)
-    call_number = Column(String(50), unique=True, nullable=False, index=True)
+    call_number = Column(String(50), nullable=False, index=True)
     patient_id = Column(String(36), nullable=True)
     incident_type = Column(String(50), default="medical", nullable=False)
     status = Column(SQLEnum(ChartStatus), default=ChartStatus.NEW, nullable=False)

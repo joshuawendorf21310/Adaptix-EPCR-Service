@@ -10,7 +10,7 @@ import logging
 from datetime import datetime, UTC
 from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from epcr_app.models import (
     Chart,
     ChartStatus,
@@ -741,7 +741,15 @@ class ChartService:
             )
             session.add(compliance)
             
-            await session.commit()
+            try:
+                await session.commit()
+            except IntegrityError as ie:
+                await session.rollback()
+                logger.warning(
+                    "Chart creation rejected by uniqueness constraint: "
+                    f"tenant_id={tenant_id} call_number={call_number}: {ie}"
+                )
+                raise ValueError("chart_call_number_conflict") from ie
             await ChartService.audit(
                 session=session,
                 tenant_id=tenant_id.strip(),
@@ -756,6 +764,8 @@ class ChartService:
             )
             logger.info(f"Chart created: id={chart.id}, call_number={call_number}, incident_type={incident_type}, tenant_id={tenant_id}")
             return chart
+        except ValueError:
+            raise
         except SQLAlchemyError as e:
             logger.error(f"Database error creating chart for tenant {tenant_id}: {str(e)}", exc_info=True)
             raise
