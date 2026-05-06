@@ -1,0 +1,231 @@
+{
+  "source_url": "https://git.nemsis.org/projects/NEP/repos/nemsis_public/raw/DefinedLists/IncidentLocationType/IncidentLocationType.json",
+  "source_name": "NEMSIS Version 3 Defined Lists",
+  "source_repo": "https://git.nemsis.org/projects/NEP/repos/nemsis_public/browse/DefinedLists",
+  "list_name": "Incident Location Type",
+  "download_format": "json",
+  "retrieved_at": "2026-05-06",
+  "upstream_date": "2025-01-14",
+  "nemsis_element_ids": [
+    "eScene.09"
+  ],
+  "nemsis_type_names": [
+    "IncidentLocationType"
+  ],
+  "source_vocabularies": [
+    "ICD-10"
+  ],
+  "value_count": 35,
+  "values": [
+    {
+      "code": "Y92.520",
+      "display": "Airport",
+      "description": "Airport as the place of occurrence of the external cause",
+      "category": "Commercial"
+    },
+    {
+      "code": "Y92.39",
+      "display": "Gym",
+      "description": "Other specified sports and athletic area as the place of occurrence of the external cause",
+      "category": "Commercial"
+    },
+    {
+      "code": "Y92.6",
+      "display": "Industrial/construction area",
+      "description": "Industrial and construction area as the place of occurrence of the external cause",
+      "category": "Commercial"
+    },
+    {
+      "code": "Y92.5",
+      "display": "Place of business, NOS",
+      "description": "Trade and service area as the place of occurrence of the external cause",
+      "category": "Commercial"
+    },
+    {
+      "code": "Y92.511",
+      "display": "Restaurant/café",
+      "description": "Restaurant or café as the place of occurrence of the external cause",
+      "category": "Commercial"
+    },
+    {
+      "code": "Y92.51",
+      "display": "Store",
+      "description": "Private commercial establishments as the place of occurrence of the external cause",
+      "category": "Commercial"
+    },
+    {
+      "code": "Y92.59",
+      "display": "Warehouse",
+      "description": "Other trade areas as the place of occurrence of the external cause",
+      "category": "Commercial"
+    },
+    {
+      "code": "Y92.531",
+      "display": "Doctor's office",
+      "description": "Health care provider office as the place of occurrence of the external cause",
+      "category": "Healthcare"
+    },
+    {
+      "code": "Y92.23",
+      "display": "Hospital",
+      "description": "Hospital as the place of occurrence of the external cause",
+      "category": "Healthcare"
+    },
+    {
+      "code": "Y92.12",
+      "display": "Nursing home",
+      "description": "Nursing home as the place of occurrence of the external cause",
+      "category": "Healthcare"
+    },
+    {
+      "code": "Y92.538",
+      "display": "Other ambulatory care",
+      "description": "Other ambulatory health services establishments as the place of occurrence of the external cause",
+      "category": "Healthcare"
+    },
+    {
+      "code": "Y92.532",
+      "display": "Urgent care",
+      "description": "Urgent care center as the place of occurrence of the external cause",
+      "category": "Healthcare"
+    },
+    {
+      "code": "Y92.1",
+      "display": "Institutional residence",
+      "description": "Institutional (nonprivate) residence as the place of occurrence of the external cause",
+      "category": "Institutional Residence"
+    },
+    {
+      "code": "Y92.14",
+      "display": "Prison/jail",
+      "description": "Prison as the place of occurrence of the external cause",
+      "category": "Institutional Residence"
+    },
+    {
+      "code": "Y92.89",
+      "display": "Abandoned house",
+      "description": "Other specified places as the place of occurrence of the external cause",
+      "category": "Other"
+    },
+    {
+      "code": "Y92.13",
+      "display": "Military installation",
+      "description": "Military base as the place of occurrence of the external cause",
+      "category": "Other"
+    },
+    {
+      "code": "Y92.8",
+      "display": "Other, NOS",
+      "description": "Other places as the place of occurrence of the external cause",
+      "category": "Other"
+    },
+    {
+      "code": "Y92.22",
+      "display": "Religious institution",
+      "description": "Religious institution as the place of occurrence of the external cause",
+      "category": "Other"
+    },
+    {
+      "code": "Y92.03",
+      "display": "Apartment/condo",
+      "description": "Apartment as the place of occurrence of the external cause",
+      "category": "Private Residence"
+    },
+    {
+      "code": "Y92.02",
+      "display": "Mobile home",
+      "description": "Mobile home as the place of occurrence of the external cause",
+      "category": "Private Residence"
+    },
+    {
+      "code": "Y92.09",
+      "display": "Other private residence",
+      "description": "Other non-institutional residence as the place of occurrence of the external cause",
+      "category": "Private Residence"
+    },
+    {
+      "code": "Y92.0",
+      "display": "Private residence",
+      "description": "Non-institutional (private) residence as the place of occurrence of the external cause",
+      "category": "Private Residence"
+    },
+    {
+      "code": "Y92.24",
+      "display": "Public building",
+      "description": "Public administrative building as the place of occurrence of the external cause",
+      "category": "Public Area"
+    },
+    {
+      "code": "Y92.2",
+      "display": "Public area, NOS",
+      "description": "School, other institution and public administrative area as the place of occurrence of the external cause",
+      "category": "Public Area"
+    },
+    {
+      "code": "Y92.29",
+      "display": "Clubhouse",
+      "description": "Other specified public building as the place of occurrence of the external cause",
+      "category": "Recreational"
+    },
+    {
+      "code": "Y92.830",
+      "display": "Park",
+      "description": "Public park as the place of occurrence of the external cause",
+      "category": "Recreational"
+    },
+    {
+      "code": "Y92.34",
+      "display": "Pool",
+      "description": "Swimming pool (public) as the place of occurrence of the external cause",
+      "category": "Recreational"
+    },
+    {
+      "code": "Y92.838",
+      "display": "Recreational area, NOS",
+      "description": "Other recreation area as the place of occurrence of the external cause",
+      "category": "Recreational"
+    },
+    {
+      "code": "Y92.3",
+      "display": "Sports area",
+      "description": "Sports and athletics area as the place of occurrence of the external cause",
+      "category": "Recreational"
+    },
+    {
+      "code": "Y92.210",
+      "display": "Daycare",
+      "description": "Daycare center as the place of occurrence of the external cause",
+      "category": "School"
+    },
+    {
+      "code": "Y92.21",
+      "display": "School",
+      "description": "School (private) (public) (state) as the place of occurrence of the external cause",
+      "category": "School"
+    },
+    {
+      "code": "Y92.16",
+      "display": "School dorm",
+      "description": "School dormitory as the place of occurrence of the external cause",
+      "category": "School"
+    },
+    {
+      "code": "Y92.481",
+      "display": "Parking lot",
+      "description": "Parking lot as the place of occurrence of the external cause",
+      "category": "Street/Road"
+    },
+    {
+      "code": "Y92.480",
+      "display": "Sidewalk",
+      "description": "Sidewalk as the place of occurrence of the external cause",
+      "category": "Street/Road"
+    },
+    {
+      "code": "Y92.4",
+      "display": "Street/road/highway",
+      "description": "Street, highway and other paved roadways as the place of occurrence of the external cause",
+      "category": "Street/Road"
+    }
+  ]
+}

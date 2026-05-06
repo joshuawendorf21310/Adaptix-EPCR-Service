@@ -1,0 +1,641 @@
+{
+  "source_family": "NEMSIS Version 3",
+  "source_repo": "https://git.nemsis.org/scm/nep/nemsis_public.git",
+  "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717",
+  "source_branch": "master",
+  "target_version": "NEMSIS_V3",
+  "retrieved_at": "2026-05-06",
+  "artifacts": [
+    {
+      "name": "commonTypes_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "EMSDataSet",
+      "source_repo_path": "XSDs/NEMSIS_EMS_XSDs/commonTypes_v3.xsd",
+      "local_path": "raw/xsd_ems/commonTypes_v3.xsd",
+      "sha256": "2c7127c28649f3a77ab4ee1354765025afec14f2609fb24759e407f67b99f386",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "dAgency_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "EMSDataSet",
+      "source_repo_path": "XSDs/NEMSIS_EMS_XSDs/dAgency_v3.xsd",
+      "local_path": "raw/xsd_ems/dAgency_v3.xsd",
+      "sha256": "45045b335846e47535f3c568f6a61979f31ab52692ba85b5637ac16a125b9eb4",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "eAirway_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "EMSDataSet",
+      "source_repo_path": "XSDs/NEMSIS_EMS_XSDs/eAirway_v3.xsd",
+      "local_path": "raw/xsd_ems/eAirway_v3.xsd",
+      "sha256": "94ac9cb1454c0dd54e8e81f2493f9e731742415fc8b7e57527c6802391935ad7",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "eArrest_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "EMSDataSet",
+      "source_repo_path": "XSDs/NEMSIS_EMS_XSDs/eArrest_v3.xsd",
+      "local_path": "raw/xsd_ems/eArrest_v3.xsd",
+      "sha256": "fd1a128028484bfd9ba6f1380bb4184873f49a4742cbba221bedea4a373c9d0c",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "eCrew_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "EMSDataSet",
+      "source_repo_path": "XSDs/NEMSIS_EMS_XSDs/eCrew_v3.xsd",
+      "local_path": "raw/xsd_ems/eCrew_v3.xsd",
+      "sha256": "d9ba9e7708be96455d29aa97371e9991c4af6643d9331dbac4e1fac60b7650aa",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "eCustom_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "EMSDataSet",
+      "source_repo_path": "XSDs/NEMSIS_EMS_XSDs/eCustom_v3.xsd",
+      "local_path": "raw/xsd_ems/eCustom_v3.xsd",
+      "sha256": "ac84b4f76015b04d47cd445080d86f2a5a4377602677c805063524f4c2b70d70",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "eDevice_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "EMSDataSet",
+      "source_repo_path": "XSDs/NEMSIS_EMS_XSDs/eDevice_v3.xsd",
+      "local_path": "raw/xsd_ems/eDevice_v3.xsd",
+      "sha256": "790f0a7000a27ec94251492a8d78ed9057f0c5bededea714e9eff590c0b9d358",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "eDispatch_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "EMSDataSet",
+      "source_repo_path": "XSDs/NEMSIS_EMS_XSDs/eDispatch_v3.xsd",
+      "local_path": "raw/xsd_ems/eDispatch_v3.xsd",
+      "sha256": "a4e72d90acc5fffe542203c18f12ae9e5ff56459213388a7e58686c66219224f",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "eDisposition_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "EMSDataSet",
+      "source_repo_path": "XSDs/NEMSIS_EMS_XSDs/eDisposition_v3.xsd",
+      "local_path": "raw/xsd_ems/eDisposition_v3.xsd",
+      "sha256": "eb785386fbb4d97b473dae9fec1184c9adeb9a805e0f895b31893a701c022c27",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "eExam_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "EMSDataSet",
+      "source_repo_path": "XSDs/NEMSIS_EMS_XSDs/eExam_v3.xsd",
+      "local_path": "raw/xsd_ems/eExam_v3.xsd",
+      "sha256": "243c8e1092af77d4764911123b9fdce07201080c200bb665bd62850c78e71755",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "eHistory_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "EMSDataSet",
+      "source_repo_path": "XSDs/NEMSIS_EMS_XSDs/eHistory_v3.xsd",
+      "local_path": "raw/xsd_ems/eHistory_v3.xsd",
+      "sha256": "5a2a5171705dc2c12c1941358a58d526693af498b29663dba1e21fb954e3a627",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "eInjury_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "EMSDataSet",
+      "source_repo_path": "XSDs/NEMSIS_EMS_XSDs/eInjury_v3.xsd",
+      "local_path": "raw/xsd_ems/eInjury_v3.xsd",
+      "sha256": "5de231aeb40f96f905a93fd324b959a576be7fec93c0e2db8dfea7640e392fc6",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "eLabs_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "EMSDataSet",
+      "source_repo_path": "XSDs/NEMSIS_EMS_XSDs/eLabs_v3.xsd",
+      "local_path": "raw/xsd_ems/eLabs_v3.xsd",
+      "sha256": "68e91445c075dd192b0a39c09b5fd65d9d4427e386a284f9960b0c31e4e62a84",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "eMedications_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "EMSDataSet",
+      "source_repo_path": "XSDs/NEMSIS_EMS_XSDs/eMedications_v3.xsd",
+      "local_path": "raw/xsd_ems/eMedications_v3.xsd",
+      "sha256": "8ed06dae63dd834f3197866dee170418e709276c33d905defd67ab7e9d52b223",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "EMSDataSet_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "EMSDataSet",
+      "source_repo_path": "XSDs/NEMSIS_EMS_XSDs/EMSDataSet_v3.xsd",
+      "local_path": "raw/xsd_ems/EMSDataSet_v3.xsd",
+      "sha256": "8f31a3c1b0ea50859c8039c862480b36c71bf94bf4fb3b7bc51877a34041dfcb",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "eNarrative_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "EMSDataSet",
+      "source_repo_path": "XSDs/NEMSIS_EMS_XSDs/eNarrative_v3.xsd",
+      "local_path": "raw/xsd_ems/eNarrative_v3.xsd",
+      "sha256": "2828fc904acec947964088fed82b8ceb128cbc4c1ae0c454de227da3228889a9",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "eOther_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "EMSDataSet",
+      "source_repo_path": "XSDs/NEMSIS_EMS_XSDs/eOther_v3.xsd",
+      "local_path": "raw/xsd_ems/eOther_v3.xsd",
+      "sha256": "5b9dc8e0337554cbb903c5f9744c9062894799325ef4d69e8d372cc7d22c972b",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "eOutcome_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "EMSDataSet",
+      "source_repo_path": "XSDs/NEMSIS_EMS_XSDs/eOutcome_v3.xsd",
+      "local_path": "raw/xsd_ems/eOutcome_v3.xsd",
+      "sha256": "0f404bbfad352374c5fef43d95a63a391b79f175143f3b7719a814f41a2ebc96",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "ePatient_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "EMSDataSet",
+      "source_repo_path": "XSDs/NEMSIS_EMS_XSDs/ePatient_v3.xsd",
+      "local_path": "raw/xsd_ems/ePatient_v3.xsd",
+      "sha256": "376320838d58fbc98b88e32e199bc19b07751b3c3ea85f75a0a7833701ed34cd",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "ePayment_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "EMSDataSet",
+      "source_repo_path": "XSDs/NEMSIS_EMS_XSDs/ePayment_v3.xsd",
+      "local_path": "raw/xsd_ems/ePayment_v3.xsd",
+      "sha256": "5d7f1bc84eeaef3342fc674451c18ad37505e604d5b8187951d1662f43b7279c",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "eProcedures_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "EMSDataSet",
+      "source_repo_path": "XSDs/NEMSIS_EMS_XSDs/eProcedures_v3.xsd",
+      "local_path": "raw/xsd_ems/eProcedures_v3.xsd",
+      "sha256": "8ce8ebe465b4dcb3ce97f6af5151033711b078936f84791a5a1f8784c7ded6b8",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "eProtocols_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "EMSDataSet",
+      "source_repo_path": "XSDs/NEMSIS_EMS_XSDs/eProtocols_v3.xsd",
+      "local_path": "raw/xsd_ems/eProtocols_v3.xsd",
+      "sha256": "a0c3d5739c632d1a179a7cafe697166f2180844fc757a4e02dcb8df3c62c70cb",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "eRecord_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "EMSDataSet",
+      "source_repo_path": "XSDs/NEMSIS_EMS_XSDs/eRecord_v3.xsd",
+      "local_path": "raw/xsd_ems/eRecord_v3.xsd",
+      "sha256": "86ad03c806339035981f569eb156eb887494930a3788c986003afed47bd73b38",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "eResponse_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "EMSDataSet",
+      "source_repo_path": "XSDs/NEMSIS_EMS_XSDs/eResponse_v3.xsd",
+      "local_path": "raw/xsd_ems/eResponse_v3.xsd",
+      "sha256": "9f6f2dc0dca1c32fb7b31d27c0d716afbb30d7e349fc226c54e9ad796fa31e98",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "eScene_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "EMSDataSet",
+      "source_repo_path": "XSDs/NEMSIS_EMS_XSDs/eScene_v3.xsd",
+      "local_path": "raw/xsd_ems/eScene_v3.xsd",
+      "sha256": "63459f3680d9e4e7ab2af5aa2251f2191ee8d09fa681342f2580085031d74799",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "eSituation_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "EMSDataSet",
+      "source_repo_path": "XSDs/NEMSIS_EMS_XSDs/eSituation_v3.xsd",
+      "local_path": "raw/xsd_ems/eSituation_v3.xsd",
+      "sha256": "d015f08a1d57cb380c0658ae7515d3ffd6b035aa2837bb407b2f7f41234d3e92",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "eTimes_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "EMSDataSet",
+      "source_repo_path": "XSDs/NEMSIS_EMS_XSDs/eTimes_v3.xsd",
+      "local_path": "raw/xsd_ems/eTimes_v3.xsd",
+      "sha256": "ec96140fccbd1a647eda0cea678bc840a37ebb1f4aa938f0cf44b7fabc8caa92",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "eVitals_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "EMSDataSet",
+      "source_repo_path": "XSDs/NEMSIS_EMS_XSDs/eVitals_v3.xsd",
+      "local_path": "raw/xsd_ems/eVitals_v3.xsd",
+      "sha256": "c78982b83e58349d0bcb7900649e06c4be941dfabd879dd5d1c87cf5ef1dae56",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "commonTypes_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "DEMDataSet",
+      "source_repo_path": "XSDs/NEMSIS_DEM_XSDs/commonTypes_v3.xsd",
+      "local_path": "raw/xsd_dem/commonTypes_v3.xsd",
+      "sha256": "2c7127c28649f3a77ab4ee1354765025afec14f2609fb24759e407f67b99f386",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "dAgency_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "DEMDataSet",
+      "source_repo_path": "XSDs/NEMSIS_DEM_XSDs/dAgency_v3.xsd",
+      "local_path": "raw/xsd_dem/dAgency_v3.xsd",
+      "sha256": "45045b335846e47535f3c568f6a61979f31ab52692ba85b5637ac16a125b9eb4",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "dConfiguration_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "DEMDataSet",
+      "source_repo_path": "XSDs/NEMSIS_DEM_XSDs/dConfiguration_v3.xsd",
+      "local_path": "raw/xsd_dem/dConfiguration_v3.xsd",
+      "sha256": "7eb171681cef17db5f0255d5b63bfb889ccef76d449410e85b1e2620a8cabde6",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "dContact_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "DEMDataSet",
+      "source_repo_path": "XSDs/NEMSIS_DEM_XSDs/dContact_v3.xsd",
+      "local_path": "raw/xsd_dem/dContact_v3.xsd",
+      "sha256": "8eaebf647ab0491104803693210100cef20f0940259a6a310c8ba3dcc84e0b54",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "dCustom_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "DEMDataSet",
+      "source_repo_path": "XSDs/NEMSIS_DEM_XSDs/dCustom_v3.xsd",
+      "local_path": "raw/xsd_dem/dCustom_v3.xsd",
+      "sha256": "d881a466a5ddf9f0699840fd94a91aa88d73fd8ccb4e9cc8596de9e2696542a1",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "dDevice_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "DEMDataSet",
+      "source_repo_path": "XSDs/NEMSIS_DEM_XSDs/dDevice_v3.xsd",
+      "local_path": "raw/xsd_dem/dDevice_v3.xsd",
+      "sha256": "5d32490b560f63d1ee0463223cadfbecb43ab0f90ced0ee3980d104869ea17d5",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "DEMDataSet_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "DEMDataSet",
+      "source_repo_path": "XSDs/NEMSIS_DEM_XSDs/DEMDataSet_v3.xsd",
+      "local_path": "raw/xsd_dem/DEMDataSet_v3.xsd",
+      "sha256": "cbf51e141517c6fdfb1cf106dff72223060d2aa0117598aa2629896f4ae5c43f",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "dFacility_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "DEMDataSet",
+      "source_repo_path": "XSDs/NEMSIS_DEM_XSDs/dFacility_v3.xsd",
+      "local_path": "raw/xsd_dem/dFacility_v3.xsd",
+      "sha256": "db2fff5378aba2eab48c34a5e9441086b9fef5a0bfc40d85dc6e54ce62618330",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "dLocation_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "DEMDataSet",
+      "source_repo_path": "XSDs/NEMSIS_DEM_XSDs/dLocation_v3.xsd",
+      "local_path": "raw/xsd_dem/dLocation_v3.xsd",
+      "sha256": "422ea78d3939d13487ac2d31a7698312baead99608419549d3201e7c7f925966",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "dPersonnel_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "DEMDataSet",
+      "source_repo_path": "XSDs/NEMSIS_DEM_XSDs/dPersonnel_v3.xsd",
+      "local_path": "raw/xsd_dem/dPersonnel_v3.xsd",
+      "sha256": "fd5f5d705854e0515d591f396d48088e1043c41cd5e7e004eba51849c07a48c9",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "dRecord_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "DEMDataSet",
+      "source_repo_path": "XSDs/NEMSIS_DEM_XSDs/dRecord_v3.xsd",
+      "local_path": "raw/xsd_dem/dRecord_v3.xsd",
+      "sha256": "7bfa09532fd554aa32d782fcd30ef54e029517564d14bb02ad13856c5d71f3f7",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "dVehicle_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "DEMDataSet",
+      "source_repo_path": "XSDs/NEMSIS_DEM_XSDs/dVehicle_v3.xsd",
+      "local_path": "raw/xsd_dem/dVehicle_v3.xsd",
+      "sha256": "453389d3c6382761799e634f85266de143245e5e9317da1c49762fb690f4b65a",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "commonTypes_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "StateDataSet",
+      "source_repo_path": "XSDs/NEMSIS_State_XSDs/commonTypes_v3.xsd",
+      "local_path": "raw/xsd_state/commonTypes_v3.xsd",
+      "sha256": "2c7127c28649f3a77ab4ee1354765025afec14f2609fb24759e407f67b99f386",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "sAgency_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "StateDataSet",
+      "source_repo_path": "XSDs/NEMSIS_State_XSDs/sAgency_v3.xsd",
+      "local_path": "raw/xsd_state/sAgency_v3.xsd",
+      "sha256": "4def639c8d7cfe8ed272dc5e63a5d29f109d40ee82cf676e13d6774c134f254c",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "sConfiguration_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "StateDataSet",
+      "source_repo_path": "XSDs/NEMSIS_State_XSDs/sConfiguration_v3.xsd",
+      "local_path": "raw/xsd_state/sConfiguration_v3.xsd",
+      "sha256": "546465ce6903d1e216c7bd2639fee2d8e12adb1a6e2491082d435c5490aa116b",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "sdCustom_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "StateDataSet",
+      "source_repo_path": "XSDs/NEMSIS_State_XSDs/sdCustom_v3.xsd",
+      "local_path": "raw/xsd_state/sdCustom_v3.xsd",
+      "sha256": "cc0bd590ed93fb277ce3c70bf7e6d02f2400c8715768b74daafdc7cfafe3502d",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "seCustom_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "StateDataSet",
+      "source_repo_path": "XSDs/NEMSIS_State_XSDs/seCustom_v3.xsd",
+      "local_path": "raw/xsd_state/seCustom_v3.xsd",
+      "sha256": "6709df023f7aae656db6f74e43a142a2d9ec1dc6c24bfc1eeeb980e769d7a66a",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "sElement_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "StateDataSet",
+      "source_repo_path": "XSDs/NEMSIS_State_XSDs/sElement_v3.xsd",
+      "local_path": "raw/xsd_state/sElement_v3.xsd",
+      "sha256": "a065cbb9a99360bf8da76c64a6c45ebd63e5d58ed3875d9e83f378baaac29df3",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "sFacility_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "StateDataSet",
+      "source_repo_path": "XSDs/NEMSIS_State_XSDs/sFacility_v3.xsd",
+      "local_path": "raw/xsd_state/sFacility_v3.xsd",
+      "sha256": "8dcd2e7c0cab648da21e2565b7048832ac1cff2db3baa37b5349b149ef967e97",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "sSoftware_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "StateDataSet",
+      "source_repo_path": "XSDs/NEMSIS_State_XSDs/sSoftware_v3.xsd",
+      "local_path": "raw/xsd_state/sSoftware_v3.xsd",
+      "sha256": "1d9aed4db2113e3fe2aa6166c3e29a2d1ade0d80e6834f5ae939be6163bf8e5c",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "sState_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "StateDataSet",
+      "source_repo_path": "XSDs/NEMSIS_State_XSDs/sState_v3.xsd",
+      "local_path": "raw/xsd_state/sState_v3.xsd",
+      "sha256": "8612d13c7c78eec866f79e94ab055d529ce2f12305889f3bfc5a410d76bc9d9e",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "StateDataSet_v3.xsd",
+      "artifact_type": "xsd",
+      "dataset": "StateDataSet",
+      "source_repo_path": "XSDs/NEMSIS_State_XSDs/StateDataSet_v3.xsd",
+      "local_path": "raw/xsd_state/StateDataSet_v3.xsd",
+      "sha256": "d87f67b411ee6d3aaa8cdbacb4c12d852433d71ea45c55589e0cabbf7ff3a0e1",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "SampleDEMDataSet.sch",
+      "artifact_type": "schematron",
+      "dataset": "DEMDataSet",
+      "source_repo_path": "Schematron/DevelopmentKit/Schematron/rules/SampleDEMDataSet.sch",
+      "local_path": "raw/schematron/SampleDEMDataSet.sch",
+      "sha256": "43ca7f2e67a02329b15ab7973df3306798d83e7eaba3b3c88f42a6a41673ff1c",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "SampleEMSDataSet.sch",
+      "artifact_type": "schematron",
+      "dataset": "EMSDataSet",
+      "source_repo_path": "Schematron/DevelopmentKit/Schematron/rules/SampleEMSDataSet.sch",
+      "local_path": "raw/schematron/SampleEMSDataSet.sch",
+      "sha256": "8042f9258d5d127e2b39f5b7b3a7b0f248b91a1e312c49301b00473ac1e16bc6",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "Template.sch",
+      "artifact_type": "schematron",
+      "dataset": "Shared",
+      "source_repo_path": "Schematron/DevelopmentKit/Schematron/rules/Template.sch",
+      "local_path": "raw/schematron/Template.sch",
+      "sha256": "c1f1db0351bf0c6219508922fef81b3ed131329103485c2835373ba105a2d8ab",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "Combined_AttributeEnumerations.txt",
+      "artifact_type": "data_dictionary",
+      "dataset": "Shared",
+      "source_repo_path": "DataDictionary/Ancillary/DEMEMS/Combined_AttributeEnumerations.txt",
+      "local_path": "raw/data_dictionary/Combined_AttributeEnumerations.txt",
+      "sha256": "d6d585c163445a3d0e9c624b8483d05e39d699f5722af6994edb1ba3c853cc9b",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "Combined_ElementAttributes.txt",
+      "artifact_type": "data_dictionary",
+      "dataset": "Shared",
+      "source_repo_path": "DataDictionary/Ancillary/DEMEMS/Combined_ElementAttributes.txt",
+      "local_path": "raw/data_dictionary/Combined_ElementAttributes.txt",
+      "sha256": "9e094e63c815306debe82ab7e635f6490b8742624d469ce517900e16d4fefa7c",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "Combined_ElementDetails.txt",
+      "artifact_type": "data_dictionary",
+      "dataset": "Shared",
+      "source_repo_path": "DataDictionary/Ancillary/DEMEMS/Combined_ElementDetails.txt",
+      "local_path": "raw/data_dictionary/Combined_ElementDetails.txt",
+      "sha256": "c48798a09b2932e9748a8080a67189628cd21acc53f601889f14a03cfbc66d85",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "Combined_ElementEnumerations.txt",
+      "artifact_type": "data_dictionary",
+      "dataset": "Shared",
+      "source_repo_path": "DataDictionary/Ancillary/DEMEMS/Combined_ElementEnumerations.txt",
+      "local_path": "raw/data_dictionary/Combined_ElementEnumerations.txt",
+      "sha256": "3847405379251d341128172a10994cecb4c556d79f5b848454811fa6e12814c4",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "StateDataSet_ElementDetails.txt",
+      "artifact_type": "data_dictionary",
+      "dataset": "StateDataSet",
+      "source_repo_path": "DataDictionary/Ancillary/STATE/StateDataSet_ElementDetails.txt",
+      "local_path": "raw/data_dictionary/StateDataSet_ElementDetails.txt",
+      "sha256": "85a8b9c632e8292bdcd6b556c1a22c9f03d5287fce2b72204f611ee64914d159",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "StateDataSet_ElementEnumerations.txt",
+      "artifact_type": "data_dictionary",
+      "dataset": "StateDataSet",
+      "source_repo_path": "DataDictionary/Ancillary/STATE/StateDataSet_ElementEnumerations.txt",
+      "local_path": "raw/data_dictionary/StateDataSet_ElementEnumerations.txt",
+      "sha256": "97c5b644ea4d406310156615e2a269e8773e57fde516748113c0770444dd7475",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "Extend_eMedications.08_DoesNotMapToNemsisCode.xml",
+      "artifact_type": "sample_custom_element",
+      "dataset": "CustomElement",
+      "source_repo_path": "SampleData/CustomElements/Extend_eMedications.08_DoesNotMapToNemsisCode.xml",
+      "local_path": "raw/sample_custom_elements/Extend_eMedications.08_DoesNotMapToNemsisCode.xml",
+      "sha256": "09e24cddc4cf75d75087ed0053277cb7f4829b7d3c8588fbb1e53f8b2d8fd9ad",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "Extend_eMedications.08_MapsToNemsisCode.xml",
+      "artifact_type": "sample_custom_element",
+      "dataset": "CustomElement",
+      "source_repo_path": "SampleData/CustomElements/Extend_eMedications.08_MapsToNemsisCode.xml",
+      "local_path": "raw/sample_custom_elements/Extend_eMedications.08_MapsToNemsisCode.xml",
+      "sha256": "27acbbedfab2a2fe33417ca57d29748cc2325b8bfd2ccbd1c0763c20789f3df8",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "Extend_eVitals.26_DoesNotMapToNemsisCode.xml",
+      "artifact_type": "sample_custom_element",
+      "dataset": "CustomElement",
+      "source_repo_path": "SampleData/CustomElements/Extend_eVitals.26_DoesNotMapToNemsisCode.xml",
+      "local_path": "raw/sample_custom_elements/Extend_eVitals.26_DoesNotMapToNemsisCode.xml",
+      "sha256": "16582f80ffd2be67009b8bacf3d3839abadd6a988d2885686ee5a7e55319cacd",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "Extend_eVitals.26_MapsToNemsisCode.xml",
+      "artifact_type": "sample_custom_element",
+      "dataset": "CustomElement",
+      "source_repo_path": "SampleData/CustomElements/Extend_eVitals.26_MapsToNemsisCode.xml",
+      "local_path": "raw/sample_custom_elements/Extend_eVitals.26_MapsToNemsisCode.xml",
+      "sha256": "330b6e51a167eb09e42632ca2f5083909ed47665d670eb958c3bc9282d95554d",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "New_Grouping_PatientRestraint.xml",
+      "artifact_type": "sample_custom_element",
+      "dataset": "CustomElement",
+      "source_repo_path": "SampleData/CustomElements/New_Grouping_PatientRestraint.xml",
+      "local_path": "raw/sample_custom_elements/New_Grouping_PatientRestraint.xml",
+      "sha256": "edbcf76c2e8beb941cd9276253e542e9d2eec4afc9f559c7618a6340241cb65a",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "cause_of_injury.json",
+      "artifact_type": "defined_list",
+      "dataset": "DefinedList",
+      "source_repo_path": "DefinedLists/cause_of_injury/cause_of_injury.json",
+      "local_path": "nemsis_resources/defined_lists/cause_of_injury.json",
+      "sha256": "864d5a11d073cd136ecb90509d7762c9d74018e08d0a46832dbefc7b1bf3a49a",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "impression.json",
+      "artifact_type": "defined_list",
+      "dataset": "DefinedList",
+      "source_repo_path": "DefinedLists/impression/impression.json",
+      "local_path": "nemsis_resources/defined_lists/impression.json",
+      "sha256": "ee311f97cd02d935e4c64dde0c4cd48ac9773e4d72072a7a80532e627d26574d",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "incident_location_type.json",
+      "artifact_type": "defined_list",
+      "dataset": "DefinedList",
+      "source_repo_path": "DefinedLists/incident_location_type/incident_location_type.json",
+      "local_path": "nemsis_resources/defined_lists/incident_location_type.json",
+      "sha256": "3493e408dbee3c55ae321de9190644cc82de20dd50660adb403ea11accdbf4b5",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "medications_given.json",
+      "artifact_type": "defined_list",
+      "dataset": "DefinedList",
+      "source_repo_path": "DefinedLists/medications_given/medications_given.json",
+      "local_path": "nemsis_resources/defined_lists/medications_given.json",
+      "sha256": "30acb1d33bc32b9a630d723fda459e767fdc0c79e96691da1bf00b36d2751418",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "procedures.json",
+      "artifact_type": "defined_list",
+      "dataset": "DefinedList",
+      "source_repo_path": "DefinedLists/procedures/procedures.json",
+      "local_path": "nemsis_resources/defined_lists/procedures.json",
+      "sha256": "381bb55ee8479a3bc5b4a51cef2c3ca1980aeb3747f75d56880b2a895bbe51c6",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    },
+    {
+      "name": "symptoms.json",
+      "artifact_type": "defined_list",
+      "dataset": "DefinedList",
+      "source_repo_path": "DefinedLists/symptoms/symptoms.json",
+      "local_path": "nemsis_resources/defined_lists/symptoms.json",
+      "sha256": "e700332038797cb702c19a8b0b7fe24d83108d87927425512aa7c12930529005",
+      "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717"
+    }
+  ],
+  "coverage_warnings": []
+}

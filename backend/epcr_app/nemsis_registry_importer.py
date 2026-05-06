@@ -1,0 +1,623 @@
+"""NEMSIS official public-source registry importer.
+
+Reads pinned artifacts cloned from
+``https://git.nemsis.org/scm/nep/nemsis_public.git`` and produces deterministic
+normalized JSON files under ``nemsis_resources/official/normalized/``.
+
+This module is invoked by a developer or CI step. The runtime EPCR service
+never calls into this importer at request time, never opens a network socket
+to git.nemsis.org, and never invents fields or codes.
+
+CLI usage:
+
+    python -m epcr_app.nemsis_registry_importer \
+        --source-clone <path-to-nemsis_public-clone> \
+        --source-commit <sha> \
+        [--source-branch master] \
+        [--retrieved-at YYYY-MM-DD]
+
+If ``--source-clone`` is omitted the importer falls back to the bundled
+``raw/`` directory under ``nemsis_resources/official``.
+"""
+
+from __future__ import annotations
+
+import argparse
+import datetime as _dt
+import hashlib
+import json
+import re
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Iterable
+
+# --------------------------------------------------------------------------- #
+# Constants
+# --------------------------------------------------------------------------- #
+
+OFFICIAL_SOURCE_REPO = "https://git.nemsis.org/scm/nep/nemsis_public.git"
+SOURCE_FAMILY = "NEMSIS Version 3"
+
+SOURCE_MODE_OFFICIAL_FULL = "official_full"
+SOURCE_MODE_OFFICIAL_PARTIAL = "official_partial"
+SOURCE_MODE_MIXED = "mixed_official_and_local_seed"
+SOURCE_MODE_LOCAL_SEED_ONLY = "local_seed_only"
+SOURCE_MODE_NOT_CONFIGURED = "not_configured"
+
+ARTIFACT_TYPE_XSD = "xsd"
+ARTIFACT_TYPE_SCHEMATRON = "schematron"
+ARTIFACT_TYPE_DATA_DICTIONARY = "data_dictionary"
+ARTIFACT_TYPE_DEFINED_LIST = "defined_list"
+ARTIFACT_TYPE_USAGE_GUIDE = "usage_guide"
+ARTIFACT_TYPE_SAMPLE_CUSTOM_ELEMENT = "sample_custom_element"
+ARTIFACT_TYPE_OTHER = "other"
+
+DATASET_DEM = "DEMDataSet"
+DATASET_EMS = "EMSDataSet"
+DATASET_STATE = "StateDataSet"
+DATASET_DEFINED_LIST = "DefinedList"
+DATASET_CUSTOM_ELEMENT = "CustomElement"
+DATASET_SHARED = "Shared"
+DATASET_UNKNOWN = "Unknown"
+
+DEFAULT_OFFICIAL_DIR = Path(__file__).resolve().parent / "nemsis_resources" / "official"
+
+_FIELD_ID_RE = re.compile(r"^[de][A-Za-z]+\.[0-9]{2,3}$|^s[A-Za-z]+\.[0-9]{2,3}$")
+_PIPE_DELIMITER = "|"
+
+
+# --------------------------------------------------------------------------- #
+# Dataclasses
+# --------------------------------------------------------------------------- #
+
+
+@dataclass(frozen=True)
+class NemsisRegistryArtifact:
+    name: str
+    artifact_type: str
+    dataset: str
+    source_repo_path: str
+    local_path: str
+    sha256: str
+    source_commit: str
+
+    def to_payload(self) -> dict[str, Any]:
+        return {
+            "name": self.name,
+            "artifact_type": self.artifact_type,
+            "dataset": self.dataset,
+            "source_repo_path": self.source_repo_path,
+            "local_path": self.local_path,
+            "sha256": self.sha256,
+            "source_commit": self.source_commit,
+        }
+
+
+@dataclass
+class NemsisRegistryImportResult:
+    manifest: dict[str, Any]
+    fields: list[dict[str, Any]]
+    element_enumerations: list[dict[str, Any]]
+    attribute_enumerations: list[dict[str, Any]]
+    defined_lists: list[dict[str, Any]]
+    required_elements: list[dict[str, Any]]
+    snapshot: dict[str, Any]
+    coverage_warnings: list[str] = field(default_factory=list)
+
+
+# --------------------------------------------------------------------------- #
+# Helpers
+# --------------------------------------------------------------------------- #
+
+
+def _sha256_file(path: Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as fh:
+        for chunk in iter(lambda: fh.read(65536), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def _section_from_field_id(field_id: str) -> str:
+    if "." not in field_id:
+        return field_id
+    return field_id.split(".", 1)[0]
+
+
+def _parse_pipe_table(path: Path) -> list[dict[str, str]]:
+    """Parse a NEMSIS pipe-delimited dictionary file.
+
+    Format example::
+
+        'DatasetName'|'DatasetType'|'ElementNumber'| ...
+        'EMSDataSet'|'element'|'dAgency.01'| ...
+
+    Returns list of dicts keyed by header (quotes stripped).
+    """
+    lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+    rows: list[dict[str, str]] = []
+    if not lines:
+        return rows
+    header_cells = [c.strip().strip("'") for c in lines[0].split(_PIPE_DELIMITER)]
+    # Drop empty trailing column from trailing pipe.
+    if header_cells and header_cells[-1] == "":
+        header_cells = header_cells[:-1]
+    for raw in lines[1:]:
+        if not raw.strip():
+            continue
+        cells = [c.strip().strip("'") for c in raw.split(_PIPE_DELIMITER)]
+        if cells and cells[-1] == "":
+            cells = cells[:-1]
+        # Pad short rows; truncate long rows.
+        if len(cells) < len(header_cells):
+            cells = cells + [""] * (len(header_cells) - len(cells))
+        elif len(cells) > len(header_cells):
+            cells = cells[: len(header_cells)]
+        rows.append(dict(zip(header_cells, cells)))
+    return rows
+
+
+def _value_or_none(s: str) -> str | None:
+    s = (s or "").strip()
+    if not s or s.lower() == "null":
+        return None
+    return s
+
+
+# --------------------------------------------------------------------------- #
+# Normalizer
+# --------------------------------------------------------------------------- #
+
+
+class NemsisRegistryNormalizer:
+    """Reads pinned NEMSIS public artifacts and emits normalized JSON."""
+
+    def __init__(
+        self,
+        official_dir: Path | None = None,
+        source_clone: Path | None = None,
+        source_commit: str = "",
+        source_branch: str = "",
+        retrieved_at: str | None = None,
+    ) -> None:
+        self.official_dir = (official_dir or DEFAULT_OFFICIAL_DIR).resolve()
+        self.raw_dir = self.official_dir / "raw"
+        self.normalized_dir = self.official_dir / "normalized"
+        self.source_clone = source_clone.resolve() if source_clone else None
+        self.source_commit = source_commit
+        self.source_branch = source_branch
+        self.retrieved_at = retrieved_at or _dt.date.today().isoformat()
+        self.coverage_warnings: list[str] = []
+
+    # -- artifact discovery ------------------------------------------------- #
+
+    def _artifact_root(self) -> Path:
+        if self.source_clone and self.source_clone.exists():
+            return self.source_clone
+        return self.raw_dir
+
+    def load_manifest(self, artifacts: Iterable[NemsisRegistryArtifact]) -> dict[str, Any]:
+        return {
+            "source_family": SOURCE_FAMILY,
+            "source_repo": OFFICIAL_SOURCE_REPO,
+            "source_commit": self.source_commit,
+            "source_branch": self.source_branch,
+            "target_version": self._detect_target_version(),
+            "retrieved_at": self.retrieved_at,
+            "artifacts": [a.to_payload() for a in artifacts],
+            "coverage_warnings": list(self.coverage_warnings),
+        }
+
+    def _detect_target_version(self) -> str:
+        # Best-effort: look at commonTypes_v3.xsd / DEM XSD comments. The NEMSIS
+        # public repo encodes version in folder names like "v3.5.1.251001CP2"
+        # only in DIFF_FILES; we do not invent an exact patch level.
+        return "NEMSIS_V3"
+
+    def load_xsd_artifacts(self) -> list[NemsisRegistryArtifact]:
+        artifacts: list[NemsisRegistryArtifact] = []
+        for label, dataset in (
+            ("xsd_ems", DATASET_EMS),
+            ("xsd_dem", DATASET_DEM),
+            ("xsd_state", DATASET_STATE),
+        ):
+            d = self.raw_dir / label
+            if not d.exists():
+                self.coverage_warnings.append(f"missing_raw_dir:{label}")
+                continue
+            for p in sorted(d.glob("*.xsd")):
+                artifacts.append(self._artifact_from_path(p, ARTIFACT_TYPE_XSD, dataset))
+        return artifacts
+
+    def _artifact_from_path(
+        self, path: Path, artifact_type: str, dataset: str
+    ) -> NemsisRegistryArtifact:
+        rel_local = path.relative_to(self.official_dir).as_posix()
+        rel_repo = self._guess_repo_path(path, artifact_type)
+        return NemsisRegistryArtifact(
+            name=path.name,
+            artifact_type=artifact_type,
+            dataset=dataset,
+            source_repo_path=rel_repo,
+            local_path=rel_local,
+            sha256=_sha256_file(path),
+            source_commit=self.source_commit,
+        )
+
+    def _guess_repo_path(self, path: Path, artifact_type: str) -> str:
+        name = path.name
+        if artifact_type == ARTIFACT_TYPE_XSD:
+            parent = path.parent.name
+            mapping = {
+                "xsd_ems": "XSDs/NEMSIS_EMS_XSDs",
+                "xsd_dem": "XSDs/NEMSIS_DEM_XSDs",
+                "xsd_state": "XSDs/NEMSIS_State_XSDs",
+            }
+            return f"{mapping.get(parent, 'XSDs')}/{name}"
+        if artifact_type == ARTIFACT_TYPE_SCHEMATRON:
+            return f"Schematron/DevelopmentKit/Schematron/rules/{name}"
+        if artifact_type == ARTIFACT_TYPE_DATA_DICTIONARY:
+            if name.startswith("StateDataSet_"):
+                return f"DataDictionary/Ancillary/STATE/{name}"
+            return f"DataDictionary/Ancillary/DEMEMS/{name}"
+        if artifact_type == ARTIFACT_TYPE_SAMPLE_CUSTOM_ELEMENT:
+            return f"SampleData/CustomElements/{name}"
+        if artifact_type == ARTIFACT_TYPE_DEFINED_LIST:
+            return f"DefinedLists/{name}"
+        return name
+
+    def load_other_artifacts(self) -> list[NemsisRegistryArtifact]:
+        artifacts: list[NemsisRegistryArtifact] = []
+        sch_dir = self.raw_dir / "schematron"
+        if sch_dir.exists():
+            for p in sorted(sch_dir.glob("*.sch")):
+                ds = (
+                    DATASET_EMS if "EMS" in p.name else DATASET_DEM if "DEM" in p.name else DATASET_SHARED
+                )
+                artifacts.append(self._artifact_from_path(p, ARTIFACT_TYPE_SCHEMATRON, ds))
+        else:
+            self.coverage_warnings.append("missing_raw_dir:schematron")
+        dd_dir = self.raw_dir / "data_dictionary"
+        if dd_dir.exists():
+            for p in sorted(dd_dir.glob("*.txt")):
+                ds = DATASET_STATE if p.name.startswith("StateDataSet_") else DATASET_SHARED
+                artifacts.append(self._artifact_from_path(p, ARTIFACT_TYPE_DATA_DICTIONARY, ds))
+        else:
+            self.coverage_warnings.append("missing_raw_dir:data_dictionary")
+        sample_dir = self.raw_dir / "sample_custom_elements"
+        if sample_dir.exists():
+            for p in sorted(sample_dir.iterdir()):
+                if p.is_file():
+                    artifacts.append(
+                        self._artifact_from_path(
+                            p, ARTIFACT_TYPE_SAMPLE_CUSTOM_ELEMENT, DATASET_CUSTOM_ELEMENT
+                        )
+                    )
+        # Defined-list envelopes (Slice 3B fixtures).
+        dl_dir = self.official_dir.parent / "defined_lists"
+        if dl_dir.exists():
+            for p in sorted(dl_dir.glob("*.json")):
+                rel_local = p.relative_to(self.official_dir.parent.parent).as_posix()
+                artifacts.append(
+                    NemsisRegistryArtifact(
+                        name=p.name,
+                        artifact_type=ARTIFACT_TYPE_DEFINED_LIST,
+                        dataset=DATASET_DEFINED_LIST,
+                        source_repo_path=f"DefinedLists/{p.stem}/{p.stem}.json",
+                        local_path=rel_local,
+                        sha256=_sha256_file(p),
+                        source_commit=self.source_commit,
+                    )
+                )
+        return artifacts
+
+    # -- normalized outputs ------------------------------------------------- #
+
+    def normalize_fields_from_data_dictionary(self) -> list[dict[str, Any]]:
+        fields: list[dict[str, Any]] = []
+        sources = [
+            (self.raw_dir / "data_dictionary" / "Combined_ElementDetails.txt", None),
+            (
+                self.raw_dir / "data_dictionary" / "StateDataSet_ElementDetails.txt",
+                DATASET_STATE,
+            ),
+        ]
+        for path, dataset_override in sources:
+            if not path.exists():
+                self.coverage_warnings.append(f"missing_artifact:{path.name}")
+                continue
+            for row in _parse_pipe_table(path):
+                element_number = _value_or_none(row.get("ElementNumber", ""))
+                if not element_number:
+                    continue
+                fields.append(
+                    {
+                        "field_id": element_number,
+                        "dataset": dataset_override
+                        or _value_or_none(row.get("DatasetName", ""))
+                        or DATASET_UNKNOWN,
+                        "section": _section_from_field_id(element_number),
+                        "name": element_number,
+                        "label": _value_or_none(row.get("ElementName", "")) or element_number,
+                        "definition": None,
+                        "data_type": _value_or_none(row.get("DataType", "")),
+                        "usage": _value_or_none(row.get("Usage", "")),
+                        "required_level": _value_or_none(row.get("Usage", "")),
+                        "national_element": _value_or_none(row.get("National", "")),
+                        "state_element": _value_or_none(row.get("State", "")),
+                        "recurrence": None,
+                        "min_occurs": _value_or_none(row.get("MinOccurs", "")),
+                        "max_occurs": _value_or_none(row.get("MaxOccurs", "")),
+                        "nillable": _value_or_none(row.get("IsNillable", "")),
+                        "not_value_allowed": _value_or_none(row.get("NV", "")),
+                        "pertinent_negative_allowed": _value_or_none(row.get("PN", "")),
+                        "required_if": None,
+                        "defined_list_ref": None,
+                        "enumeration_ref": None,
+                        "attributes": [],
+                        "source_artifact": path.name,
+                        "source_repo_path": self._guess_repo_path(
+                            path, ARTIFACT_TYPE_DATA_DICTIONARY
+                        ),
+                        "source_commit": self.source_commit,
+                        "source_version": self._detect_target_version(),
+                    }
+                )
+        # Stable ordering: dataset then field_id.
+        fields.sort(key=lambda f: (f["dataset"], f["field_id"]))
+        return fields
+
+    def normalize_element_enumerations(self) -> list[dict[str, Any]]:
+        out: list[dict[str, Any]] = []
+        for fname, dataset_override in (
+            ("Combined_ElementEnumerations.txt", None),
+            ("StateDataSet_ElementEnumerations.txt", DATASET_STATE),
+        ):
+            path = self.raw_dir / "data_dictionary" / fname
+            if not path.exists():
+                self.coverage_warnings.append(f"missing_artifact:{fname}")
+                continue
+            for row in _parse_pipe_table(path):
+                field_id = _value_or_none(row.get("ElementNumber", ""))
+                code = _value_or_none(row.get("Code", ""))
+                if not field_id or not code:
+                    continue
+                out.append(
+                    {
+                        "field_id": field_id,
+                        "code": code,
+                        "display": _value_or_none(row.get("CodeDescription", "")) or code,
+                        "description": None,
+                        "active": True,
+                        "dataset": dataset_override
+                        or _value_or_none(row.get("DatasetName", ""))
+                        or DATASET_UNKNOWN,
+                        "source_artifact": fname,
+                        "source_repo_path": self._guess_repo_path(
+                            path, ARTIFACT_TYPE_DATA_DICTIONARY
+                        ),
+                        "source_commit": self.source_commit,
+                        "source_version": self._detect_target_version(),
+                    }
+                )
+        out.sort(key=lambda r: (r["field_id"], r["code"]))
+        return out
+
+    def normalize_attribute_enumerations(self) -> list[dict[str, Any]]:
+        out: list[dict[str, Any]] = []
+        for fname in ("Combined_AttributeEnumerations.txt",):
+            path = self.raw_dir / "data_dictionary" / fname
+            if not path.exists():
+                continue
+            for row in _parse_pipe_table(path):
+                attr = _value_or_none(row.get("null", "")) or _value_or_none(
+                    row.get("AttributeName", "")
+                )
+                code = _value_or_none(row.get("Code", ""))
+                if not attr or not code:
+                    continue
+                out.append(
+                    {
+                        "attribute_name": attr,
+                        "code": code,
+                        "display": _value_or_none(row.get("CodeDescription", "")) or code,
+                        "source_artifact": fname,
+                        "source_repo_path": self._guess_repo_path(
+                            path, ARTIFACT_TYPE_DATA_DICTIONARY
+                        ),
+                        "source_commit": self.source_commit,
+                        "source_version": self._detect_target_version(),
+                    }
+                )
+        out.sort(key=lambda r: (r["attribute_name"], r["code"]))
+        return out
+
+    def normalize_defined_lists(self) -> list[dict[str, Any]]:
+        dl_dir = self.official_dir.parent / "defined_lists"
+        out: list[dict[str, Any]] = []
+        if not dl_dir.exists():
+            self.coverage_warnings.append("missing_defined_lists_dir")
+            return out
+        for p in sorted(dl_dir.glob("*.json")):
+            try:
+                envelope = json.loads(p.read_text(encoding="utf-8"))
+            except json.JSONDecodeError:
+                self.coverage_warnings.append(f"defined_list_decode_failed:{p.name}")
+                continue
+            element_ids = envelope.get("nemsis_element_ids") or []
+            for element_id in element_ids:
+                out.append(
+                    {
+                        "list_id": p.stem,
+                        "list_name": envelope.get("list_name"),
+                        "field_id": element_id,
+                        "values": envelope.get("values", []),
+                        "value_count": envelope.get("value_count", len(envelope.get("values", []))),
+                        "source_artifact": p.name,
+                        "source_repo_path": f"DefinedLists/{p.stem}/{p.stem}.json",
+                        "source_url": envelope.get("source_url"),
+                        "upstream_date": envelope.get("upstream_date"),
+                        "retrieved_at": envelope.get("retrieved_at"),
+                        "source_commit": self.source_commit,
+                        "source_version": self._detect_target_version(),
+                    }
+                )
+        out.sort(key=lambda r: (r["field_id"], r["list_id"]))
+        return out
+
+    def normalize_required_elements(self, fields: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        out: list[dict[str, Any]] = []
+        for f in fields:
+            level = (f.get("required_level") or "").lower()
+            if level in {"mandatory", "required"}:
+                out.append(
+                    {
+                        "field_id": f["field_id"],
+                        "dataset": f["dataset"],
+                        "national_element": f.get("national_element"),
+                        "state_element": f.get("state_element"),
+                        "required_level": f.get("required_level"),
+                    }
+                )
+        return out
+
+    def normalize_sample_custom_element_awareness(
+        self, artifacts: list[NemsisRegistryArtifact]
+    ) -> list[dict[str, Any]]:
+        return [
+            {
+                "name": a.name,
+                "source_repo_path": a.source_repo_path,
+                "sha256": a.sha256,
+                "note": (
+                    "Sample custom-element fixture only. NOT a configured eCustom field. "
+                    "Slice 4 NemsisCustomElementService remains not_configured by design."
+                ),
+            }
+            for a in artifacts
+            if a.artifact_type == ARTIFACT_TYPE_SAMPLE_CUSTOM_ELEMENT
+        ]
+
+    # -- snapshot ----------------------------------------------------------- #
+
+    def build_registry_snapshot(
+        self,
+        *,
+        fields: list[dict[str, Any]],
+        element_enumerations: list[dict[str, Any]],
+        attribute_enumerations: list[dict[str, Any]],
+        defined_lists: list[dict[str, Any]],
+        artifacts: list[NemsisRegistryArtifact],
+        local_seed_fallback_count: int,
+    ) -> dict[str, Any]:
+        # Honest source-mode determination.
+        if not artifacts:
+            mode = SOURCE_MODE_NOT_CONFIGURED
+        elif fields and defined_lists:
+            mode = (
+                SOURCE_MODE_MIXED
+                if local_seed_fallback_count > 0
+                else SOURCE_MODE_OFFICIAL_PARTIAL
+            )
+        else:
+            mode = SOURCE_MODE_OFFICIAL_PARTIAL
+        return {
+            "source_mode": mode,
+            "source_repo": OFFICIAL_SOURCE_REPO,
+            "source_commit": self.source_commit,
+            "source_branch": self.source_branch,
+            "target_version": self._detect_target_version(),
+            "retrieved_at": self.retrieved_at,
+            "field_count": len(fields),
+            "element_enumeration_count": len(element_enumerations),
+            "attribute_enumeration_count": len(attribute_enumerations),
+            "defined_list_count": len({r["list_id"] for r in defined_lists}),
+            "defined_list_field_count": len({r["field_id"] for r in defined_lists}),
+            "official_artifact_count": len(artifacts),
+            "local_seed_fallback_count": local_seed_fallback_count,
+            "coverage_warnings": list(self.coverage_warnings),
+        }
+
+    # -- top-level orchestration ------------------------------------------- #
+
+    def run(self, local_seed_fallback_count: int = 0) -> NemsisRegistryImportResult:
+        xsd_artifacts = self.load_xsd_artifacts()
+        other_artifacts = self.load_other_artifacts()
+        artifacts = xsd_artifacts + other_artifacts
+        fields = self.normalize_fields_from_data_dictionary()
+        element_enums = self.normalize_element_enumerations()
+        attr_enums = self.normalize_attribute_enumerations()
+        defined_lists = self.normalize_defined_lists()
+        required = self.normalize_required_elements(fields)
+        snapshot = self.build_registry_snapshot(
+            fields=fields,
+            element_enumerations=element_enums,
+            attribute_enumerations=attr_enums,
+            defined_lists=defined_lists,
+            artifacts=artifacts,
+            local_seed_fallback_count=local_seed_fallback_count,
+        )
+        manifest = self.load_manifest(artifacts)
+        return NemsisRegistryImportResult(
+            manifest=manifest,
+            fields=fields,
+            element_enumerations=element_enums,
+            attribute_enumerations=attr_enums,
+            defined_lists=defined_lists,
+            required_elements=required,
+            snapshot=snapshot,
+            coverage_warnings=list(self.coverage_warnings),
+        )
+
+    def write_normalized_outputs(self, result: NemsisRegistryImportResult) -> None:
+        self.normalized_dir.mkdir(parents=True, exist_ok=True)
+        self.official_dir.mkdir(parents=True, exist_ok=True)
+        outputs = {
+            self.official_dir / "manifest.json": result.manifest,
+            self.normalized_dir / "fields.json": result.fields,
+            self.normalized_dir / "element_enumerations.json": result.element_enumerations,
+            self.normalized_dir / "attribute_enumerations.json": result.attribute_enumerations,
+            self.normalized_dir / "defined_lists.json": result.defined_lists,
+            self.normalized_dir / "required_elements.json": result.required_elements,
+            self.normalized_dir / "registry_snapshot.json": result.snapshot,
+        }
+        for path, payload in outputs.items():
+            path.write_text(
+                json.dumps(payload, indent=2, sort_keys=False) + "\n",
+                encoding="utf-8",
+            )
+
+
+# --------------------------------------------------------------------------- #
+# CLI
+# --------------------------------------------------------------------------- #
+
+
+def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    p = argparse.ArgumentParser(description="NEMSIS official-source registry importer.")
+    p.add_argument("--source-clone", type=Path, default=None)
+    p.add_argument("--source-commit", default="")
+    p.add_argument("--source-branch", default="master")
+    p.add_argument("--retrieved-at", default=None)
+    p.add_argument("--official-dir", type=Path, default=None)
+    p.add_argument("--local-seed-fallback-count", type=int, default=0)
+    return p.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = _parse_args(argv)
+    normalizer = NemsisRegistryNormalizer(
+        official_dir=args.official_dir,
+        source_clone=args.source_clone,
+        source_commit=args.source_commit,
+        source_branch=args.source_branch,
+        retrieved_at=args.retrieved_at,
+    )
+    result = normalizer.run(local_seed_fallback_count=args.local_seed_fallback_count)
+    normalizer.write_normalized_outputs(result)
+    print(json.dumps(result.snapshot, indent=2))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

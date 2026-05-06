@@ -1,0 +1,700 @@
+{
+  "source_url": "https://git.nemsis.org/projects/NEP/repos/nemsis_public/raw/DefinedLists/Procedure/Procedure.json",
+  "source_name": "NEMSIS Version 3 Defined Lists",
+  "source_repo": "https://git.nemsis.org/projects/NEP/repos/nemsis_public/browse/DefinedLists",
+  "list_name": "Procedures",
+  "download_format": "json",
+  "retrieved_at": "2026-05-06",
+  "upstream_date": "2025-01-14",
+  "nemsis_element_ids": [
+    "eProcedures.03",
+    "dConfiguration.07",
+    "sConfiguration.03"
+  ],
+  "nemsis_type_names": [
+    "snomed"
+  ],
+  "source_vocabularies": [
+    "SNOMED-CT"
+  ],
+  "value_count": 115,
+  "values": [
+    {
+      "code": "18629005",
+      "display": "Drug administration",
+      "description": "Administration of drug or medicament",
+      "category": "Administration (Drug, fluid, gas)"
+    },
+    {
+      "code": "386358000",
+      "display": "Drug administration via IV",
+      "description": "Administration of drug or medicament via intravenous route",
+      "category": "Administration (Drug, fluid, gas)"
+    },
+    {
+      "code": "431393006",
+      "display": "IV fluid bolus",
+      "description": "Administration of intravenous fluid bolus",
+      "category": "Administration (Drug, fluid, gas)"
+    },
+    {
+      "code": "103744005",
+      "display": "IV fluids",
+      "description": "Administration of intravenous fluids",
+      "category": "Administration (Drug, fluid, gas)"
+    },
+    {
+      "code": "56251003",
+      "display": "Nebulizer therapy",
+      "category": "Administration (Drug, fluid, gas)"
+    },
+    {
+      "code": "57485005",
+      "display": "Oxygen therapy, NOS",
+      "description": "Oxygen therapy",
+      "category": "Administration (Drug, fluid, gas)"
+    },
+    {
+      "code": "371907003",
+      "display": "Oxygen via cannula",
+      "description": "Oxygen administration by nasal cannula",
+      "category": "Administration (Drug, fluid, gas)"
+    },
+    {
+      "code": "371908008",
+      "display": "Oxygen via mask",
+      "description": "Oxygen administration by mask",
+      "category": "Administration (Drug, fluid, gas)"
+    },
+    {
+      "code": "116859006",
+      "display": "Transfusion of blood",
+      "description": "Transfusion of blood product",
+      "category": "Administration (Drug, fluid, gas)"
+    },
+    {
+      "code": "230040009",
+      "display": "Airway suction",
+      "description": "Airway suction technique",
+      "category": "Airway, Basic"
+    },
+    {
+      "code": "425447009",
+      "display": "Assist ventilations via BVM",
+      "description": "Bag valve mask ventilation",
+      "category": "Airway, Basic"
+    },
+    {
+      "code": "243140006",
+      "display": "Assist ventilations, intubated",
+      "description": "Lung inflation by intermittent compression of reservoir bag",
+      "category": "Airway, Basic"
+    },
+    {
+      "code": "284029005",
+      "display": "ETCO2 monitoring",
+      "description": "Respired carbon dioxide monitoring",
+      "category": "Airway, Basic"
+    },
+    {
+      "code": "23690002",
+      "display": "Heimlich maneuver",
+      "description": "Abdominal thrust",
+      "category": "Airway, Basic"
+    },
+    {
+      "code": "182692007",
+      "display": "Nasal airway insertion (NPA)",
+      "description": "Nasopharyngeal airway insertion",
+      "category": "Airway, Basic"
+    },
+    {
+      "code": "7443007",
+      "display": "Oral airway insertion (OPA)",
+      "description": "Insertion of oropharyngeal airway",
+      "category": "Airway, Basic"
+    },
+    {
+      "code": "232664002",
+      "display": "Open airway manually",
+      "description": "Manual establishment of airway",
+      "category": "Airway, Basic"
+    },
+    {
+      "code": "243142003",
+      "display": "BiPAP",
+      "description": "Dual pressure spontaneous ventilation support",
+      "category": "Airway, Advanced"
+    },
+    {
+      "code": "47545007",
+      "display": "CPAP",
+      "description": "Continuous positive airway pressure ventilation treatment",
+      "category": "Airway, Advanced"
+    },
+    {
+      "code": "225718003",
+      "display": "ET tube, check placement",
+      "description": "Checking position of endotracheal tube",
+      "category": "Airway, Advanced"
+    },
+    {
+      "code": "425543005",
+      "display": "ETCO2 digital capnography",
+      "description": "Digital respired carbon dioxide monitoring",
+      "category": "Airway, Advanced"
+    },
+    {
+      "code": "429705000",
+      "display": "Intubation, combitube",
+      "description": "Insertion of esophageal tracheal combitube",
+      "category": "Airway, Advanced"
+    },
+    {
+      "code": "427753009",
+      "display": "Intubation, double lumen supraglottic",
+      "description": "Insertion of esophageal tracheal double lumen supraglottic airway",
+      "category": "Airway, Advanced"
+    },
+    {
+      "code": "424979004",
+      "display": "Intubation, laryngeal mask airway (LMA)",
+      "description": "Laryngeal mask airway insertion",
+      "category": "Airway, Advanced"
+    },
+    {
+      "code": "232674004",
+      "display": "Intubation, NOS",
+      "description": "Orotracheal intubation",
+      "category": "Airway, Advanced"
+    },
+    {
+      "code": "450601000124103",
+      "display": "Intubation, orotracheal",
+      "description": "Orotracheal intubation using bougie device",
+      "category": "Airway, Advanced"
+    },
+    {
+      "code": "241689008",
+      "display": "Intubation, rapid sequence intubation (RSI)",
+      "description": "Rapid sequence induction",
+      "category": "Airway, Advanced"
+    },
+    {
+      "code": "450611000124100",
+      "display": "Intubation, single lumen supraglottic",
+      "description": "Insertion of Single Lumen Supraglottic Airway Device",
+      "category": "Airway, Advanced"
+    },
+    {
+      "code": "45851008",
+      "display": "PEEP",
+      "description": "Positive end expiratory pressure ventilation therapy, initiation and management",
+      "category": "Airway, Advanced"
+    },
+    {
+      "code": "385857005",
+      "display": "Ventilator care/adjustment",
+      "description": "Ventilator care and adjustment",
+      "category": "Airway, Advanced"
+    },
+    {
+      "code": "408994004",
+      "display": "Assessment, adult",
+      "description": "Adult care assessment",
+      "category": "Assessment"
+    },
+    {
+      "code": "422618004",
+      "display": "Assessment, continuous",
+      "description": "Continuous physical assessment",
+      "category": "Assessment"
+    },
+    {
+      "code": "315639002",
+      "display": "Assessment, initial",
+      "description": "Initial patient assessment",
+      "category": "Assessment"
+    },
+    {
+      "code": "225398001",
+      "display": "Assessment, neurological",
+      "description": "Neurological assessment",
+      "category": "Assessment"
+    },
+    {
+      "code": "423850004",
+      "display": "Assessment, pediatric",
+      "description": "Pediatric continuous physical assessment",
+      "category": "Assessment"
+    },
+    {
+      "code": "386053000",
+      "display": "Evaluation/observation",
+      "description": "Evaluation procedure",
+      "category": "Assessment"
+    },
+    {
+      "code": "270352002",
+      "display": "Exam, medical",
+      "description": "Medical examinations/reports",
+      "category": "Assessment"
+    },
+    {
+      "code": "171397002",
+      "display": "Exam, medical, suspected condition",
+      "description": "Medical examination for suspected condition",
+      "category": "Assessment"
+    },
+    {
+      "code": "182777000",
+      "display": "Patient monitoring",
+      "description": "Monitoring of patient",
+      "category": "Assessment"
+    },
+    {
+      "code": "23852006",
+      "display": "Cardiac monitoring",
+      "category": "Assessment, Cardiac"
+    },
+    {
+      "code": "268400002",
+      "display": "ECG, 12 lead",
+      "description": "12 lead electrocardiogram",
+      "category": "Assessment, Cardiac"
+    },
+    {
+      "code": "428803005",
+      "display": "ECG, 3 lead",
+      "description": "3 lead electrocardiographic monitoring",
+      "category": "Assessment, Cardiac"
+    },
+    {
+      "code": "29303009",
+      "display": "ECG, NOS",
+      "description": "Electrocardiographic procedure",
+      "category": "Assessment, Cardiac"
+    },
+    {
+      "code": "46825001",
+      "display": "ECG, monitoring",
+      "description": "Electrocardiographic monitoring",
+      "category": "Assessment, Cardiac"
+    },
+    {
+      "code": "250980009",
+      "display": "Cardioversion",
+      "category": "Cardiac"
+    },
+    {
+      "code": "429283006",
+      "display": "Chest compressions, mechanical",
+      "description": "Mechanically assisted chest compression",
+      "category": "Cardiac"
+    },
+    {
+      "code": "89666000",
+      "display": "CPR, manual",
+      "description": "Cardiopulmonary resuscitation",
+      "category": "Cardiac"
+    },
+    {
+      "code": "450661000124102",
+      "display": "Defibrillation, AED",
+      "description": "Defibrillation using automated external cardiac defibrillator",
+      "category": "Cardiac"
+    },
+    {
+      "code": "426220008",
+      "display": "Defibrillation, manual",
+      "description": "External ventricular defibrillation",
+      "category": "Cardiac"
+    },
+    {
+      "code": "386237008",
+      "display": "LVAD monitoring",
+      "description": "Circulatory care: mechanical assist device",
+      "category": "Cardiac"
+    },
+    {
+      "code": "18590009",
+      "display": "Pacing",
+      "description": "Cardiac pacing",
+      "category": "Cardiac"
+    },
+    {
+      "code": "128968000",
+      "display": "Vagal maneuver",
+      "description": "Vagal stimulation physiologic challenge",
+      "category": "Cardiac"
+    },
+    {
+      "code": "228621007",
+      "display": "Environmental control",
+      "description": "Provision of environmental control system",
+      "category": "Environmental"
+    },
+    {
+      "code": "431774007",
+      "display": "Patient cooling",
+      "description": "Active external cooling of subject",
+      "category": "Environmental"
+    },
+    {
+      "code": "431949004",
+      "display": "Patient warming",
+      "description": "Active external warming of subject",
+      "category": "Environmental"
+    },
+    {
+      "code": "87750000",
+      "display": "Nasogastric tube insertion (NG)",
+      "description": "Insertion of nasogastric tube",
+      "category": "Gastrointestinal"
+    },
+    {
+      "code": "235425002",
+      "display": "Orogastric tube insertion (OG)",
+      "description": "Insertion of orogastric tube",
+      "category": "Gastrointestinal"
+    },
+    {
+      "code": "33747003",
+      "display": "Blood glucose measurement",
+      "description": "Glucose measurement, blood",
+      "category": "Glycemic Management"
+    },
+    {
+      "code": "386328006",
+      "display": "Hypoglycemia management",
+      "category": "Glycemic Management"
+    },
+    {
+      "code": "49689007",
+      "display": "Cervical collar",
+      "description": "Application of cervical collar",
+      "category": "Immobilization"
+    },
+    {
+      "code": "707794004",
+      "display": "Extrication splint",
+      "description": "Immobilization using extrication splint",
+      "category": "Immobilization"
+    },
+    {
+      "code": "450591000124106",
+      "display": "Long board",
+      "description": "Immobilization using long board",
+      "category": "Immobilization"
+    },
+    {
+      "code": "182556001",
+      "display": "Pelvic sling",
+      "category": "Immobilization"
+    },
+    {
+      "code": "79321009",
+      "display": "Splinting, general",
+      "description": "Application of splint",
+      "category": "Immobilization"
+    },
+    {
+      "code": "302488007",
+      "display": "Splinting, traction",
+      "description": "Application of traction using a traction device",
+      "category": "Immobilization"
+    },
+    {
+      "code": "78086002",
+      "display": "Holding patient",
+      "category": "Other"
+    },
+    {
+      "code": "409582008",
+      "display": "Isolation precautions",
+      "category": "Other"
+    },
+    {
+      "code": "182705007",
+      "display": "Needle decompression",
+      "description": "Tension pneumothorax relief",
+      "category": "Other"
+    },
+    {
+      "code": "22633006",
+      "display": "Vaginal delivery",
+      "description": "Vaginal delivery, medical personnel present",
+      "category": "Other"
+    },
+    {
+      "code": "423184003",
+      "display": "Pain assessment, adult",
+      "description": "Adult pain assessment",
+      "category": "Pain"
+    },
+    {
+      "code": "423401003",
+      "display": "Pain assessment, pediatric",
+      "description": "Pediatric pain assessment",
+      "category": "Pain"
+    },
+    {
+      "code": "225399009",
+      "display": "Pain assessment, NOS",
+      "description": "Pain assessment",
+      "category": "Pain"
+    },
+    {
+      "code": "278414003",
+      "display": "Pain management",
+      "category": "Pain"
+    },
+    {
+      "code": "58715004",
+      "display": "Moving patient to stretcher",
+      "description": "Moving a patient to a stretcher",
+      "category": "Patient Positioning"
+    },
+    {
+      "code": "56469005",
+      "display": "Moving patient, NOS",
+      "description": "Moving a patient",
+      "category": "Patient Positioning"
+    },
+    {
+      "code": "225287004",
+      "display": "Patient positioning, support",
+      "description": "Procedures relating to positioning and support",
+      "category": "Patient Positioning"
+    },
+    {
+      "code": "386423001",
+      "display": "Physical restraint",
+      "category": "Patient Positioning"
+    },
+    {
+      "code": "398041008",
+      "display": "Spinal stabilization, c-spine",
+      "description": "Cervical spine immobilization",
+      "category": "Spinal Procedures"
+    },
+    {
+      "code": "449199004",
+      "display": "Spinal stabilization, manual",
+      "description": "Manual inline stabilization of cervical spine",
+      "category": "Spinal Procedures"
+    },
+    {
+      "code": "426498007",
+      "display": "Spinal stabilization, NOS",
+      "description": "Stabilization of spine",
+      "category": "Spinal Procedures"
+    },
+    {
+      "code": "445828009",
+      "display": "Spinal, advanced assessment (spinal clearance)",
+      "description": "Assessment using functional capacity evaluation",
+      "category": "Spinal Procedures"
+    },
+    {
+      "code": "284405008",
+      "display": "Spinal, c-spine exam",
+      "description": "Examination of cervical spine",
+      "category": "Spinal Procedures"
+    },
+    {
+      "code": "284394000",
+      "display": "Spinal, exam",
+      "description": "Examination of spine",
+      "category": "Spinal Procedures"
+    },
+    {
+      "code": "304562007",
+      "display": "Contact Medical Control",
+      "description": "Informing doctor",
+      "category": "Transfer of Care"
+    },
+    {
+      "code": "429202003",
+      "display": "Transfer of care to hospital",
+      "category": "Transfer of Care"
+    },
+    {
+      "code": "308292007",
+      "display": "Transfer of care, NOS",
+      "description": "Transfer of care",
+      "category": "Transfer of Care"
+    },
+    {
+      "code": "392247006",
+      "display": "Arterial cannulation",
+      "description": "Insertion of catheter into artery",
+      "category": "Vascular Access"
+    },
+    {
+      "code": "226005007",
+      "display": "Central line care",
+      "description": "Care of central line",
+      "category": "Vascular Access"
+    },
+    {
+      "code": "425074000",
+      "display": "Convert IV to saline lock",
+      "description": "Conversion of intravenous infusion to saline lock",
+      "category": "Vascular Access"
+    },
+    {
+      "code": "430824005",
+      "display": "IO cannulation",
+      "description": "Intraosseous cannulation",
+      "category": "Vascular Access"
+    },
+    {
+      "code": "392230005",
+      "display": "IV, insertion",
+      "description": "Catheterization of vein",
+      "category": "Vascular Access"
+    },
+    {
+      "code": "353008",
+      "display": "IV, monitoring",
+      "description": "Intravenous/irrigation monitoring",
+      "category": "Vascular Access"
+    },
+    {
+      "code": "424287005",
+      "display": "IV, removal",
+      "description": "Removal of peripheral intravenous catheter",
+      "category": "Vascular Access"
+    },
+    {
+      "code": "396540005",
+      "display": "Vein, blood draw",
+      "description": "Phlebotomy",
+      "category": "Vascular Access"
+    },
+    {
+      "code": "405427009",
+      "display": "Vein, external jugular access",
+      "description": "Catheterization of external jugular vein",
+      "category": "Vascular Access"
+    },
+    {
+      "code": "46973005",
+      "display": "Blood pressure",
+      "description": "Blood pressure taking",
+      "category": "Vital Signs"
+    },
+    {
+      "code": "248753002",
+      "display": "Capillary refill",
+      "category": "Vital Signs"
+    },
+    {
+      "code": "68664003",
+      "display": "Glascow Coma Scale (GCS)",
+      "description": "Glasgow coma testing and evaluation",
+      "category": "Vital Signs"
+    },
+    {
+      "code": "65653002",
+      "display": "Pulse",
+      "description": "Pulse taking",
+      "category": "Vital Signs"
+    },
+    {
+      "code": "252465000",
+      "display": "Pulse oximetry",
+      "category": "Vital Signs"
+    },
+    {
+      "code": "408867002",
+      "display": "Respiratory rate",
+      "description": "Taking respiratory rate",
+      "category": "Vital Signs"
+    },
+    {
+      "code": "56342008",
+      "display": "Temperature",
+      "description": "Temperature taking",
+      "category": "Vital Signs"
+    },
+    {
+      "code": "61746007",
+      "display": "Vital signs, NOS",
+      "description": "Taking patient vital signs",
+      "category": "Vital Signs"
+    },
+    {
+      "code": "425058005",
+      "display": "Vital signs, orthostatic",
+      "description": "Taking orthostatic vital signs",
+      "category": "Vital Signs"
+    },
+    {
+      "code": "447686008",
+      "display": "Apply pressure to wound",
+      "description": "Application of pressure to wound",
+      "category": "Wound Care"
+    },
+    {
+      "code": "182555002",
+      "display": "Bandage",
+      "description": "Application of bandage",
+      "category": "Wound Care"
+    },
+    {
+      "code": "373675000",
+      "display": "Bandage, pressure",
+      "description": "Application of pressure bandage",
+      "category": "Wound Care"
+    },
+    {
+      "code": "133901003",
+      "display": "Burn care",
+      "category": "Wound Care"
+    },
+    {
+      "code": "182531007",
+      "display": "Dressing",
+      "description": "Dressing of wound",
+      "category": "Wound Care"
+    },
+    {
+      "code": "22206003",
+      "display": "Dressing, occlusive",
+      "description": "Application of dressing, occlusive plastic",
+      "category": "Wound Care"
+    },
+    {
+      "code": "26906007",
+      "display": "Dressing, pressure",
+      "description": "Application of dressing, pressure",
+      "category": "Wound Care"
+    },
+    {
+      "code": "372045002",
+      "display": "Hemostatic agent (i.e. QuikClot)",
+      "description": "Application of chemical hemostatic agents",
+      "category": "Wound Care"
+    },
+    {
+      "code": "225116006",
+      "display": "Irrigation",
+      "description": "Irrigation of wound",
+      "category": "Wound Care"
+    },
+    {
+      "code": "20655006",
+      "display": "Tourniquet",
+      "description": "Application of tourniquet",
+      "category": "Wound Care"
+    },
+    {
+      "code": "225358003",
+      "display": "Wound care, NOS",
+      "description": "Wound care",
+      "category": "Wound Care"
+    }
+  ]
+}

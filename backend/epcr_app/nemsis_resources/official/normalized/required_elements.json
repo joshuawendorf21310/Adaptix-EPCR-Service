@@ -1,0 +1,1584 @@
+[
+  {
+    "field_id": "dAgency.01",
+    "dataset": "DEMDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "dAgency.02",
+    "dataset": "DEMDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "dAgency.04",
+    "dataset": "DEMDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "dAgency.05",
+    "dataset": "DEMDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "dAgency.06",
+    "dataset": "DEMDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "dAgency.07",
+    "dataset": "DEMDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "dAgency.08",
+    "dataset": "DEMDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "dAgency.09",
+    "dataset": "DEMDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "dAgency.11",
+    "dataset": "DEMDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "dAgency.12",
+    "dataset": "DEMDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "dAgency.13",
+    "dataset": "DEMDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "dAgency.14",
+    "dataset": "DEMDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "dAgency.25",
+    "dataset": "DEMDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "dAgency.26",
+    "dataset": "DEMDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "dConfiguration.01",
+    "dataset": "DEMDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "dConfiguration.06",
+    "dataset": "DEMDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "dConfiguration.07",
+    "dataset": "DEMDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "dConfiguration.08",
+    "dataset": "DEMDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "dConfiguration.09",
+    "dataset": "DEMDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "dConfiguration.10",
+    "dataset": "DEMDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "dConfiguration.13",
+    "dataset": "DEMDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "dConfiguration.16",
+    "dataset": "DEMDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "dCustomConfiguration.01",
+    "dataset": "DEMDataSet",
+    "national_element": null,
+    "state_element": null,
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "dCustomConfiguration.02",
+    "dataset": "DEMDataSet",
+    "national_element": null,
+    "state_element": null,
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "dCustomConfiguration.03",
+    "dataset": "DEMDataSet",
+    "national_element": null,
+    "state_element": null,
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "dCustomConfiguration.04",
+    "dataset": "DEMDataSet",
+    "national_element": null,
+    "state_element": null,
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "dCustomConfiguration.05",
+    "dataset": "DEMDataSet",
+    "national_element": null,
+    "state_element": null,
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "dCustomResults.01",
+    "dataset": "DEMDataSet",
+    "national_element": null,
+    "state_element": null,
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "dCustomResults.02",
+    "dataset": "DEMDataSet",
+    "national_element": null,
+    "state_element": null,
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "dAgency.01",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "dAgency.02",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "dAgency.04",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "eArrest.01",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eArrest.02",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eArrest.03",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eArrest.04",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eArrest.07",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eArrest.09",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eArrest.11",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eArrest.12",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eArrest.14",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eArrest.16",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eArrest.17",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eArrest.18",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eArrest.20",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eArrest.21",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eArrest.22",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eCustomConfiguration.01",
+    "dataset": "EMSDataSet",
+    "national_element": null,
+    "state_element": null,
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "eCustomConfiguration.02",
+    "dataset": "EMSDataSet",
+    "national_element": null,
+    "state_element": null,
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "eCustomConfiguration.03",
+    "dataset": "EMSDataSet",
+    "national_element": null,
+    "state_element": null,
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "eCustomConfiguration.04",
+    "dataset": "EMSDataSet",
+    "national_element": null,
+    "state_element": null,
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "eCustomConfiguration.05",
+    "dataset": "EMSDataSet",
+    "national_element": null,
+    "state_element": null,
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "eCustomResults.01",
+    "dataset": "EMSDataSet",
+    "national_element": null,
+    "state_element": null,
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "eCustomResults.02",
+    "dataset": "EMSDataSet",
+    "national_element": null,
+    "state_element": null,
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "eDispatch.01",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "eDispatch.02",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eDisposition.05",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eDisposition.06",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eDisposition.07",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eDisposition.16",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eDisposition.17",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eDisposition.18",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eDisposition.19",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eDisposition.20",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eDisposition.21",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eDisposition.22",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eDisposition.23",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eDisposition.24",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eDisposition.25",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eDisposition.27",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "eDisposition.28",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eDisposition.29",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eDisposition.30",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eDisposition.32",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eHistory.01",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eHistory.17",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eInjury.01",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eInjury.03",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eInjury.04",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eMedications.01",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eMedications.02",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eMedications.03",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eMedications.04",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eMedications.05",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eMedications.06",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eMedications.07",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eMedications.08",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eMedications.10",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eOutcome.01",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eOutcome.02",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eOutcome.09",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eOutcome.10",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eOutcome.11",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eOutcome.12",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eOutcome.13",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eOutcome.16",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eOutcome.18",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eOutcome.19",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eOutcome.20",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "ePatient.07",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "ePatient.08",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "ePatient.09",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "ePatient.13",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "ePatient.14",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "ePatient.15",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "ePatient.16",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "ePatient.25",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "ePayment.01",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "ePayment.50",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eProcedures.01",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eProcedures.02",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eProcedures.03",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eProcedures.05",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eProcedures.06",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eProcedures.07",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eProcedures.08",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eProcedures.10",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eProtocols.01",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eRecord.01",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "eRecord.02",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "eRecord.03",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "eRecord.04",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "eResponse.01",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "eResponse.03",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eResponse.04",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eResponse.05",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "eResponse.07",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "eResponse.08",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eResponse.09",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eResponse.10",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eResponse.11",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eResponse.12",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eResponse.13",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "eResponse.14",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "eResponse.23",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "eResponse.24",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eScene.01",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eScene.06",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eScene.07",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eScene.08",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eScene.09",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eScene.18",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eScene.19",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eScene.21",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eSituation.01",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eSituation.02",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eSituation.07",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eSituation.08",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eSituation.09",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eSituation.10",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eSituation.11",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eSituation.12",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eSituation.13",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eSituation.18",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eSituation.20",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eTimes.01",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eTimes.03",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "eTimes.05",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eTimes.06",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eTimes.07",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eTimes.09",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eTimes.11",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eTimes.12",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eTimes.13",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "eVitals.01",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eVitals.02",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eVitals.03",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eVitals.04",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eVitals.05",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eVitals.06",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eVitals.10",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eVitals.12",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eVitals.14",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eVitals.16",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eVitals.18",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eVitals.19",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eVitals.20",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eVitals.21",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eVitals.22",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eVitals.26",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eVitals.27",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eVitals.29",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eVitals.30",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "eVitals.31",
+    "dataset": "EMSDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "sConfiguration.01",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "sConfiguration.01",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "sConfiguration.02",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "sConfiguration.02",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "sConfiguration.03",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "sConfiguration.03",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "sConfiguration.04",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "sConfiguration.04",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "sConfiguration.05",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "sConfiguration.05",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "sConfiguration.06",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "sConfiguration.06",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "sElement.01",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "sElement.01",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "sSoftware.01",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "sSoftware.01",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "sSoftware.02",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "sSoftware.02",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "sSoftware.03",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "sSoftware.03",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Required"
+  },
+  {
+    "field_id": "sState.01",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "sState.01",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "sdCustomConfiguration.01",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "sdCustomConfiguration.01",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "sdCustomConfiguration.02",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "sdCustomConfiguration.02",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "sdCustomConfiguration.03",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "sdCustomConfiguration.03",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "sdCustomConfiguration.04",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "sdCustomConfiguration.04",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "sdCustomConfiguration.05",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "sdCustomConfiguration.05",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "seCustomConfiguration.01",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "seCustomConfiguration.01",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "seCustomConfiguration.02",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "seCustomConfiguration.02",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "seCustomConfiguration.03",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "seCustomConfiguration.03",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "seCustomConfiguration.04",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "seCustomConfiguration.04",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "seCustomConfiguration.05",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  },
+  {
+    "field_id": "seCustomConfiguration.05",
+    "dataset": "StateDataSet",
+    "national_element": "National",
+    "state_element": "State",
+    "required_level": "Mandatory"
+  }
+]
