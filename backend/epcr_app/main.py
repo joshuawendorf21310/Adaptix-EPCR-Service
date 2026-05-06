@@ -137,9 +137,27 @@ app.add_middleware(
     ],
 )
 
-app.include_router(auth_router)
-# Also mount auth router under gateway-prefixed path for ALB routing
-app.include_router(auth_router, prefix="/api/v1/epcr", include_in_schema=False)
+# Mount the local CTA testing portal auth router only when explicitly enabled.
+# This router (epcr_app.api_auth) issues HS256 tokens from a local secret and
+# exists for local/CTA testing portals only. It MUST NOT be exposed in
+# production: real production auth is the Adaptix Core Keycloak/OIDC flow.
+def _local_auth_enabled() -> bool:
+    """Return True if EPCR local CTA portal auth is explicitly enabled."""
+    return os.getenv("EPCR_ENABLE_LOCAL_AUTH", "").strip().lower() in {"1", "true", "yes", "on"}
+
+if _local_auth_enabled():
+    logger.warning(
+        "Care service: EPCR_ENABLE_LOCAL_AUTH is enabled. "
+        "Mounting local CTA portal auth router. This must never be enabled in production."
+    )
+    app.include_router(auth_router)
+    # Also mount auth router under gateway-prefixed path for ALB routing
+    app.include_router(auth_router, prefix="/api/v1/epcr", include_in_schema=False)
+else:
+    logger.info(
+        "Care service: local CTA portal auth router is disabled "
+        "(set EPCR_ENABLE_LOCAL_AUTH=true to enable for local CTA testing only)."
+    )
 app.include_router(router)
 app.include_router(export_router)
 app.include_router(nemsis_router)
