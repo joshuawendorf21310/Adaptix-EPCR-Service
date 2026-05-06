@@ -37,6 +37,7 @@ from epcr_app.api_vision import router as vision_router
 from epcr_app.api_clinical_extended import router as clinical_extended_router
 from epcr_app.api_smart_text_address import router as smart_text_address_router
 from epcr_app.api_desktop import router as desktop_router
+from epcr_app.api_chart_workspace import router as chart_workspace_router
 from epcr_app.db import init_db
 from adaptix_contracts.event_contracts import LocalEventConsumerRegistry
 from epcr_app.background_worker import EventProcessingWorker
@@ -151,6 +152,7 @@ app.include_router(vision_router)
 app.include_router(clinical_extended_router)
 app.include_router(smart_text_address_router)
 app.include_router(desktop_router)
+app.include_router(chart_workspace_router)
 
 logger.info("Care service configured with all routers: CareGraph, CPAE, VAS, Vision, CriticalCare, Sync, Dashboard, SmartText, Address, Desktop")
 
