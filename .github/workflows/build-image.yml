@@ -106,7 +106,11 @@ jobs:
             --task-definition "${{ steps.register-td.outputs.new_td_arn }}" \
             --force-new-deployment
 
-          echo "Deployment initiated for ${{ env.ECS_SERVICE }} with ${{ steps.register-td.outputs.new_td_arn }}"
+          aws ecs wait services-stable \
+            --cluster "${{ env.ECS_CLUSTER }}" \
+            --services "${{ env.ECS_SERVICE }}"
+
+          echo "Deployment stabilized for ${{ env.ECS_SERVICE }} with ${{ steps.register-td.outputs.new_td_arn }}"
 
   deploy-production:
     runs-on: ubuntu-latest
@@ -175,4 +179,8 @@ jobs:
             --task-definition "${NEW_TD_ARN}" \
             --force-new-deployment
 
-          echo "Production deployment initiated for ${{ env.PROD_ECS_SERVICE }}"
+          aws ecs wait services-stable \
+            --cluster "${{ env.PROD_ECS_CLUSTER }}" \
+            --services "${{ env.PROD_ECS_SERVICE }}"
+
+          echo "Production deployment stabilized for ${{ env.PROD_ECS_SERVICE }} with ${NEW_TD_ARN}"
