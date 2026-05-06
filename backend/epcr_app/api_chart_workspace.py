@@ -14,6 +14,7 @@ from typing import Any
 
 from fastapi import APIRouter, Body, Depends, HTTPException, status
 from pydantic import BaseModel, ConfigDict, Field
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from epcr_app.chart_workspace_service import (
@@ -65,6 +66,22 @@ async def create_chart_workspace(
         )
     except ChartWorkspaceError as exc:
         _raise_for_workspace_error(exc)
+    except IntegrityError as exc:
+        await session.rollback()
+        logger.warning(
+            "Chart workspace create conflict for tenant=%s call_number=%s",
+            current_user.tenant_id,
+            payload.call_number,
+            exc_info=True,
+        )
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail={
+                "message": "Chart call_number already exists for this tenant or violates a database uniqueness rule",
+                "code": "chart_call_number_conflict",
+                "call_number": payload.call_number,
+            },
+        ) from exc
     except Exception as exc:  # pragma: no cover - defensive
         logger.exception("Unexpected error creating chart workspace")
         raise HTTPException(
