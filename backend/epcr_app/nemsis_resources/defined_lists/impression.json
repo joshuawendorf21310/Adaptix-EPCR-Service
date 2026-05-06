@@ -1,0 +1,744 @@
+{
+  "source_url": "https://git.nemsis.org/projects/NEP/repos/nemsis_public/raw/DefinedLists/Impression/Impression.json",
+  "source_name": "NEMSIS Version 3 Defined Lists",
+  "source_repo": "https://git.nemsis.org/projects/NEP/repos/nemsis_public/browse/DefinedLists",
+  "list_name": "Impression",
+  "download_format": "json",
+  "retrieved_at": "2026-05-06",
+  "upstream_date": "2025-01-14",
+  "nemsis_element_ids": [
+    "eSituation.11",
+    "eSituation.12"
+  ],
+  "nemsis_type_names": [
+    "ProvidersImpression"
+  ],
+  "source_vocabularies": [
+    "ICD-10"
+  ],
+  "value_count": 122,
+  "values": [
+    {
+      "code": "R10.0",
+      "display": "Acute pain",
+      "description": "Acute abdomen",
+      "category": "Abdominal"
+    },
+    {
+      "code": "R10.84",
+      "display": "Generalized pain",
+      "description": "Generalized abdominal pain",
+      "category": "Abdominal"
+    },
+    {
+      "code": "T50.90",
+      "display": "Adverse effect of unspecified substance",
+      "description": "Poisoning by, adverse effect of and underdosing of unspecified drugs, medicaments and biological substances",
+      "category": "Alcohol/Drug Exposure"
+    },
+    {
+      "code": "F10.92",
+      "display": "Alcohol intoxication",
+      "description": "Alcohol use, unspecified with intoxication",
+      "category": "Alcohol/Drug Exposure"
+    },
+    {
+      "code": "F10.9",
+      "display": "Alcohol use",
+      "description": "Alcohol use, unspecified",
+      "category": "Alcohol/Drug Exposure"
+    },
+    {
+      "code": "F10.23",
+      "display": "Alcohol withdrawal",
+      "description": "Alcohol dependence with withdrawal",
+      "category": "Alcohol/Drug Exposure"
+    },
+    {
+      "code": "F11",
+      "display": "Suspected Opioid related",
+      "description": "Opioid related disorders",
+      "category": "Alcohol/Drug Exposure"
+    },
+    {
+      "code": "F19",
+      "display": "Other psychoactive substance",
+      "description": "Other psychoactive substance related disorders",
+      "category": "Alcohol/Drug Exposure"
+    },
+    {
+      "code": "F13",
+      "display": "Sedative, anti-anxiety related",
+      "description": "Sedative, hypnotic, or anxiolytic related disorders",
+      "category": "Alcohol/Drug Exposure"
+    },
+    {
+      "code": "I20.9",
+      "display": "Angina (pain related to heart)",
+      "description": "Angina pectoris, unspecified",
+      "category": "Cardiovascular"
+    },
+    {
+      "code": "I49.9",
+      "display": "Arrhythmia",
+      "description": "Cardiac arrhythmia, unspecified",
+      "category": "Cardiovascular"
+    },
+    {
+      "code": "I46.9",
+      "display": "Cardiac arrest",
+      "description": "Cardiac arrest, cause unspecified",
+      "category": "Cardiovascular"
+    },
+    {
+      "code": "R07.9",
+      "display": "Chest pain, NOS",
+      "description": "Chest pain, unspecified",
+      "category": "Cardiovascular"
+    },
+    {
+      "code": "I21",
+      "display": "Myocardial Infarction, NOS",
+      "description": "Acute myocardial infarction",
+      "category": "Cardiovascular"
+    },
+    {
+      "code": "I50.9",
+      "display": "Heart failure",
+      "description": "Heart failure, unspecified",
+      "category": "Cardiovascular"
+    },
+    {
+      "code": "I10",
+      "display": "Hypertension",
+      "description": "Essential (primary) hypertension",
+      "category": "Cardiovascular"
+    },
+    {
+      "code": "I95.9",
+      "display": "Hypotension",
+      "description": "Hypotension, unspecified",
+      "category": "Cardiovascular"
+    },
+    {
+      "code": "I21.4",
+      "display": "Non-STEMI",
+      "description": "Non-ST elevation (NSTEMI) myocardial infarction",
+      "category": "Cardiovascular"
+    },
+    {
+      "code": "I99.9",
+      "display": "Other, unspecified CV disorder",
+      "description": "Unspecified disorder of circulatory system",
+      "category": "Cardiovascular"
+    },
+    {
+      "code": "I21.3",
+      "display": "STEMI",
+      "description": "ST elevation (STEMI) myocardial infarction of unspecified site",
+      "category": "Cardiovascular"
+    },
+    {
+      "code": "K92.2",
+      "display": "Blood in vomit or stool (GI bleed)",
+      "description": "Gastrointestinal hemorrhage, unspecified",
+      "category": "Digestive"
+    },
+    {
+      "code": "K59.00",
+      "display": "Constipation",
+      "description": "Constipation, unspecified",
+      "category": "Digestive"
+    },
+    {
+      "code": "K59.1",
+      "display": "Diarrhea",
+      "description": "Functional diarrhea",
+      "category": "Digestive"
+    },
+    {
+      "code": "R11.0",
+      "display": "Nausea",
+      "category": "Digestive"
+    },
+    {
+      "code": "R11.1",
+      "display": "Vomiting",
+      "category": "Digestive"
+    },
+    {
+      "code": "F41.9",
+      "display": "Anxiety",
+      "description": "Anxiety disorder, unspecified",
+      "category": "Emotional State/Behavior"
+    },
+    {
+      "code": "F32",
+      "display": "Depression",
+      "description": "Major depressive disorder, single episode",
+      "category": "Emotional State/Behavior"
+    },
+    {
+      "code": "R45.85",
+      "display": "Homicidal ideation",
+      "description": "Homicidal and suicidal ideations",
+      "category": "Emotional State/Behavior"
+    },
+    {
+      "code": "F99",
+      "display": "Mental illness, NOS",
+      "description": "Mental disorder, not otherwise specified",
+      "category": "Emotional State/Behavior"
+    },
+    {
+      "code": "R45.89",
+      "display": "Other emotional symptoms",
+      "description": "Other symptoms and signs involving emotional state",
+      "category": "Emotional State/Behavior"
+    },
+    {
+      "code": "F60.8",
+      "display": "Other personality disorder",
+      "description": "Other specific personality disorders",
+      "category": "Emotional State/Behavior"
+    },
+    {
+      "code": "R45.851",
+      "display": "Suicidal ideation",
+      "description": "Suicidal ideations",
+      "category": "Emotional State/Behavior"
+    },
+    {
+      "code": "T14.91",
+      "display": "Suicide attempt",
+      "category": "Emotional State/Behavior"
+    },
+    {
+      "code": "R73.9",
+      "display": "Hyperglycemia",
+      "description": "Hyperglycemia, unspecified",
+      "category": "Endocrine/Urinary"
+    },
+    {
+      "code": "E13.65",
+      "display": "Hyperglycemia, known diabetic",
+      "description": "Other specified diabetes mellitus with hyperglycemia",
+      "category": "Endocrine/Urinary"
+    },
+    {
+      "code": "E16.2",
+      "display": "Hypoglycemia",
+      "description": "Hypoglycemia, unspecified",
+      "category": "Endocrine/Urinary"
+    },
+    {
+      "code": "E13.64",
+      "display": "Hypoglycemia, known diabetic",
+      "description": "Other specified diabetes mellitus with hypoglycemia",
+      "category": "Endocrine/Urinary"
+    },
+    {
+      "code": "N17.8",
+      "display": "Kidney failure, NOS",
+      "description": "Other acute kidney failure",
+      "category": "Endocrine/Urinary"
+    },
+    {
+      "code": "N18.6",
+      "display": "Kidney/renal disease requiring dialysis",
+      "description": "End stage renal disease",
+      "category": "Endocrine/Urinary"
+    },
+    {
+      "code": "N39.0",
+      "display": "Urinary tract infection (UTI)",
+      "description": "Urinary tract infection, site not specified",
+      "category": "Endocrine/Urinary"
+    },
+    {
+      "code": "R50.9",
+      "display": "Fever",
+      "description": "Fever, unspecified",
+      "category": "Illness"
+    },
+    {
+      "code": "R68.89",
+      "display": "General symptoms",
+      "description": "Other general symptoms and signs",
+      "category": "Illness"
+    },
+    {
+      "code": "R69",
+      "display": "Illness, NOS",
+      "description": "Illness, unspecified",
+      "category": "Illness"
+    },
+    {
+      "code": "A41.9",
+      "display": "Sepsis",
+      "description": "Sepsis, unspecified organism",
+      "category": "Illness"
+    },
+    {
+      "code": "B99.9",
+      "display": "Unspecified infectious disease",
+      "category": "Illness"
+    },
+    {
+      "code": "S99.91",
+      "display": "Ankle injury",
+      "description": "Unspecified injury of ankle",
+      "category": "Injury"
+    },
+    {
+      "code": "T30.0",
+      "display": "Burn, NOS",
+      "description": "Burn of unspecified body region, unspecified degree",
+      "category": "Injury"
+    },
+    {
+      "code": "S06.0X9",
+      "display": "Concussion, with LOC",
+      "description": "Concussion with loss of consciousness of unspecified duration",
+      "category": "Injury"
+    },
+    {
+      "code": "S06.0",
+      "display": "Concussion, without LOC",
+      "description": "Concussion",
+      "category": "Injury"
+    },
+    {
+      "code": "T79.9",
+      "display": "Early complication of trauma",
+      "description": "Unspecified early complication of trauma",
+      "category": "Injury"
+    },
+    {
+      "code": "S09.93",
+      "display": "Facial injury",
+      "description": "Unspecified injury of face",
+      "category": "Injury"
+    },
+    {
+      "code": "S99.92",
+      "display": "Foot injury",
+      "description": "Unspecified injury of foot",
+      "category": "Injury"
+    },
+    {
+      "code": "S59.91",
+      "display": "Forearm injury",
+      "description": "Unspecified injury of forearm",
+      "category": "Injury"
+    },
+    {
+      "code": "S09.90",
+      "display": "Head injury",
+      "description": "Unspecified injury of head",
+      "category": "Injury"
+    },
+    {
+      "code": "R58",
+      "display": "Hemorrhage",
+      "description": "Hemorrhage, not elsewhere classified",
+      "category": "Injury"
+    },
+    {
+      "code": "S79.91",
+      "display": "Hip injury",
+      "description": "Unspecified injury of hip",
+      "category": "Injury"
+    },
+    {
+      "code": "T14.90",
+      "display": "Injury, unspecified",
+      "category": "Injury"
+    },
+    {
+      "code": "S39.92",
+      "display": "Lower back injury",
+      "description": "Unspecified injury of lower back",
+      "category": "Injury"
+    },
+    {
+      "code": "S89.9",
+      "display": "Lower leg injury",
+      "description": "Unspecified injury of lower leg",
+      "category": "Injury"
+    },
+    {
+      "code": "T07",
+      "display": "Multiple injuries",
+      "description": "Unspecified multiple injuries",
+      "category": "Injury"
+    },
+    {
+      "code": "S19.9",
+      "display": "Neck injury",
+      "description": "Unspecified injury of neck",
+      "category": "Injury"
+    },
+    {
+      "code": "S39.93",
+      "display": "Pelvis injury",
+      "description": "Unspecified injury of pelvis",
+      "category": "Injury"
+    },
+    {
+      "code": "S49.9",
+      "display": "Shoulder/upper arm injury",
+      "description": "Unspecified injury of shoulder and upper arm",
+      "category": "Injury"
+    },
+    {
+      "code": "S79.92",
+      "display": "Thigh injury",
+      "description": "Unspecified injury of thigh",
+      "category": "Injury"
+    },
+    {
+      "code": "S29.9",
+      "display": "Thorax injury",
+      "description": "Unspecified injury of thorax",
+      "category": "Injury"
+    },
+    {
+      "code": "S69.9",
+      "display": "Wrist/hand/finger injury",
+      "description": "Unspecified injury of wrist, hand and finger(s)",
+      "category": "Injury"
+    },
+    {
+      "code": "R41.82",
+      "display": "Altered mental status",
+      "description": "Altered mental status, unspecified",
+      "category": "Level of Consciousness"
+    },
+    {
+      "code": "R40.4",
+      "display": "Altered mental status, transient",
+      "description": "Transient alteration of awareness",
+      "category": "Level of Consciousness"
+    },
+    {
+      "code": "R41.0",
+      "display": "Disoriented",
+      "description": "Disorientation, unspecified",
+      "category": "Level of Consciousness"
+    },
+    {
+      "code": "R55",
+      "display": "Fainting/collapse",
+      "description": "Syncope and collapse",
+      "category": "Level of Consciousness"
+    },
+    {
+      "code": "R53.83",
+      "display": "Fatigue",
+      "description": "Other fatigue",
+      "category": "Malaise"
+    },
+    {
+      "code": "R53.81",
+      "display": "Malaise (feeling unwell)",
+      "description": "Other malaise",
+      "category": "Malaise"
+    },
+    {
+      "code": "M62.81",
+      "display": "Muscle weakness",
+      "description": "Muscle weakness (generalized)",
+      "category": "Malaise"
+    },
+    {
+      "code": "R53.1",
+      "display": "Weakness",
+      "category": "Malaise"
+    },
+    {
+      "code": "Z74.01",
+      "display": "Bedridden",
+      "description": "Bed confinement status",
+      "category": "Mobility"
+    },
+    {
+      "code": "Z74.09",
+      "display": "Reduced mobility",
+      "description": "Other reduced mobility",
+      "category": "Mobility"
+    },
+    {
+      "code": "R56.9",
+      "display": "Convulsions, NOS",
+      "description": "Unspecified convulsions",
+      "category": "Neurological"
+    },
+    {
+      "code": "R42",
+      "display": "Lightheaded/vertigo",
+      "description": "Dizziness and giddiness",
+      "category": "Neurological"
+    },
+    {
+      "code": "G40.909",
+      "display": "Seizure, epileptic",
+      "description": "Epilepsy, unspecified, not intractable, without status epilepticus",
+      "category": "Neurological"
+    },
+    {
+      "code": "G40.89",
+      "display": "Seizure, NOS",
+      "description": "Other seizures",
+      "category": "Neurological"
+    },
+    {
+      "code": "G40.901",
+      "display": "Seizure, status epilepticus",
+      "description": "Epilepsy, unspecified, not intractable, with status epilepticus",
+      "category": "Neurological"
+    },
+    {
+      "code": "I63.9",
+      "display": "Stroke",
+      "description": "Cerebral infarction, unspecified",
+      "category": "Neurological"
+    },
+    {
+      "code": "G45.9",
+      "display": "TIA",
+      "description": "Transient cerebral ischemic attack, unspecified",
+      "category": "Neurological"
+    },
+    {
+      "code": "Z00.00",
+      "display": "Adult general exam, no finding",
+      "description": "Encounter for general adult medical examination without abnormal findings",
+      "category": "No Patient Complaint"
+    },
+    {
+      "code": "Z00.129",
+      "display": "Child general exam, no finding",
+      "description": "Encounter for routine child health examination without abnormal findings",
+      "category": "No Patient Complaint"
+    },
+    {
+      "code": "Z51.89",
+      "display": "Encounter for aftercare",
+      "description": "Encounter for other specified aftercare",
+      "category": "No Patient Complaint"
+    },
+    {
+      "code": "Z71.1",
+      "display": "Encounter, feared condition not observed",
+      "description": "Person with feared health complaint in whom no diagnosis is made",
+      "category": "No Patient Complaint"
+    },
+    {
+      "code": "Z00",
+      "display": "General exam, no complaint",
+      "description": "Encounter for general examination without complaint, suspected or reported diagnosis",
+      "category": "No Patient Complaint"
+    },
+    {
+      "code": "Z04.9",
+      "display": "General exam, NOS",
+      "description": "Encounter for examination and observation for unspecified reason",
+      "category": "No Patient Complaint"
+    },
+    {
+      "code": "Z03.89",
+      "display": "Observation only",
+      "description": "Encounter for observation for other suspected diseases and conditions ruled out",
+      "category": "No Patient Complaint"
+    },
+    {
+      "code": "Z04.6",
+      "display": "Psych exam, requested by authority",
+      "description": "Encounter for general psychiatric examination, requested by authority",
+      "category": "No Patient Complaint"
+    },
+    {
+      "code": "T76",
+      "display": "Abuse/Neglect NOS, suspected",
+      "description": "Adult and child abuse, neglect and other maltreatment, suspected",
+      "category": "Other"
+    },
+    {
+      "code": "T78.40",
+      "display": "Allergic reaction, NOS",
+      "description": "Allergy, unspecified",
+      "category": "Other"
+    },
+    {
+      "code": "E86.0",
+      "display": "Dehydration",
+      "category": "Other"
+    },
+    {
+      "code": "T67",
+      "display": "Heat related (heat stroke/exhaustion)",
+      "description": "Effects of heat and light",
+      "category": "Other"
+    },
+    {
+      "code": "D49",
+      "display": "New growth, tumor",
+      "description": "Neoplasms of unspecified behavior",
+      "category": "Other"
+    },
+    {
+      "code": "R99",
+      "display": "Obvious death",
+      "description": "Ill-defined and unknown cause of mortality",
+      "category": "Other"
+    },
+    {
+      "code": "M54.9",
+      "display": "Back pain, NOS",
+      "description": "Dorsalgia, unspecified",
+      "category": "Pain"
+    },
+    {
+      "code": "R51",
+      "display": "Headache",
+      "category": "Pain"
+    },
+    {
+      "code": "M79.6",
+      "display": "Limb/hand/foot/fingers/toes pain",
+      "description": "Pain in limb, hand, foot, fingers and toes",
+      "category": "Pain"
+    },
+    {
+      "code": "M54.5",
+      "display": "Lower back pain",
+      "description": "Low back pain",
+      "category": "Pain"
+    },
+    {
+      "code": "G89.1",
+      "display": "Pain, acute",
+      "description": "Acute pain, not elsewhere classified",
+      "category": "Pain"
+    },
+    {
+      "code": "G89.11",
+      "display": "Pain, acute due to trauma",
+      "description": "Acute pain due to trauma",
+      "category": "Pain"
+    },
+    {
+      "code": "G89.2",
+      "display": "Pain, chronic",
+      "description": "Chronic pain, not elsewhere classified",
+      "category": "Pain"
+    },
+    {
+      "code": "R52",
+      "display": "Pain, NOS",
+      "description": "Pain, unspecified",
+      "category": "Pain"
+    },
+    {
+      "code": "R10.2",
+      "display": "Pelvic/perineal pain",
+      "description": "Pelvic and perineal pain",
+      "category": "Pain"
+    },
+    {
+      "code": "O80",
+      "display": "Normal delivery",
+      "description": "Encounter for full-term uncomplicated delivery",
+      "category": "Reproductive System"
+    },
+    {
+      "code": "O26.90",
+      "display": "Pregnancy related",
+      "description": "Pregnancy related conditions, unspecified, unspecified trimester",
+      "category": "Reproductive System"
+    },
+    {
+      "code": "N93.9",
+      "display": "Vaginal bleeding, abnormal",
+      "description": "Abnormal uterine and vaginal bleeding, unspecified",
+      "category": "Reproductive System"
+    },
+    {
+      "code": "J45",
+      "display": "Asthma",
+      "category": "Respiratory"
+    },
+    {
+      "code": "J98.01",
+      "display": "Bronchospasm, acute",
+      "description": "Acute bronchospasm",
+      "category": "Respiratory"
+    },
+    {
+      "code": "J00",
+      "display": "Common cold",
+      "description": "Acute nasopharyngitis [common cold]",
+      "category": "Respiratory"
+    },
+    {
+      "code": "J44.1",
+      "display": "COPD",
+      "description": "Chronic obstructive pulmonary disease with (acute) exacerbation",
+      "category": "Respiratory"
+    },
+    {
+      "code": "R06.00",
+      "display": "Difficulty breathing",
+      "description": "Dyspnea, unspecified",
+      "category": "Respiratory"
+    },
+    {
+      "code": "J11",
+      "display": "Flu",
+      "description": "Influenza due to unidentified influenza virus",
+      "category": "Respiratory"
+    },
+    {
+      "code": "J81.0",
+      "display": "Fluid in lungs",
+      "description": "Acute pulmonary edema",
+      "category": "Respiratory"
+    },
+    {
+      "code": "R04.0",
+      "display": "Nosebleed",
+      "description": "Epistaxis",
+      "category": "Respiratory"
+    },
+    {
+      "code": "J18.9",
+      "display": "Pneumonia",
+      "description": "Pneumonia, unspecified organism",
+      "category": "Respiratory"
+    },
+    {
+      "code": "J80",
+      "display": "Respiratory distress",
+      "description": "Acute respiratory distress syndrome",
+      "category": "Respiratory"
+    },
+    {
+      "code": "J96.9",
+      "display": "Respiratory failure",
+      "description": "Respiratory failure, unspecified",
+      "category": "Respiratory"
+    },
+    {
+      "code": "J98.9",
+      "display": "Respiratory, other disorder",
+      "description": "Respiratory disorder, unspecified",
+      "category": "Respiratory"
+    },
+    {
+      "code": "R06.02",
+      "display": "Shortness of breath",
+      "category": "Respiratory"
+    }
+  ]
+}

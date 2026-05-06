@@ -1,0 +1,16 @@
+{
+  "source_mode": "official_partial",
+  "source_repo": "https://git.nemsis.org/scm/nep/nemsis_public.git",
+  "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717",
+  "source_branch": "master",
+  "target_version": "NEMSIS_V3",
+  "retrieved_at": "2026-05-06",
+  "field_count": 704,
+  "element_enumeration_count": 3622,
+  "attribute_enumeration_count": 0,
+  "defined_list_count": 6,
+  "defined_list_field_count": 12,
+  "official_artifact_count": 70,
+  "local_seed_fallback_count": 0,
+  "coverage_warnings": []
+}

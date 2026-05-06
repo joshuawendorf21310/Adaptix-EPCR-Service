@@ -1,0 +1,745 @@
+{
+  "source_url": "https://git.nemsis.org/projects/NEP/repos/nemsis_public/raw/DefinedLists/Symptom/Symptom.json",
+  "source_name": "NEMSIS Version 3 Defined Lists",
+  "source_repo": "https://git.nemsis.org/projects/NEP/repos/nemsis_public/browse/DefinedLists",
+  "list_name": "Symptoms",
+  "download_format": "json",
+  "retrieved_at": "2026-05-06",
+  "upstream_date": "2025-01-14",
+  "nemsis_element_ids": [
+    "eSituation.09",
+    "eSituation.10"
+  ],
+  "nemsis_type_names": [
+    "AssociatedSymptoms"
+  ],
+  "source_vocabularies": [
+    "ICD-10"
+  ],
+  "value_count": 124,
+  "values": [
+    {
+      "code": "R10.0",
+      "display": "Acute pain",
+      "description": "Acute abdomen",
+      "category": "Abdominal"
+    },
+    {
+      "code": "R10.84",
+      "display": "Generalized pain",
+      "description": "Generalized abdominal pain",
+      "category": "Abdominal"
+    },
+    {
+      "code": "R10.3",
+      "display": "Lower abdominal pain",
+      "description": "Pain localized to other parts of lower abdomen",
+      "category": "Abdominal"
+    },
+    {
+      "code": "R10.81",
+      "display": "Tenderness",
+      "description": "Abdominal tenderness",
+      "category": "Abdominal"
+    },
+    {
+      "code": "R10.9",
+      "display": "Unspecified pain",
+      "description": "Unspecified abdominal pain",
+      "category": "Abdominal"
+    },
+    {
+      "code": "R10.1",
+      "display": "Upper abdominal pain",
+      "description": "Pain localized to upper abdomen",
+      "category": "Abdominal"
+    },
+    {
+      "code": "F10.92",
+      "display": "Alcohol use with intoxication",
+      "description": "Alcohol use, unspecified with intoxication",
+      "category": "Alcohol/Drug Exposure"
+    },
+    {
+      "code": "F10.9",
+      "display": "Alcohol use",
+      "description": "Alcohol use, unspecified",
+      "category": "Alcohol/Drug Exposure"
+    },
+    {
+      "code": "T57.9",
+      "display": "Inorganic substance use",
+      "description": "Toxic effect of unspecified inorganic substance",
+      "category": "Alcohol/Drug Exposure"
+    },
+    {
+      "code": "T40.6",
+      "display": "Narcotic use",
+      "description": "Poisoning by, adverse effect of and underdosing of other and unspecified narcotics",
+      "category": "Alcohol/Drug Exposure"
+    },
+    {
+      "code": "T50",
+      "display": "Unspecified drugs/substance",
+      "description": "Poisoning by, adverse effect of and underdosing of diuretics and other and unspecified drugs, medicaments and biological substances",
+      "category": "Alcohol/Drug Exposure"
+    },
+    {
+      "code": "I20.9",
+      "display": "Angina, NOS",
+      "description": "Angina pectoris, unspecified",
+      "category": "Cardiovascular"
+    },
+    {
+      "code": "I49.9",
+      "display": "Arrhythmia",
+      "description": "Cardiac arrhythmia, unspecified",
+      "category": "Cardiovascular"
+    },
+    {
+      "code": "I48.91",
+      "display": "Atrial fibrillation, NOS",
+      "description": "Unspecified atrial fibrillation",
+      "category": "Cardiovascular"
+    },
+    {
+      "code": "I46.9",
+      "display": "Cardiac arrest",
+      "description": "Cardiac arrest, cause unspecified",
+      "category": "Cardiovascular"
+    },
+    {
+      "code": "I10",
+      "display": "Hypertension",
+      "description": "Essential (primary) hypertension",
+      "category": "Cardiovascular"
+    },
+    {
+      "code": "I95.9",
+      "display": "Hypotension",
+      "description": "Hypotension, unspecified",
+      "category": "Cardiovascular"
+    },
+    {
+      "code": "I21",
+      "display": "Myocardial infarction, NOS",
+      "description": "Acute myocardial infarction",
+      "category": "Cardiovascular"
+    },
+    {
+      "code": "R00.2",
+      "display": "Palpitations",
+      "category": "Cardiovascular"
+    },
+    {
+      "code": "I21.3",
+      "display": "STEMI, NOS",
+      "description": "ST elevation (STEMI) myocardial infarction of unspecified site",
+      "category": "Cardiovascular"
+    },
+    {
+      "code": "R14.0",
+      "display": "Abdominal distention/bloating",
+      "description": "Abdominal distension (gaseous)",
+      "category": "Digestive"
+    },
+    {
+      "code": "K59.00",
+      "display": "Constipation",
+      "description": "Constipation, unspecified",
+      "category": "Digestive"
+    },
+    {
+      "code": "R19.7",
+      "display": "Diarrhea",
+      "description": "Diarrhea, unspecified",
+      "category": "Digestive"
+    },
+    {
+      "code": "R11.0",
+      "display": "Nausea",
+      "category": "Digestive"
+    },
+    {
+      "code": "R11.10",
+      "display": "Vomiting",
+      "description": "Vomiting, unspecified",
+      "category": "Digestive"
+    },
+    {
+      "code": "K92.0",
+      "display": "Vomiting blood",
+      "description": "Hematemesis",
+      "category": "Digestive"
+    },
+    {
+      "code": "F41.9",
+      "display": "Anxiety",
+      "description": "Anxiety disorder, unspecified",
+      "category": "Emotional State/Behavior"
+    },
+    {
+      "code": "F32.9",
+      "display": "Depression",
+      "description": "Major depressive disorder, single episode, unspecified",
+      "category": "Emotional State/Behavior"
+    },
+    {
+      "code": "R45.7",
+      "display": "Emotional shock/stress",
+      "description": "State of emotional shock and stress, unspecified",
+      "category": "Emotional State/Behavior"
+    },
+    {
+      "code": "F99",
+      "display": "Mental illness, NOS",
+      "description": "Mental disorder, not otherwise specified",
+      "category": "Emotional State/Behavior"
+    },
+    {
+      "code": "R45.0",
+      "display": "Nervousness",
+      "category": "Emotional State/Behavior"
+    },
+    {
+      "code": "R46.3",
+      "display": "Overactivity",
+      "category": "Emotional State/Behavior"
+    },
+    {
+      "code": "R45.1",
+      "display": "Restless/agitated",
+      "description": "Restlessness and agitation",
+      "category": "Emotional State/Behavior"
+    },
+    {
+      "code": "R46.4",
+      "display": "Slowness/poor responsiveness",
+      "description": "Slowness and poor responsiveness",
+      "category": "Emotional State/Behavior"
+    },
+    {
+      "code": "R46.2",
+      "display": "Strange/inexplicable behavior",
+      "description": "Strange and inexplicable behavior",
+      "category": "Emotional State/Behavior"
+    },
+    {
+      "code": "R45.851",
+      "display": "Suicidal ideation",
+      "description": "Suicidal ideations",
+      "category": "Emotional State/Behavior"
+    },
+    {
+      "code": "R45.6",
+      "display": "Violent behavior",
+      "category": "Emotional State/Behavior"
+    },
+    {
+      "code": "R45.82",
+      "display": "Worries",
+      "category": "Emotional State/Behavior"
+    },
+    {
+      "code": "N18",
+      "display": "Chronic kidney disease",
+      "description": "Chronic kidney disease (CKD)",
+      "category": "Endocrine/Urinary"
+    },
+    {
+      "code": "E13.8",
+      "display": "Diabetic complications",
+      "description": "Other specified diabetes mellitus with unspecified complications",
+      "category": "Endocrine/Urinary"
+    },
+    {
+      "code": "R73.9",
+      "display": "Hyperglycemia",
+      "description": "Hyperglycemia, unspecified",
+      "category": "Endocrine/Urinary"
+    },
+    {
+      "code": "E16.2",
+      "display": "Hypoglycemia",
+      "description": "Hypoglycemia, unspecified",
+      "category": "Endocrine/Urinary"
+    },
+    {
+      "code": "R30.0",
+      "display": "Pain upon urination",
+      "description": "Dysuria",
+      "category": "Endocrine/Urinary"
+    },
+    {
+      "code": "R33.9",
+      "display": "Unable to urinate",
+      "description": "Retention of urine, unspecified",
+      "category": "Endocrine/Urinary"
+    },
+    {
+      "code": "N19",
+      "display": "Uremia (on dialysis)",
+      "description": "Unspecified kidney failure",
+      "category": "Endocrine/Urinary"
+    },
+    {
+      "code": "R50.9",
+      "display": "Fever, NOS",
+      "description": "Fever, unspecified",
+      "category": "Illness"
+    },
+    {
+      "code": "R68.89",
+      "display": "General symptoms, NOS",
+      "description": "Other general symptoms and signs",
+      "category": "Illness"
+    },
+    {
+      "code": "R69",
+      "display": "Illness, NOS",
+      "description": "Illness, unspecified",
+      "category": "Illness"
+    },
+    {
+      "code": "R99",
+      "display": "Undefined/unknown",
+      "description": "Ill-defined and unknown cause of mortality",
+      "category": "Illness"
+    },
+    {
+      "code": "S09.93",
+      "display": "Facial injury",
+      "description": "Unspecified injury of face",
+      "category": "Injury"
+    },
+    {
+      "code": "S09.90",
+      "display": "Head injury",
+      "description": "Unspecified injury of head",
+      "category": "Injury"
+    },
+    {
+      "code": "R58",
+      "display": "Hemorrhage, NOS",
+      "description": "Hemorrhage, not elsewhere classified",
+      "category": "Injury"
+    },
+    {
+      "code": "S79",
+      "display": "Hip/thigh injury",
+      "description": "Other and unspecified injuries of hip and thigh",
+      "category": "Injury"
+    },
+    {
+      "code": "T14",
+      "display": "Injury, NOS",
+      "description": "Injury of unspecified body region",
+      "category": "Injury"
+    },
+    {
+      "code": "S89.90",
+      "display": "Lower leg injury",
+      "description": "Unspecified injury of unspecified lower leg",
+      "category": "Injury"
+    },
+    {
+      "code": "T07",
+      "display": "Multiple injuries, NOS",
+      "description": "Unspecified multiple injuries",
+      "category": "Injury"
+    },
+    {
+      "code": "S49.9",
+      "display": "Shoulder/upper arm injury",
+      "description": "Unspecified injury of shoulder and upper arm",
+      "category": "Injury"
+    },
+    {
+      "code": "S69.9",
+      "display": "Wrist/hand/finger injury",
+      "description": "Unspecified injury of wrist, hand and finger(s)",
+      "category": "Injury"
+    },
+    {
+      "code": "R41.82",
+      "display": "Altered mental status, NOS",
+      "description": "Altered mental status, unspecified",
+      "category": "Level of Consciousness"
+    },
+    {
+      "code": "R40.4",
+      "display": "Altered mental status, transient",
+      "description": "Transient alteration of awareness",
+      "category": "Level of Consciousness"
+    },
+    {
+      "code": "R41.0",
+      "display": "Disoriented, NOS",
+      "description": "Disorientation, unspecified",
+      "category": "Level of Consciousness"
+    },
+    {
+      "code": "R40.0",
+      "display": "Drowsiness",
+      "description": "Somnolence",
+      "category": "Level of Consciousness"
+    },
+    {
+      "code": "R55",
+      "display": "Fainting/collapse",
+      "description": "Syncope and collapse",
+      "category": "Level of Consciousness"
+    },
+    {
+      "code": "R40.20",
+      "display": "Unconscious, NOS",
+      "description": "Unspecified coma",
+      "category": "Level of Consciousness"
+    },
+    {
+      "code": "R53.83",
+      "display": "Fatigue, NOS",
+      "description": "Other fatigue",
+      "category": "Malaise"
+    },
+    {
+      "code": "R53.81",
+      "display": "Malaise, NOS",
+      "description": "Other malaise",
+      "category": "Malaise"
+    },
+    {
+      "code": "R53.1",
+      "display": "Weakness",
+      "category": "Malaise"
+    },
+    {
+      "code": "R56.9",
+      "display": "Convulsions, NOS",
+      "description": "Unspecified convulsions",
+      "category": "Neurological"
+    },
+    {
+      "code": "G40.3",
+      "display": "Epileptic seizure/syndrome",
+      "description": "Generalized idiopathic epilepsy and epileptic syndromes",
+      "category": "Neurological"
+    },
+    {
+      "code": "R56.0",
+      "display": "Febrile convulsions",
+      "category": "Neurological"
+    },
+    {
+      "code": "R42",
+      "display": "Lightheaded/vertigo",
+      "description": "Dizziness and giddiness",
+      "category": "Neurological"
+    },
+    {
+      "code": "G40.89",
+      "display": "Seizure, NOS",
+      "description": "Other seizures",
+      "category": "Neurological"
+    },
+    {
+      "code": "R47.81",
+      "display": "Slurred speech",
+      "category": "Neurological"
+    },
+    {
+      "code": "I63.9",
+      "display": "Stroke",
+      "description": "Cerebral infarction, unspecified",
+      "category": "Neurological"
+    },
+    {
+      "code": "R26.89",
+      "display": "Abnormal gait/mobility",
+      "description": "Other abnormalities of gait and mobility",
+      "category": "Nervous/Musculoskeletal"
+    },
+    {
+      "code": "R25.8",
+      "display": "Abnormal involuntary movements",
+      "description": "Other abnormal involuntary movements",
+      "category": "Nervous/Musculoskeletal"
+    },
+    {
+      "code": "R25.2",
+      "display": "Cramp/spasm",
+      "description": "Cramp and spasm",
+      "category": "Nervous/Musculoskeletal"
+    },
+    {
+      "code": "R26.2",
+      "display": "Difficulty walking",
+      "description": "Difficulty in walking, not elsewhere classified",
+      "category": "Nervous/Musculoskeletal"
+    },
+    {
+      "code": "R29.810",
+      "display": "Facial weakness",
+      "category": "Nervous/Musculoskeletal"
+    },
+    {
+      "code": "R29.8",
+      "display": "Other symptoms, NOS",
+      "description": "Other symptoms and signs involving the nervous and musculoskeletal systems",
+      "category": "Nervous/Musculoskeletal"
+    },
+    {
+      "code": "R29.6",
+      "display": "Repeated falls",
+      "category": "Nervous/Musculoskeletal"
+    },
+    {
+      "code": "T76",
+      "display": "Abuse/Neglect NOS, suspected",
+      "description": "Adult and child abuse, neglect and other maltreatment, suspected",
+      "category": "No Patient Complaint"
+    },
+    {
+      "code": "Z00.00",
+      "display": "Adult encounter, no finding",
+      "description": "Encounter for general adult medical examination without abnormal findings",
+      "category": "No Patient Complaint"
+    },
+    {
+      "code": "Z00.12",
+      "display": "Child encounter, no finding",
+      "description": "Encounter for routine child health examination",
+      "category": "No Patient Complaint"
+    },
+    {
+      "code": "Z71.1",
+      "display": "Feared condition not observed",
+      "description": "Person with feared health complaint in whom no diagnosis is made",
+      "category": "No Patient Complaint"
+    },
+    {
+      "code": "Z00",
+      "display": "General exam, no complaint",
+      "description": "Encounter for general examination without complaint, suspected or reported diagnosis",
+      "category": "No Patient Complaint"
+    },
+    {
+      "code": "G89.11",
+      "display": "Acute pain due to trauma",
+      "category": "Pain"
+    },
+    {
+      "code": "M54.9",
+      "display": "Back pain, NOS",
+      "description": "Dorsalgia, unspecified",
+      "category": "Pain"
+    },
+    {
+      "code": "R07.89",
+      "display": "Chest pain (not angina)",
+      "description": "Other chest pain",
+      "category": "Pain"
+    },
+    {
+      "code": "R07.9",
+      "display": "Chest pain, NOS",
+      "description": "Chest pain, unspecified",
+      "category": "Pain"
+    },
+    {
+      "code": "H57.10",
+      "display": "Eye pain",
+      "description": "Ocular pain, unspecified eye",
+      "category": "Pain"
+    },
+    {
+      "code": "G50.1",
+      "display": "Facial pain",
+      "description": "Atypical facial pain",
+      "category": "Pain"
+    },
+    {
+      "code": "R51",
+      "display": "Headache",
+      "category": "Pain"
+    },
+    {
+      "code": "M25.55",
+      "display": "Hip pain",
+      "description": "Pain in hip",
+      "category": "Pain"
+    },
+    {
+      "code": "M25.56",
+      "display": "Knee pain",
+      "description": "Pain in knee",
+      "category": "Pain"
+    },
+    {
+      "code": "M79.6",
+      "display": "Limb/hand/foot/fingers/toes pain",
+      "description": "Pain in limb, hand, foot, fingers and toes",
+      "category": "Pain"
+    },
+    {
+      "code": "M54.5",
+      "display": "Lower back pain",
+      "description": "Low back pain",
+      "category": "Pain"
+    },
+    {
+      "code": "M54.2",
+      "display": "Neck pain",
+      "description": "Cervicalgia",
+      "category": "Pain"
+    },
+    {
+      "code": "G89.2",
+      "display": "Pain, chronic",
+      "description": "Chronic pain, not elsewhere classified",
+      "category": "Pain"
+    },
+    {
+      "code": "R52",
+      "display": "Pain, NOS",
+      "description": "Pain, unspecified",
+      "category": "Pain"
+    },
+    {
+      "code": "R10.2",
+      "display": "Pelvic/perineal pain",
+      "description": "Pelvic and perineal pain",
+      "category": "Pain"
+    },
+    {
+      "code": "R07.82",
+      "display": "Rib pain",
+      "description": "Intercostal pain",
+      "category": "Pain"
+    },
+    {
+      "code": "M25.51",
+      "display": "Shoulder pain",
+      "description": "Pain in shoulder",
+      "category": "Pain"
+    },
+    {
+      "code": "N93.9",
+      "display": "Vaginal bleeding, NOS",
+      "description": "Abnormal uterine and vaginal bleeding, unspecified",
+      "category": "Reproductive System"
+    },
+    {
+      "code": "R06",
+      "display": "Abnormal breathing",
+      "description": "Abnormalities of breathing",
+      "category": "Respiratory"
+    },
+    {
+      "code": "T17",
+      "display": "Choking",
+      "description": "Foreign body in respiratory tract",
+      "category": "Respiratory"
+    },
+    {
+      "code": "J44.9",
+      "display": "COPD, NOS",
+      "description": "Chronic obstructive pulmonary disease, unspecified",
+      "category": "Respiratory"
+    },
+    {
+      "code": "R05",
+      "display": "Cough",
+      "category": "Respiratory"
+    },
+    {
+      "code": "R06.00",
+      "display": "Difficulty breathing",
+      "description": "Dyspnea, unspecified",
+      "category": "Respiratory"
+    },
+    {
+      "code": "R04.0",
+      "display": "Nosebleed",
+      "description": "Epistaxis",
+      "category": "Respiratory"
+    },
+    {
+      "code": "R06.81",
+      "display": "Not breathing",
+      "description": "Apnea, not elsewhere classified",
+      "category": "Respiratory"
+    },
+    {
+      "code": "R06.89",
+      "display": "Other abnormalities of breathing",
+      "category": "Respiratory"
+    },
+    {
+      "code": "R07.0",
+      "display": "Pain in throat",
+      "category": "Respiratory"
+    },
+    {
+      "code": "R07.1",
+      "display": "Painful breathing",
+      "description": "Chest pain on breathing",
+      "category": "Respiratory"
+    },
+    {
+      "code": "R06.3",
+      "display": "Periodic breathing",
+      "category": "Respiratory"
+    },
+    {
+      "code": "R09.2",
+      "display": "Respiratory arrest",
+      "category": "Respiratory"
+    },
+    {
+      "code": "J80",
+      "display": "Respiratory distress",
+      "description": "Acute respiratory distress syndrome",
+      "category": "Respiratory"
+    },
+    {
+      "code": "R06.02",
+      "display": "Shortness of breath",
+      "category": "Respiratory"
+    },
+    {
+      "code": "R06.2",
+      "display": "Wheezing",
+      "category": "Respiratory"
+    },
+    {
+      "code": "R60.9",
+      "display": "Edema",
+      "description": "Edema, unspecified",
+      "category": "Skin"
+    },
+    {
+      "code": "R22",
+      "display": "Localized swelling/mass/lump",
+      "description": "Localized swelling, mass and lump of skin and subcutaneous tissue",
+      "category": "Skin"
+    },
+    {
+      "code": "R20.0",
+      "display": "Numbness",
+      "description": "Anesthesia of skin",
+      "category": "Skin"
+    },
+    {
+      "code": "R23.8",
+      "display": "Other skin changes",
+      "category": "Skin"
+    },
+    {
+      "code": "R21",
+      "display": "Rash",
+      "description": "Rash and other nonspecific skin eruption",
+      "category": "Skin"
+    }
+  ]
+}
