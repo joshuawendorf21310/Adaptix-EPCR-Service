@@ -51,12 +51,18 @@ _event_worker_task: asyncio.Task | None = None
 def _cors_allow_origins() -> list[str]:
     """Return allowed CORS origins for local and configured clients."""
 
-    configured = os.environ.get("EPCR_CORS_ALLOW_ORIGINS", "").strip()
+    configured = (
+        os.environ.get("EPCR_CORS_ALLOW_ORIGINS", "").strip()
+        or os.environ.get("CORS_ORIGINS", "").strip()
+    )
     if configured:
         return [origin.strip() for origin in configured.split(",") if origin.strip()]
     return [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
+        "https://adaptixcore.com",
+        "https://www.adaptixcore.com",
+        "https://app.adaptixcore.com",
     ]
 
 
@@ -115,7 +121,19 @@ app.add_middleware(
     allow_origins=_cors_allow_origins(),
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=[
+        "Accept",
+        "Accept-Language",
+        "Authorization",
+        "Content-Language",
+        "Content-Type",
+        "X-Requested-With",
+        "X-Tenant-ID",
+        "X-User-ID",
+        "X-User-Email",
+        "X-User-Roles",
+        "X-Correlation-ID",
+    ],
 )
 
 app.include_router(auth_router)
