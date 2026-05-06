@@ -557,6 +557,16 @@ class ChartWorkspaceService:
                 patient_id=payload.get("patient_id"),
             )
         except ValueError as exc:
+            if str(exc) == "chart_call_number_conflict":
+                raise ChartWorkspaceError(
+                    "Chart call_number already exists for this tenant",
+                    status_code=409,
+                    detail={
+                        "message": "Chart call_number already exists for this tenant",
+                        "code": "chart_call_number_conflict",
+                        "call_number": call_number,
+                    },
+                ) from exc
             raise ChartWorkspaceError(str(exc), status_code=400) from exc
         return await ChartWorkspaceService._load_workspace(session, tenant_id, chart.id)
 
