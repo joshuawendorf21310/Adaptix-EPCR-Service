@@ -1,8 +1,15 @@
 """019 add version + deleted_at to NEMSIS submission pipeline tables
 
 Revision ID: 019
-Revises: 018
+Revises: 017
 Create Date: 2026-05-07
+
+(Migration file 018 exists in the local working tree but is not yet
+committed to the repository; the deployed migration chain therefore
+ends at 017. This migration chains directly off 017 so the production
+container's bundled migrations resolve cleanly. When 018 lands later,
+its `down_revision` should be updated to chain after 019, or 019's
+`down_revision` revisited as part of that change set.)
 
 Migration 004 created the four NEMSIS submission pipeline tables
 (`nemsis_resource_packs`, `nemsis_pack_files`, `nemsis_submission_results`,
@@ -29,7 +36,7 @@ import sqlalchemy as sa
 
 
 revision = "019"
-down_revision = "018"
+down_revision = "017"
 branch_labels = None
 depends_on = None
 

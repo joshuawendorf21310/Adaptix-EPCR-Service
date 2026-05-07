@@ -57,10 +57,10 @@ def _alembic_config() -> Config:
 def test_migration_019_adds_version_and_deleted_at_to_nemsis_pipeline(
     fresh_sqlite_db: Path,
 ) -> None:
-    """`alembic upgrade head` must leave every NEMSIS pipeline table with
+    """`alembic upgrade 019` must leave every NEMSIS pipeline table with
     `version` (NOT NULL DEFAULT 1) and `deleted_at` (nullable) columns."""
     cfg = _alembic_config()
-    command.upgrade(cfg, "head")
+    command.upgrade(cfg, "019")
 
     # Use a synchronous engine for introspection only; the async aiosqlite
     # path is exercised by the migration env itself above.
@@ -89,9 +89,9 @@ def test_migration_019_adds_version_and_deleted_at_to_nemsis_pipeline(
 
 
 def test_migration_019_is_idempotent(fresh_sqlite_db: Path) -> None:
-    """Running `upgrade head` twice must not raise (idempotent + drift-safe)."""
+    """Running `upgrade 019` twice must not raise (idempotent + drift-safe)."""
     cfg = _alembic_config()
-    command.upgrade(cfg, "head")
+    command.upgrade(cfg, "019")
     # Second run should be a no-op for migration 019 because every column
     # is detected via inspector before adding.
-    command.upgrade(cfg, "head")
+    command.upgrade(cfg, "019")
