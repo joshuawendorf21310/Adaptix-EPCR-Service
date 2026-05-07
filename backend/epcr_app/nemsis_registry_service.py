@@ -97,7 +97,13 @@ class NemsisRegistryService:
                 "source_repo": OFFICIAL_SOURCE_REPO,
                 "source_commit": "",
                 "target_version": "NEMSIS_V3",
+                "dictionary_version": "3.5.1",
                 "field_count": 0,
+                "baseline_total_expected": 654,
+                "baseline_total_actual": 0,
+                "baseline_counts_expected": {},
+                "baseline_counts_actual": {},
+                "baseline_counts_match": False,
                 "element_enumeration_count": 0,
                 "attribute_enumeration_count": 0,
                 "defined_list_count": 0,
@@ -108,10 +114,37 @@ class NemsisRegistryService:
             }
         return copy.deepcopy(snap)
 
+    def get_version(self) -> dict[str, Any]:
+        snapshot = self.get_snapshot()
+        manifest = self.get_manifest()
+        return {
+            "source_repo": manifest.get("source_repo", OFFICIAL_SOURCE_REPO),
+            "source_commit": manifest.get("source_commit", ""),
+            "source_branch": manifest.get("source_branch"),
+            "target_version": manifest.get("target_version") or snapshot.get("target_version"),
+            "dictionary_version": snapshot.get("dictionary_version", "3.5.1"),
+            "retrieved_at": manifest.get("retrieved_at") or snapshot.get("retrieved_at"),
+            "baseline_total_expected": snapshot.get("baseline_total_expected"),
+            "baseline_total_actual": snapshot.get("baseline_total_actual"),
+            "baseline_counts_expected": snapshot.get("baseline_counts_expected", {}),
+            "baseline_counts_actual": snapshot.get("baseline_counts_actual", {}),
+            "baseline_counts_match": snapshot.get("baseline_counts_match", False),
+            "coverage_warnings": snapshot.get("coverage_warnings", []),
+        }
+
     def list_datasets(self) -> list[str]:
         return sorted({f.get("dataset", "Unknown") for f in self._fields()})
 
     def list_sections(self, dataset: str | None = None) -> list[str]:
+        section_rows = self._load_json("sections.json", [])
+        if section_rows:
+            return sorted(
+                {
+                    row.get("section")
+                    for row in section_rows
+                    if row.get("section") and (not dataset or row.get("dataset") == dataset)
+                }
+            )
         sections = set()
         for f in self._fields():
             if dataset and f.get("dataset") != dataset:
@@ -157,6 +190,12 @@ class NemsisRegistryService:
 
     def list_defined_lists(self) -> list[dict[str, Any]]:
         return copy.deepcopy(self._load_json("defined_lists.json", []))
+
+    def list_code_sets(self, field_id: str | None = None) -> list[dict[str, Any]]:
+        rows = self._load_json("code_sets.json", [])
+        if field_id:
+            rows = [row for row in rows if row.get("field_element_id") == field_id]
+        return copy.deepcopy(rows)
 
     def get_defined_list(self, list_id_or_field_id: str) -> dict[str, Any] | None:
         rows = self._load_json("defined_lists.json", [])
