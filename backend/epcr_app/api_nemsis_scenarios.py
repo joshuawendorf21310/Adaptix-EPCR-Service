@@ -349,13 +349,19 @@ def _load_baked_cta_xml(scenario: dict[str, Any]) -> str | None:
 def _generate_pretesting_xml_or_500(scenario_id: str, scenario: dict[str, Any]) -> bytes:
     scenario_code = scenario["scenario_code"]
 
-    # DEM scenarios are not modeled by the EMS template registry. Submit
-    # the published CTA DEM XML verbatim (with fresh UUIDs and a fresh
-    # software-application identity stamp) so TAC sees the official
-    # DEMDataSet structure unchanged. EMS scenarios continue through the
-    # registry path which performs DEM enrichment, custom-element
-    # merging, and eResponse.04 key enforcement.
-    if scenario.get("category") == "DEM":
+    # 2025 CTA scenarios (both DEM and EMS) submit the published baked
+    # CTA XML verbatim, with only safe runtime stamping applied (fresh
+    # UUID attributes, eRecord.01-04 software identity, DEM
+    # DemographicReport timestamp). The EMS template registry was
+    # producing payloads whose key clinical fields drifted from the
+    # baked CTA scenario, which TAC rejects with soap_response_code -16
+    # ("Incorrect test case provided. Key data elements must match a
+    # test case."). Loading the baked CTA EMSDataSet/DEMDataSet XML
+    # directly preserves all scenario-defining fields (eResponse.04,
+    # chief complaint, dispatch type, patient age/sex, conditions,
+    # assessments, medications, allergies, procedures, trauma,
+    # heat-stroke, asthma, mental-health) without mutation.
+    if scenario_code in _2025_CTA_FILES:
         raw_xml = _load_baked_cta_xml(scenario)
         if raw_xml is None:
             raise HTTPException(
@@ -364,33 +370,10 @@ def _generate_pretesting_xml_or_500(scenario_id: str, scenario: dict[str, Any]) 
                     "code": "unsupported_tac_test_case",
                     "scenario_id": scenario_id,
                     "template_id": Path(str(scenario.get("pretesting_file") or "")).stem,
-                    "message": "Unsupported TAC test case id",
+                    "message": "No official CTA XML available for this scenario",
                 },
             )
         return _stamp_pretesting_xml(raw_xml, scenario_code).encode("utf-8")
-
-    if scenario_code in _2025_CTA_FILES:
-        try:
-            return _build_template_resolved_xml(scenario)
-        except ValueError as exc:
-            # Resolver raised because the EMS template registry does not
-            # know this test case id. Surface a controlled 422 instead of
-            # a 500 stack trace so callers can distinguish "TAC does not
-            # support this test case yet" from real server failures.
-            logger.warning(
-                "submit_scenario: unsupported TAC test case for scenario %s: %s",
-                scenario_id,
-                exc,
-            )
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail={
-                    "code": "unsupported_tac_test_case",
-                    "scenario_id": scenario_id,
-                    "template_id": Path(str(scenario.get("pretesting_file") or "")).stem,
-                    "message": "Unsupported TAC test case id",
-                },
-            ) from exc
 
     raw_xml = _load_pretesting_xml(scenario_code)
     if raw_xml is None:

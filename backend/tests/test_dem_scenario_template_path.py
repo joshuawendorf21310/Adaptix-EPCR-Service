@@ -12,8 +12,11 @@ These tests pin the corrected behavior:
     NOT call into `build_nemsis_xml_from_template` (the EMS pipeline).
   * The XML payload submitted for a DEM scenario has `<DEMDataSet>` as
     its root element.
-  * EMS scenarios still go through the EMS template registry path.
-  * An unsupported TAC test case id surfaces as HTTP 422 with a
+  * 2025 EMS CTA scenarios likewise load the baked CTA `EMSDataSet`
+    XML directly and DO NOT call the EMS template registry, so the
+    scenario-defining clinical key fields TAC checks survive verbatim
+    (this is what eliminates `soap_response_code=-16`).
+  * An unsupported / missing CTA template surfaces as HTTP 422 with a
     structured `code: unsupported_tac_test_case` body, never an
     uncaught 500.
 """
@@ -82,46 +85,16 @@ def test_dem_scenario_does_not_use_ems_template_registry(
     assert calls == [], "EMS template registry must not be called for DEM"
 
 
-def test_ems_scenario_still_uses_template_registry(
+def test_unsupported_tac_test_case_returns_422_when_baked_xml_missing(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """`2025_EMS_1` must continue to flow through the EMS template
-    registry path (`_build_template_resolved_xml`)."""
-    scenario = _find_scenario_or_skip("2025_EMS_1")
-    assert scenario["category"] == "EMS"
-
-    sentinel = b"<EMSDataSet xmlns=\"http://www.nemsis.org\"/>"
-    seen: list[dict[str, Any]] = []
-
-    def _fake(s: dict[str, Any]) -> bytes:
-        seen.append(s)
-        return sentinel
-
-    monkeypatch.setattr(
-        scenarios_module, "_build_template_resolved_xml", _fake
-    )
-
-    out = scenarios_module._generate_pretesting_xml_or_500(
-        "2025_EMS_1", scenario
-    )
-    assert out == sentinel
-    assert len(seen) == 1, "EMS path must invoke the template registry exactly once"
-    assert seen[0]["scenario_code"] == "2025_EMS_1"
-
-
-def test_unsupported_tac_test_case_returns_422_for_ems(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """If the EMS template registry raises ValueError (unsupported test
-    case id), the handler must convert it to a structured HTTP 422,
-    never an uncaught 500."""
+    """If the baked CTA XML cannot be loaded for a 2025 CTA scenario,
+    `_generate_pretesting_xml_or_500` must surface a structured HTTP
+    422, never an uncaught 500."""
     scenario = _find_scenario_or_skip("2025_EMS_1")
 
-    def _raise(_s: dict[str, Any]) -> bytes:
-        raise ValueError("Unsupported TAC test case id: 2025-EMS-1_v351")
-
     monkeypatch.setattr(
-        scenarios_module, "_build_template_resolved_xml", _raise
+        scenarios_module, "_load_baked_cta_xml", lambda _s: None
     )
 
     with pytest.raises(HTTPException) as excinfo:
@@ -135,7 +108,6 @@ def test_unsupported_tac_test_case_returns_422_for_ems(
     assert detail["code"] == "unsupported_tac_test_case"
     assert detail["scenario_id"] == "2025_EMS_1"
     assert detail["template_id"] == "2025-EMS-1-Allergy_v351"
-    assert "Unsupported TAC test case id" in detail["message"]
 
 
 def test_dem_scenario_xml_is_stamped_with_fresh_uuids() -> None:
