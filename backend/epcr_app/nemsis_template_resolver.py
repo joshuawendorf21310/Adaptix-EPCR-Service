@@ -294,6 +294,14 @@ def _resolve_template_path(filename: str) -> Path:
     raise ValueError(f"Template file not found for {filename}")
 
 
+def resolve_cta_template_path(filename: str) -> Path:
+    """Public wrapper used by the scenario submit handler so the DEM
+    pre-testing path can locate baked CTA files via the same resolution
+    chain (env override -> baked image -> repo source) without going
+    through the EMS template-registry/enrichment pipeline."""
+    return _resolve_template_path(filename)
+
+
 def _resolve_dem_reference_path() -> Path:
     for root in _template_roots():
         candidate = root / _DEM_REFERENCE_NAME

@@ -29,7 +29,10 @@ from epcr_app.models_nemsis_core import (
     NemsisSubmissionResult,
     NemsisSubmissionStatusHistory,
 )
-from epcr_app.nemsis_template_resolver import build_nemsis_xml_from_template
+from epcr_app.nemsis_template_resolver import (
+    build_nemsis_xml_from_template,
+    resolve_cta_template_path,
+)
 from epcr_app.nemsis_xsd_validator import NemsisXSDValidator
 
 logger = logging.getLogger(__name__)
@@ -326,17 +329,81 @@ def _stamp_pretesting_xml(raw_xml: str, scenario_code: str) -> str:
     return stamped
 
 
-def _generate_pretesting_xml_or_500(scenario_id: str, scenario: dict[str, Any]) -> bytes:
-    if scenario["scenario_code"] in _2025_CTA_FILES:
-        return _build_template_resolved_xml(scenario)
+def _load_baked_cta_xml(scenario: dict[str, Any]) -> str | None:
+    """Load a baked CTA template (DEM or EMS) directly from the image so
+    DEM scenarios -- which the EMS-focused template registry does not
+    cover -- can still be submitted using the official NEMSIS 3.5.1 CTA
+    XML structure exactly as published by the TAC."""
+    filename = _2025_CTA_FILES.get(scenario["scenario_code"])
+    if not filename:
+        return None
+    try:
+        path = resolve_cta_template_path(filename)
+    except ValueError:
+        return None
+    if not path.exists():
+        return None
+    return path.read_text(encoding="utf-8")
 
-    raw_xml = _load_pretesting_xml(scenario["scenario_code"])
+
+def _generate_pretesting_xml_or_500(scenario_id: str, scenario: dict[str, Any]) -> bytes:
+    scenario_code = scenario["scenario_code"]
+
+    # DEM scenarios are not modeled by the EMS template registry. Submit
+    # the published CTA DEM XML verbatim (with fresh UUIDs and a fresh
+    # software-application identity stamp) so TAC sees the official
+    # DEMDataSet structure unchanged. EMS scenarios continue through the
+    # registry path which performs DEM enrichment, custom-element
+    # merging, and eResponse.04 key enforcement.
+    if scenario.get("category") == "DEM":
+        raw_xml = _load_baked_cta_xml(scenario)
+        if raw_xml is None:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail={
+                    "code": "unsupported_tac_test_case",
+                    "scenario_id": scenario_id,
+                    "template_id": Path(str(scenario.get("pretesting_file") or "")).stem,
+                    "message": "Unsupported TAC test case id",
+                },
+            )
+        return _stamp_pretesting_xml(raw_xml, scenario_code).encode("utf-8")
+
+    if scenario_code in _2025_CTA_FILES:
+        try:
+            return _build_template_resolved_xml(scenario)
+        except ValueError as exc:
+            # Resolver raised because the EMS template registry does not
+            # know this test case id. Surface a controlled 422 instead of
+            # a 500 stack trace so callers can distinguish "TAC does not
+            # support this test case yet" from real server failures.
+            logger.warning(
+                "submit_scenario: unsupported TAC test case for scenario %s: %s",
+                scenario_id,
+                exc,
+            )
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail={
+                    "code": "unsupported_tac_test_case",
+                    "scenario_id": scenario_id,
+                    "template_id": Path(str(scenario.get("pretesting_file") or "")).stem,
+                    "message": "Unsupported TAC test case id",
+                },
+            ) from exc
+
+    raw_xml = _load_pretesting_xml(scenario_code)
     if raw_xml is None:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"No official pre-testing XML available for scenario '{scenario_id}'",
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={
+                "code": "unsupported_tac_test_case",
+                "scenario_id": scenario_id,
+                "template_id": Path(str(scenario.get("pretesting_file") or "")).stem,
+                "message": "No official pre-testing XML available for this scenario",
+            },
         )
-    xml_str = _stamp_pretesting_xml(raw_xml, scenario["scenario_code"])
+    xml_str = _stamp_pretesting_xml(raw_xml, scenario_code)
     return xml_str.encode("utf-8")
 
 
