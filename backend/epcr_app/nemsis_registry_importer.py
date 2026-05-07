@@ -60,6 +60,18 @@ DATASET_CUSTOM_ELEMENT = "CustomElement"
 DATASET_SHARED = "Shared"
 DATASET_UNKNOWN = "Unknown"
 
+DICTIONARY_VERSION_351 = "3.5.1"
+# Machine-derived from published NEMSIS 3.5.1 section index (HTTP 200, May 2026).
+# ePayment.47 (Ambulance Conditions Indicator) and dAgency.27 (Licensed Agency)
+# are both present in the published 3.5.1 site with national=No / state=No / Optional.
+# The correct published 3.5.1 total is 654 = 450 EMS + 157 DEM + 47 State.
+EXPECTED_BASELINE_COUNTS = {
+    DATASET_EMS: 450,
+    DATASET_DEM: 157,
+    DATASET_STATE: 47,
+}
+EXPECTED_BASELINE_TOTAL = sum(EXPECTED_BASELINE_COUNTS.values())
+
 DEFAULT_OFFICIAL_DIR = Path(__file__).resolve().parent / "nemsis_resources" / "official"
 
 _FIELD_ID_RE = re.compile(r"^[de][A-Za-z]+\.[0-9]{2,3}$|^s[A-Za-z]+\.[0-9]{2,3}$")
@@ -97,6 +109,9 @@ class NemsisRegistryArtifact:
 class NemsisRegistryImportResult:
     manifest: dict[str, Any]
     fields: list[dict[str, Any]]
+    code_sets: list[dict[str, Any]]
+    sections: list[dict[str, Any]]
+    validation_rules: dict[str, Any]
     element_enumerations: list[dict[str, Any]]
     attribute_enumerations: list[dict[str, Any]]
     defined_lists: list[dict[str, Any]]
@@ -122,6 +137,16 @@ def _section_from_field_id(field_id: str) -> str:
     if "." not in field_id:
         return field_id
     return field_id.split(".", 1)[0]
+
+
+def _canonical_dataset_for_field_id(field_id: str, dataset_name: str | None = None) -> str:
+    if field_id.startswith("d"):
+        return DATASET_DEM
+    if field_id.startswith("e"):
+        return DATASET_EMS
+    if field_id.startswith("s"):
+        return DATASET_STATE
+    return dataset_name or DATASET_UNKNOWN
 
 
 def _parse_pipe_table(path: Path) -> list[dict[str, str]]:
@@ -314,7 +339,7 @@ class NemsisRegistryNormalizer:
     # -- normalized outputs ------------------------------------------------- #
 
     def normalize_fields_from_data_dictionary(self) -> list[dict[str, Any]]:
-        fields: list[dict[str, Any]] = []
+        fields_by_id: dict[str, dict[str, Any]] = {}
         sources = [
             (self.raw_dir / "data_dictionary" / "Combined_ElementDetails.txt", None),
             (
@@ -327,27 +352,52 @@ class NemsisRegistryNormalizer:
                 self.coverage_warnings.append(f"missing_artifact:{path.name}")
                 continue
             for row in _parse_pipe_table(path):
+                if (_value_or_none(row.get("DatasetType", "")) or "element") != "element":
+                    continue
                 element_number = _value_or_none(row.get("ElementNumber", ""))
                 if not element_number:
                     continue
-                fields.append(
+                source_dataset = (
+                    dataset_override
+                    or _value_or_none(row.get("DatasetName", ""))
+                    or DATASET_UNKNOWN
+                )
+                canonical_dataset = _canonical_dataset_for_field_id(
+                    element_number,
+                    source_dataset,
+                )
+                min_occurs = _value_or_none(row.get("MinOccurs", ""))
+                max_occurs = _value_or_none(row.get("MaxOccurs", ""))
+                constraints = {
+                    "min_length": _value_or_none(row.get("minLength", "")),
+                    "max_length": _value_or_none(row.get("maxLength", "")),
+                    "length": _value_or_none(row.get("length", "")),
+                    "min_inclusive": _value_or_none(row.get("minInclusive", "")),
+                    "max_inclusive": _value_or_none(row.get("maxInclusive", "")),
+                    "min_exclusive": _value_or_none(row.get("minExclusive", "")),
+                    "total_digits": _value_or_none(row.get("totalDigits", "")),
+                    "fraction_digits": _value_or_none(row.get("fractionDigits", "")),
+                    "pattern": _value_or_none(row.get("pattern", "")),
+                }
+                payload = fields_by_id.setdefault(
+                    element_number,
                     {
                         "field_id": element_number,
-                        "dataset": dataset_override
-                        or _value_or_none(row.get("DatasetName", ""))
-                        or DATASET_UNKNOWN,
+                        "element_id": element_number,
+                        "dataset": canonical_dataset,
                         "section": _section_from_field_id(element_number),
                         "name": element_number,
                         "label": _value_or_none(row.get("ElementName", "")) or element_number,
+                        "official_name": _value_or_none(row.get("ElementName", "")) or element_number,
                         "definition": None,
                         "data_type": _value_or_none(row.get("DataType", "")),
                         "usage": _value_or_none(row.get("Usage", "")),
                         "required_level": _value_or_none(row.get("Usage", "")),
                         "national_element": _value_or_none(row.get("National", "")),
                         "state_element": _value_or_none(row.get("State", "")),
-                        "recurrence": None,
-                        "min_occurs": _value_or_none(row.get("MinOccurs", "")),
-                        "max_occurs": _value_or_none(row.get("MaxOccurs", "")),
+                        "recurrence": f"{min_occurs or '0'}:{max_occurs or '1'}",
+                        "min_occurs": min_occurs,
+                        "max_occurs": max_occurs,
                         "nillable": _value_or_none(row.get("IsNillable", "")),
                         "not_value_allowed": _value_or_none(row.get("NV", "")),
                         "pertinent_negative_allowed": _value_or_none(row.get("PN", "")),
@@ -355,15 +405,43 @@ class NemsisRegistryNormalizer:
                         "defined_list_ref": None,
                         "enumeration_ref": None,
                         "attributes": [],
+                        "version_2_element": _value_or_none(row.get("V2Number", "")),
+                        "min_length": constraints["min_length"],
+                        "max_length": constraints["max_length"],
+                        "pattern": constraints["pattern"],
+                        "constraints": constraints,
+                        "code_system": None,
+                        "code_type_attribute": None,
+                        "allowed_values": [],
+                        "element_comments": None,
+                        "deprecated": False,
+                        "dictionary_version": DICTIONARY_VERSION_351,
+                        "dictionary_source": self._guess_repo_path(
+                            path, ARTIFACT_TYPE_DATA_DICTIONARY
+                        ),
                         "source_artifact": path.name,
                         "source_repo_path": self._guess_repo_path(
                             path, ARTIFACT_TYPE_DATA_DICTIONARY
                         ),
                         "source_commit": self.source_commit,
                         "source_version": self._detect_target_version(),
-                    }
+                        "source_datasets": [source_dataset],
+                    },
                 )
+                if source_dataset not in payload["source_datasets"]:
+                    payload["source_datasets"].append(source_dataset)
+                if payload.get("dataset") != canonical_dataset:
+                    payload["dataset"] = canonical_dataset
+                if payload.get("label") == element_number:
+                    payload["label"] = _value_or_none(row.get("ElementName", "")) or element_number
+                    payload["official_name"] = payload["label"]
+                for key, value in constraints.items():
+                    target_key = key if key != "pattern" else "pattern"
+                    if payload.get(target_key) in (None, "") and value not in (None, ""):
+                        payload[target_key] = value
+                        payload["constraints"][key] = value
         # Stable ordering: dataset then field_id.
+        fields = list(fields_by_id.values())
         fields.sort(key=lambda f: (f["dataset"], f["field_id"]))
         return fields
 
@@ -481,6 +559,90 @@ class NemsisRegistryNormalizer:
                 )
         return out
 
+    def build_code_sets(
+        self,
+        *,
+        fields: list[dict[str, Any]],
+        element_enumerations: list[dict[str, Any]],
+        defined_lists: list[dict[str, Any]],
+    ) -> list[dict[str, Any]]:
+        rows: list[dict[str, Any]] = []
+        field_index = {field["field_id"]: field for field in fields}
+        for row in element_enumerations:
+            field = field_index.get(row["field_id"], {})
+            rows.append(
+                {
+                    "field_element_id": row["field_id"],
+                    "code": row["code"],
+                    "label": row.get("display") or row["code"],
+                    "description": row.get("description"),
+                    "code_system": "NEMSIS_NATIVE_CODE_LIST",
+                    "code_type": field.get("data_type"),
+                    "source": row.get("source_artifact"),
+                    "source_version": row.get("source_version") or DICTIONARY_VERSION_351,
+                    "effective_date": None,
+                    "deprecated": False,
+                }
+            )
+        for defined_list in defined_lists:
+            field = field_index.get(defined_list["field_id"], {})
+            for raw_value in defined_list.get("values", []):
+                if isinstance(raw_value, dict):
+                    code = raw_value.get("code") or raw_value.get("value") or raw_value.get("id")
+                    label = raw_value.get("display") or raw_value.get("label") or code
+                    description = raw_value.get("description")
+                    deprecated = bool(raw_value.get("deprecated", False))
+                    effective_date = raw_value.get("effective_date")
+                else:
+                    code = raw_value
+                    label = raw_value
+                    description = None
+                    deprecated = False
+                    effective_date = None
+                if code in (None, ""):
+                    continue
+                rows.append(
+                    {
+                        "field_element_id": defined_list["field_id"],
+                        "code": str(code),
+                        "label": str(label),
+                        "description": description,
+                        "code_system": "NEMSIS_DEFINED_LIST",
+                        "code_type": field.get("data_type"),
+                        "source": defined_list.get("source_artifact"),
+                        "source_version": defined_list.get("source_version") or DICTIONARY_VERSION_351,
+                        "effective_date": effective_date,
+                        "deprecated": deprecated,
+                    }
+                )
+        rows.sort(key=lambda row: (row["field_element_id"], row["code"]))
+        return rows
+
+    def build_sections(self, fields: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        sections: dict[tuple[str, str], list[str]] = {}
+        for field in fields:
+            key = (field["dataset"], field["section"])
+            sections.setdefault(key, []).append(field["field_id"])
+        payload: list[dict[str, Any]] = []
+        for (dataset, section), field_ids in sorted(sections.items()):
+            payload.append(
+                {
+                    "dataset": dataset,
+                    "section": section,
+                    "field_count": len(field_ids),
+                    "field_ids": sorted(field_ids),
+                }
+            )
+        return payload
+
+    def build_validation_rules(self) -> dict[str, Any]:
+        return {
+            "status": "not_generated",
+            "dictionary_version": DICTIONARY_VERSION_351,
+            "source": "schematron_parse_not_implemented_in_phase1",
+            "field_rule_map": {},
+        }
+
     def normalize_sample_custom_element_awareness(
         self, artifacts: list[NemsisRegistryArtifact]
     ) -> list[dict[str, Any]]:
@@ -521,14 +683,36 @@ class NemsisRegistryNormalizer:
             )
         else:
             mode = SOURCE_MODE_OFFICIAL_PARTIAL
+        actual_counts = {
+            DATASET_EMS: len([f for f in fields if f.get("dataset") == DATASET_EMS]),
+            DATASET_DEM: len([f for f in fields if f.get("dataset") == DATASET_DEM]),
+            DATASET_STATE: len([f for f in fields if f.get("dataset") == DATASET_STATE]),
+        }
+        baseline_counts_match = actual_counts == EXPECTED_BASELINE_COUNTS
+        if not baseline_counts_match and mode != SOURCE_MODE_NOT_CONFIGURED:
+            detail = (
+                f"NEMSIS 3.5.1 baseline count mismatch: "
+                f"expected={EXPECTED_BASELINE_COUNTS} (total={EXPECTED_BASELINE_TOTAL}) "
+                f"actual={actual_counts} (total={sum(actual_counts.values())}). "
+                f"Do not proceed with contract generation until the official raw bundle "
+                f"matches the published 3.5.1 baseline."
+            )
+            self.coverage_warnings.append(f"baseline_count_mismatch:{detail}")
+            raise ValueError(detail)
         return {
             "source_mode": mode,
             "source_repo": OFFICIAL_SOURCE_REPO,
             "source_commit": self.source_commit,
             "source_branch": self.source_branch,
             "target_version": self._detect_target_version(),
+            "dictionary_version": DICTIONARY_VERSION_351,
             "retrieved_at": self.retrieved_at,
             "field_count": len(fields),
+            "baseline_total_expected": EXPECTED_BASELINE_TOTAL,
+            "baseline_total_actual": len(fields),
+            "baseline_counts_expected": EXPECTED_BASELINE_COUNTS,
+            "baseline_counts_actual": actual_counts,
+            "baseline_counts_match": baseline_counts_match,
             "element_enumeration_count": len(element_enumerations),
             "attribute_enumeration_count": len(attribute_enumerations),
             "defined_list_count": len({r["list_id"] for r in defined_lists}),
@@ -548,6 +732,13 @@ class NemsisRegistryNormalizer:
         element_enums = self.normalize_element_enumerations()
         attr_enums = self.normalize_attribute_enumerations()
         defined_lists = self.normalize_defined_lists()
+        code_sets = self.build_code_sets(
+            fields=fields,
+            element_enumerations=element_enums,
+            defined_lists=defined_lists,
+        )
+        sections = self.build_sections(fields)
+        validation_rules = self.build_validation_rules()
         required = self.normalize_required_elements(fields)
         snapshot = self.build_registry_snapshot(
             fields=fields,
@@ -561,6 +752,9 @@ class NemsisRegistryNormalizer:
         return NemsisRegistryImportResult(
             manifest=manifest,
             fields=fields,
+            code_sets=code_sets,
+            sections=sections,
+            validation_rules=validation_rules,
             element_enumerations=element_enums,
             attribute_enumerations=attr_enums,
             defined_lists=defined_lists,
@@ -575,6 +769,9 @@ class NemsisRegistryNormalizer:
         outputs = {
             self.official_dir / "manifest.json": result.manifest,
             self.normalized_dir / "fields.json": result.fields,
+            self.normalized_dir / "code_sets.json": result.code_sets,
+            self.normalized_dir / "sections.json": result.sections,
+            self.normalized_dir / "validation_rules.json": result.validation_rules,
             self.normalized_dir / "element_enumerations.json": result.element_enumerations,
             self.normalized_dir / "attribute_enumerations.json": result.attribute_enumerations,
             self.normalized_dir / "defined_lists.json": result.defined_lists,

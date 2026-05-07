@@ -84,6 +84,19 @@ def test_normalized_fields_have_traceability() -> None:
     assert sample["source_commit"] == PINNED_COMMIT
 
 
+def test_normalized_fields_expose_dictionary_contract_metadata() -> None:
+    fields = json.loads(
+        (DEFAULT_OFFICIAL_DIR / "normalized" / "fields.json").read_text(encoding="utf-8")
+    )
+    sample = fields[0]
+    assert "element_id" in sample
+    assert "official_name" in sample
+    assert "version_2_element" in sample
+    assert "constraints" in sample
+    assert "dictionary_version" in sample
+    assert "dictionary_source" in sample
+
+
 def test_normalized_element_enumerations_have_code_display_source() -> None:
     rows = json.loads(
         (DEFAULT_OFFICIAL_DIR / "normalized" / "element_enumerations.json").read_text(encoding="utf-8")
@@ -120,6 +133,60 @@ def test_normalizer_emits_not_configured_when_dirs_missing(tmp_path: Path) -> No
     assert result.snapshot["source_mode"] == SOURCE_MODE_NOT_CONFIGURED
     assert result.snapshot["field_count"] == 0
     assert result.snapshot["official_artifact_count"] == 0
+
+
+def test_normalizer_canonicalizes_duplicate_ids_to_single_field() -> None:
+    result = NemsisRegistryNormalizer(
+        official_dir=DEFAULT_OFFICIAL_DIR,
+        source_commit=PINNED_COMMIT,
+        source_branch="master",
+        retrieved_at="2026-05-06",
+    ).run(local_seed_fallback_count=0)
+    d_agency = [field for field in result.fields if field["field_id"] == "dAgency.01"]
+    assert len(d_agency) == 1
+    assert d_agency[0]["dataset"] == "DEMDataSet"
+    assert sorted(d_agency[0]["source_datasets"]) == ["DEMDataSet", "EMSDataSet"]
+
+
+def test_normalizer_emits_code_sets_sections_and_validation_rule_manifest() -> None:
+    result = NemsisRegistryNormalizer(
+        official_dir=DEFAULT_OFFICIAL_DIR,
+        source_commit=PINNED_COMMIT,
+        source_branch="master",
+        retrieved_at="2026-05-06",
+    ).run(local_seed_fallback_count=0)
+    assert result.code_sets
+    assert result.sections
+    assert result.validation_rules["status"] == "not_generated"
+    assert any(row["field_element_id"] == "eResponse.05" for row in result.code_sets)
+    assert any(section["section"] == "eResponse" for section in result.sections)
+
+
+def test_snapshot_surfaces_baseline_count_truth() -> None:
+    result = NemsisRegistryNormalizer(
+        official_dir=DEFAULT_OFFICIAL_DIR,
+        source_commit=PINNED_COMMIT,
+        source_branch="master",
+        retrieved_at="2026-05-06",
+    ).run(local_seed_fallback_count=0)
+    snapshot = result.snapshot
+    # Correct published NEMSIS 3.5.1 baseline: 450 EMS + 157 DEM + 47 State = 654
+    # Machine-verified via HTTP diff against https://nemsis.org/media/nemsis_v3/release-3.5.1/
+    assert snapshot["dictionary_version"] == "3.5.1"
+    assert snapshot["baseline_total_expected"] == 654
+    assert snapshot["baseline_total_actual"] == snapshot["field_count"]
+    assert snapshot["baseline_counts_expected"] == {
+        "EMSDataSet": 450,
+        "DEMDataSet": 157,
+        "StateDataSet": 47,
+    }
+    assert snapshot["baseline_counts_match"] is True
+    # Confirm the two 3.5.1-specific elements are present in the generated field list
+    # ePayment.47 (Ambulance Conditions Indicator) and dAgency.27 (Licensed Agency)
+    # are both confirmed present in published NEMSIS 3.5.1 via HTTP 200 spot-check.
+    field_ids = {field["field_id"] for field in result.fields}
+    assert "ePayment.47" in field_ids, "ePayment.47 must be present in NEMSIS 3.5.1 field registry"
+    assert "dAgency.27" in field_ids, "dAgency.27 must be present in NEMSIS 3.5.1 field registry"
 
 
 def test_artifact_dataclass_round_trip() -> None:
