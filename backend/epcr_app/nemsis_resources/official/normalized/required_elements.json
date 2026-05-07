@@ -203,27 +203,6 @@
     "required_level": "Mandatory"
   },
   {
-    "field_id": "dAgency.01",
-    "dataset": "EMSDataSet",
-    "national_element": "National",
-    "state_element": "State",
-    "required_level": "Mandatory"
-  },
-  {
-    "field_id": "dAgency.02",
-    "dataset": "EMSDataSet",
-    "national_element": "National",
-    "state_element": "State",
-    "required_level": "Mandatory"
-  },
-  {
-    "field_id": "dAgency.04",
-    "dataset": "EMSDataSet",
-    "national_element": "National",
-    "state_element": "State",
-    "required_level": "Mandatory"
-  },
-  {
     "field_id": "eArrest.01",
     "dataset": "EMSDataSet",
     "national_element": "National",
@@ -1295,28 +1274,7 @@
     "required_level": "Required"
   },
   {
-    "field_id": "sConfiguration.01",
-    "dataset": "StateDataSet",
-    "national_element": "National",
-    "state_element": "State",
-    "required_level": "Required"
-  },
-  {
     "field_id": "sConfiguration.02",
-    "dataset": "StateDataSet",
-    "national_element": "National",
-    "state_element": "State",
-    "required_level": "Required"
-  },
-  {
-    "field_id": "sConfiguration.02",
-    "dataset": "StateDataSet",
-    "national_element": "National",
-    "state_element": "State",
-    "required_level": "Required"
-  },
-  {
-    "field_id": "sConfiguration.03",
     "dataset": "StateDataSet",
     "national_element": "National",
     "state_element": "State",
@@ -1337,28 +1295,7 @@
     "required_level": "Required"
   },
   {
-    "field_id": "sConfiguration.04",
-    "dataset": "StateDataSet",
-    "national_element": "National",
-    "state_element": "State",
-    "required_level": "Required"
-  },
-  {
     "field_id": "sConfiguration.05",
-    "dataset": "StateDataSet",
-    "national_element": "National",
-    "state_element": "State",
-    "required_level": "Required"
-  },
-  {
-    "field_id": "sConfiguration.05",
-    "dataset": "StateDataSet",
-    "national_element": "National",
-    "state_element": "State",
-    "required_level": "Required"
-  },
-  {
-    "field_id": "sConfiguration.06",
     "dataset": "StateDataSet",
     "national_element": "National",
     "state_element": "State",
@@ -1379,28 +1316,7 @@
     "required_level": "Required"
   },
   {
-    "field_id": "sElement.01",
-    "dataset": "StateDataSet",
-    "national_element": "National",
-    "state_element": "State",
-    "required_level": "Required"
-  },
-  {
     "field_id": "sSoftware.01",
-    "dataset": "StateDataSet",
-    "national_element": "National",
-    "state_element": "State",
-    "required_level": "Required"
-  },
-  {
-    "field_id": "sSoftware.01",
-    "dataset": "StateDataSet",
-    "national_element": "National",
-    "state_element": "State",
-    "required_level": "Required"
-  },
-  {
-    "field_id": "sSoftware.02",
     "dataset": "StateDataSet",
     "national_element": "National",
     "state_element": "State",
@@ -1421,28 +1337,7 @@
     "required_level": "Required"
   },
   {
-    "field_id": "sSoftware.03",
-    "dataset": "StateDataSet",
-    "national_element": "National",
-    "state_element": "State",
-    "required_level": "Required"
-  },
-  {
     "field_id": "sState.01",
-    "dataset": "StateDataSet",
-    "national_element": "National",
-    "state_element": "State",
-    "required_level": "Mandatory"
-  },
-  {
-    "field_id": "sState.01",
-    "dataset": "StateDataSet",
-    "national_element": "National",
-    "state_element": "State",
-    "required_level": "Mandatory"
-  },
-  {
-    "field_id": "sdCustomConfiguration.01",
     "dataset": "StateDataSet",
     "national_element": "National",
     "state_element": "State",
@@ -1463,28 +1358,7 @@
     "required_level": "Mandatory"
   },
   {
-    "field_id": "sdCustomConfiguration.02",
-    "dataset": "StateDataSet",
-    "national_element": "National",
-    "state_element": "State",
-    "required_level": "Mandatory"
-  },
-  {
     "field_id": "sdCustomConfiguration.03",
-    "dataset": "StateDataSet",
-    "national_element": "National",
-    "state_element": "State",
-    "required_level": "Mandatory"
-  },
-  {
-    "field_id": "sdCustomConfiguration.03",
-    "dataset": "StateDataSet",
-    "national_element": "National",
-    "state_element": "State",
-    "required_level": "Mandatory"
-  },
-  {
-    "field_id": "sdCustomConfiguration.04",
     "dataset": "StateDataSet",
     "national_element": "National",
     "state_element": "State",
@@ -1505,28 +1379,7 @@
     "required_level": "Mandatory"
   },
   {
-    "field_id": "sdCustomConfiguration.05",
-    "dataset": "StateDataSet",
-    "national_element": "National",
-    "state_element": "State",
-    "required_level": "Mandatory"
-  },
-  {
     "field_id": "seCustomConfiguration.01",
-    "dataset": "StateDataSet",
-    "national_element": "National",
-    "state_element": "State",
-    "required_level": "Mandatory"
-  },
-  {
-    "field_id": "seCustomConfiguration.01",
-    "dataset": "StateDataSet",
-    "national_element": "National",
-    "state_element": "State",
-    "required_level": "Mandatory"
-  },
-  {
-    "field_id": "seCustomConfiguration.02",
     "dataset": "StateDataSet",
     "national_element": "National",
     "state_element": "State",
@@ -1547,28 +1400,7 @@
     "required_level": "Mandatory"
   },
   {
-    "field_id": "seCustomConfiguration.03",
-    "dataset": "StateDataSet",
-    "national_element": "National",
-    "state_element": "State",
-    "required_level": "Mandatory"
-  },
-  {
     "field_id": "seCustomConfiguration.04",
-    "dataset": "StateDataSet",
-    "national_element": "National",
-    "state_element": "State",
-    "required_level": "Mandatory"
-  },
-  {
-    "field_id": "seCustomConfiguration.04",
-    "dataset": "StateDataSet",
-    "national_element": "National",
-    "state_element": "State",
-    "required_level": "Mandatory"
-  },
-  {
-    "field_id": "seCustomConfiguration.05",
     "dataset": "StateDataSet",
     "national_element": "National",
     "state_element": "State",

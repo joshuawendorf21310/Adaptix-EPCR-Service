@@ -4,8 +4,22 @@
   "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717",
   "source_branch": "master",
   "target_version": "NEMSIS_V3",
+  "dictionary_version": "3.5.1",
   "retrieved_at": "2026-05-06",
-  "field_count": 704,
+  "field_count": 654,
+  "baseline_total_expected": 654,
+  "baseline_total_actual": 654,
+  "baseline_counts_expected": {
+    "EMSDataSet": 450,
+    "DEMDataSet": 157,
+    "StateDataSet": 47
+  },
+  "baseline_counts_actual": {
+    "EMSDataSet": 450,
+    "DEMDataSet": 157,
+    "StateDataSet": 47
+  },
+  "baseline_counts_match": true,
   "element_enumeration_count": 3622,
   "attribute_enumeration_count": 0,
   "defined_list_count": 6,
