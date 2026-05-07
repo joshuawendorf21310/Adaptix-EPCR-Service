@@ -1,10 +1,21 @@
 FROM python:3.11-slim
 
+# Build-time identity. Populated by CI (e.g. CodeBuild / GitHub Actions) so the
+# resulting image self-reports which commit it is. Surfaced at runtime via
+# /api/v1/epcr/version. Defaults are intentionally "unknown" so a local docker
+# build still produces a runnable image, just without verifiable identity.
+ARG BUILD_COMMIT_SHA=unknown
+ARG BUILD_BRANCH=unknown
+ARG BUILD_TIME=unknown
+
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONPATH=/app \
     PIP_NO_CACHE_DIR=1 \
-    PORT=8000
+    PORT=8000 \
+    BUILD_COMMIT_SHA=${BUILD_COMMIT_SHA} \
+    BUILD_BRANCH=${BUILD_BRANCH} \
+    BUILD_TIME=${BUILD_TIME}
 
 WORKDIR /app
 
@@ -25,6 +36,14 @@ COPY backend/alembic.ini ./alembic.ini
 COPY backend/README.md ./README.md
 
 RUN pip install .
+
+# Bake non-sensitive build identity into a JSON sidecar consumed by
+# epcr_app.api_version at runtime. Contains only commit SHA, branch, and
+# build timestamp -- no secrets, no tenant data, no env values.
+RUN printf '{"commit_sha":"%s","branch":"%s","build_time":"%s"}\n' \
+        "${BUILD_COMMIT_SHA}" "${BUILD_BRANCH}" "${BUILD_TIME}" \
+        > /app/.build_info.json \
+    && chmod 0444 /app/.build_info.json
 
 EXPOSE 8000
 

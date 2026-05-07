@@ -43,6 +43,8 @@ from epcr_app.api_nemsis_custom_elements import router as nemsis_custom_elements
 from epcr_app.api_nemsis_field_graph import router as nemsis_field_graph_router
 from epcr_app.api_nemsis_registry import router as nemsis_registry_router
 from epcr_app.api_nemsis_scenarios import router as nemsis_scenarios_router
+from epcr_app.api_tac_schematron_packages import router as tac_schematron_packages_router
+from epcr_app.api_version import router as version_router
 from epcr_app.db import init_db
 from adaptix_contracts.event_contracts import LocalEventConsumerRegistry
 from epcr_app.background_worker import EventProcessingWorker
@@ -181,6 +183,8 @@ app.include_router(nemsis_custom_elements_router)
 app.include_router(nemsis_field_graph_router)
 app.include_router(nemsis_registry_router)
 app.include_router(nemsis_scenarios_router)
+app.include_router(tac_schematron_packages_router)
+app.include_router(version_router)
 
 logger.info("Care service configured with all routers: CareGraph, CPAE, VAS, Vision, CriticalCare, Sync, Dashboard, SmartText, Address, Desktop")
 

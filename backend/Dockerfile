@@ -1,10 +1,17 @@
 FROM python:3.11-slim
 
+ARG BUILD_COMMIT_SHA=unknown
+ARG BUILD_BRANCH=unknown
+ARG BUILD_TIME=unknown
+
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONPATH=/app \
     PIP_NO_CACHE_DIR=1 \
-    PORT=8000
+    PORT=8000 \
+    BUILD_COMMIT_SHA=${BUILD_COMMIT_SHA} \
+    BUILD_BRANCH=${BUILD_BRANCH} \
+    BUILD_TIME=${BUILD_TIME}
 
 WORKDIR /app
 
@@ -22,6 +29,11 @@ COPY alembic.ini /app/alembic.ini
 COPY nemsis /app/nemsis
 
 RUN pip install .
+
+RUN printf '{"commit_sha":"%s","branch":"%s","build_time":"%s"}\n' \
+        "${BUILD_COMMIT_SHA}" "${BUILD_BRANCH}" "${BUILD_TIME}" \
+        > /app/.build_info.json \
+    && chmod 0444 /app/.build_info.json
 
 RUN adduser --disabled-password --gecos "" appuser \
     && chown -R appuser:appuser /app
