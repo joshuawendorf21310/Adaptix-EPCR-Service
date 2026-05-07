@@ -209,3 +209,51 @@ def test_only_stamping_allow_list_is_mutated(
         f"{scenario_code}: generated XML diverges from baked CTA XML "
         "outside the stamping allow-list"
     )
+
+
+# 17. TAC key fields exactly match the operator-spec uploaded test
+# cases. eResponse.04 / dAgency.02 are the discriminators TAC uses to
+# pick which test case the submission is for; if these are wrong, TAC
+# returns soap_response_code=-16 ("Incorrect test case provided").
+EMS_KEY_RESPONSE_04 = {
+    "2025_EMS_1": "351-241102-005-1",
+    "2025_EMS_2": "351-241134-005-1",
+    "2025_EMS_3": "351-241140-004-1",
+    "2025_EMS_4": "351-241198-002-1",
+    "2025_EMS_5": "351-241219-002-1",
+}
+DEM_KEY_AGENCY_02 = "351-T0495"
+
+
+@pytest.mark.parametrize(
+    "scenario_code,expected", sorted(EMS_KEY_RESPONSE_04.items())
+)
+def test_ems_eresponse_04_matches_uploaded_test_case(
+    scenario_code: str, expected: str
+) -> None:
+    s = _scenario(scenario_code)
+    xml_text = scenarios_module._generate_pretesting_xml_or_500(
+        scenario_code, s
+    ).decode("utf-8")
+    m = re.search(r"<eResponse\.04>([^<]*)</eResponse\.04>", xml_text)
+    assert m is not None, (
+        f"{scenario_code}: <eResponse.04> must be present in generated XML"
+    )
+    assert m.group(1) == expected, (
+        f"{scenario_code}: eResponse.04 must equal {expected!r} "
+        f"(uploaded TAC test case key); got {m.group(1)!r}. TAC will "
+        "return soap_response_code=-16 if this drifts."
+    )
+
+
+def test_dem_dagency_02_matches_uploaded_test_case() -> None:
+    s = _scenario("2025_DEM_1")
+    xml_text = scenarios_module._generate_pretesting_xml_or_500(
+        "2025_DEM_1", s
+    ).decode("utf-8")
+    m = re.search(r"<dAgency\.02>([^<]*)</dAgency\.02>", xml_text)
+    assert m is not None, "<dAgency.02> must be present in generated DEM XML"
+    assert m.group(1) == DEM_KEY_AGENCY_02, (
+        f"2025_DEM_1: dAgency.02 must equal {DEM_KEY_AGENCY_02!r} "
+        f"(uploaded TAC test case key); got {m.group(1)!r}"
+    )
