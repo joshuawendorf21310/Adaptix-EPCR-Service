@@ -44,8 +44,14 @@ class RegistrySnapshotResponse(BaseModel):
     source_commit: str
     source_branch: str | None = None
     target_version: str
+    dictionary_version: str | None = None
     retrieved_at: str | None = None
     field_count: int
+    baseline_total_expected: int | None = None
+    baseline_total_actual: int | None = None
+    baseline_counts_expected: dict[str, int] = Field(default_factory=dict)
+    baseline_counts_actual: dict[str, int] = Field(default_factory=dict)
+    baseline_counts_match: bool | None = None
     element_enumeration_count: int
     attribute_enumeration_count: int
     defined_list_count: int
@@ -78,10 +84,12 @@ class RegistryManifestResponse(BaseModel):
 
 class RegistryFieldPayload(BaseModel):
     field_id: str
+    element_id: str | None = None
     dataset: str
     section: str
     name: str
     label: str
+    official_name: str | None = None
     definition: str | None = None
     data_type: str | None = None
     usage: str | None = None
@@ -97,11 +105,52 @@ class RegistryFieldPayload(BaseModel):
     required_if: str | None = None
     defined_list_ref: str | None = None
     enumeration_ref: str | None = None
+    version_2_element: str | None = None
+    min_length: str | None = None
+    max_length: str | None = None
+    pattern: str | None = None
+    constraints: dict[str, Any] = Field(default_factory=dict)
+    code_system: str | None = None
+    code_type_attribute: str | None = None
+    allowed_values: list[Any] = Field(default_factory=list)
+    element_comments: str | None = None
+    deprecated: bool = False
+    dictionary_version: str | None = None
+    dictionary_source: str | None = None
+    source_datasets: list[str] = Field(default_factory=list)
     attributes: list[Any] = Field(default_factory=list)
     source_artifact: str | None = None
     source_repo_path: str | None = None
     source_commit: str | None = None
     source_version: str | None = None
+
+
+class RegistryCodeSetPayload(BaseModel):
+    field_element_id: str
+    code: str
+    label: str
+    description: str | None = None
+    code_system: str | None = None
+    code_type: str | None = None
+    source: str | None = None
+    source_version: str | None = None
+    effective_date: str | None = None
+    deprecated: bool = False
+
+
+class RegistryVersionResponse(BaseModel):
+    source_repo: str
+    source_commit: str
+    source_branch: str | None = None
+    target_version: str | None = None
+    dictionary_version: str | None = None
+    retrieved_at: str | None = None
+    baseline_total_expected: int | None = None
+    baseline_total_actual: int | None = None
+    baseline_counts_expected: dict[str, int] = Field(default_factory=dict)
+    baseline_counts_actual: dict[str, int] = Field(default_factory=dict)
+    baseline_counts_match: bool = False
+    coverage_warnings: list[str] = Field(default_factory=list)
 
 
 class RegistryEnumerationPayload(BaseModel):
@@ -164,6 +213,14 @@ async def get_registry_snapshot(
     _ = current_user
     snap = _service().get_snapshot()
     return RegistrySnapshotResponse(**snap)
+
+
+@router.get("/version", response_model=RegistryVersionResponse)
+async def get_registry_version(
+    current_user: CurrentUser = Depends(get_current_user),
+) -> RegistryVersionResponse:
+    _ = current_user
+    return RegistryVersionResponse(**_service().get_version())
 
 
 @router.get("/manifest", response_model=RegistryManifestResponse)
@@ -252,6 +309,15 @@ async def list_defined_lists(
 ) -> list[RegistryDefinedListPayload]:
     _ = current_user
     return [RegistryDefinedListPayload(**r) for r in _service().list_defined_lists()]
+
+
+@router.get("/code-sets/{field_id}", response_model=list[RegistryCodeSetPayload])
+async def list_code_sets(
+    field_id: str,
+    current_user: CurrentUser = Depends(get_current_user),
+) -> list[RegistryCodeSetPayload]:
+    _ = current_user
+    return [RegistryCodeSetPayload(**row) for row in _service().list_code_sets(field_id)]
 
 
 @router.post("/evaluate", response_model=RegistryEvaluateResponse)
