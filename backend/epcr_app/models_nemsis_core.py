@@ -76,7 +76,12 @@ class NemsisSubmissionResult(Base):
 
     id = Column(String(36), primary_key=True)
     tenant_id = Column(String(36), nullable=False, index=True)
-    chart_id = Column(String(36), ForeignKey("epcr_charts.id"), nullable=False, index=True)
+    # `chart_id` is nullable because TAC compliance scenario submissions
+    # have no real `epcr_charts.id`. Real chart-driven submissions still
+    # populate this; scenario submissions populate `scenario_code` instead.
+    # FK to epcr_charts.id was dropped in migration 020.
+    chart_id = Column(String(36), nullable=True, index=True)
+    scenario_code = Column(String(64), nullable=True, index=True)
 
     # Keep as string only if there is no canonical export table yet.
     # If a real export table exists, convert this to a ForeignKey.

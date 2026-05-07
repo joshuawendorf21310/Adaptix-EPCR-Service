@@ -653,7 +653,8 @@ async def submit_scenario(
     submission_record = NemsisSubmissionResult(
         id=submission_id,
         tenant_id=tenant_id,
-        chart_id=f"SCENARIO-{scenario['scenario_code']}",
+        chart_id=None,
+        scenario_code=scenario["scenario_code"],
         submission_number=submission_number,
         state_endpoint_url=TAC_ENDPOINT_URL,
         submission_status=final_status,
