@@ -21,7 +21,19 @@ logger = logging.getLogger(__name__)
 
 def _configured_database_url() -> str | None:
     """Return the configured database URL if present."""
-    return os.environ.get("EPCR_DATABASE_URL") or os.environ.get("CARE_DATABASE_URL")
+    raw = (
+        os.environ.get("EPCR_DATABASE_URL")
+        or os.environ.get("CARE_DATABASE_URL")
+        or os.environ.get("DATABASE_URL")
+    )
+    if not raw:
+        return None
+    # Normalize sync postgres URLs to asyncpg for the async engine.
+    if raw.startswith("postgresql://"):
+        raw = "postgresql+asyncpg://" + raw[len("postgresql://"):]
+    elif raw.startswith("postgres://"):
+        raw = "postgresql+asyncpg://" + raw[len("postgres://"):]
+    return raw
 
 
 def _require_database_url() -> str:

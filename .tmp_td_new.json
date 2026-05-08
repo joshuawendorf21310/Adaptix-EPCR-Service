@@ -2,7 +2,7 @@
   "containerDefinitions": [
     {
       "name": "epcr",
-      "image": "793439286972.dkr.ecr.us-east-1.amazonaws.com/adaptix-staging-epcr-service:main-0be3a8ca",
+      "image": "793439286972.dkr.ecr.us-east-1.amazonaws.com/adaptix-staging-epcr-service:main-a03a8dca",
       "cpu": 0,
       "portMappings": [
         {
