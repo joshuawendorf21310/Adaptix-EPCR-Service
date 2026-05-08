@@ -93,12 +93,50 @@ def run_migrations_offline() -> None:
         context.run_migrations()
 
 
+def _prepare_version_table(connection: Connection) -> None:
+    """Ensure the EPCR-scoped alembic version table exists with a wide column.
+
+    Some EPCR migration revision identifiers exceed the alembic default of
+    VARCHAR(32) (e.g. ``010_nemsis_validation_persistence``). We pre-create
+    the table with VARCHAR(128) so alembic's later ``stamp``/``UPDATE`` calls
+    do not raise ``StringDataRightTruncationError`` on PostgreSQL.
+    """
+    if connection.dialect.name == "postgresql":
+        connection.exec_driver_sql(
+            f"""
+            DO $$
+            BEGIN
+                IF NOT EXISTS (
+                    SELECT 1 FROM information_schema.tables
+                    WHERE table_schema = current_schema() AND table_name = '{_VERSION_TABLE}'
+                ) THEN
+                    CREATE TABLE {_VERSION_TABLE} (
+                        version_num VARCHAR(128) NOT NULL PRIMARY KEY
+                    );
+                ELSIF EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_schema = current_schema()
+                      AND table_name = '{_VERSION_TABLE}'
+                      AND column_name = 'version_num'
+                      AND character_maximum_length IS NOT NULL
+                      AND character_maximum_length < 128
+                ) THEN
+                    ALTER TABLE {_VERSION_TABLE} ALTER COLUMN version_num TYPE VARCHAR(128);
+                END IF;
+            END $$;
+            """
+        )
+        if connection.in_transaction():
+            connection.commit()
+
+
 def do_run_migrations(connection: Connection) -> None:
     """Execute migrations on an active synchronous connection.
 
     Args:
         connection: Active SQLAlchemy connection handed in by the async runner.
     """
+    _prepare_version_table(connection)
     context.configure(connection=connection, target_metadata=target_metadata, version_table=_VERSION_TABLE)
     with context.begin_transaction():
         context.run_migrations()
