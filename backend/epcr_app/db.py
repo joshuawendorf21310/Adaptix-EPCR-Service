@@ -76,7 +76,11 @@ def _engine_options(database_url: str) -> dict:
         options["pool_size"] = 10
         options["max_overflow"] = 20
     if "+asyncpg" in database_url:
-        options["connect_args"] = {"ssl": True}
+        import ssl as _ssl
+        ctx = _ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = _ssl.CERT_NONE
+        options["connect_args"] = {"ssl": ctx}
 
     return options
 
