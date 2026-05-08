@@ -33,6 +33,12 @@ def _configured_database_url() -> str | None:
         raw = "postgresql+asyncpg://" + raw[len("postgresql://"):]
     elif raw.startswith("postgres://"):
         raw = "postgresql+asyncpg://" + raw[len("postgres://"):]
+    # asyncpg does not understand libpq-style ?sslmode=... query params; strip them.
+    if "+asyncpg" in raw and "?" in raw:
+        from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
+        parts = urlsplit(raw)
+        kept = [(k, v) for k, v in parse_qsl(parts.query, keep_blank_values=True) if k.lower() != "sslmode"]
+        raw = urlunsplit((parts.scheme, parts.netloc, parts.path, urlencode(kept), parts.fragment))
     return raw
 
 
@@ -69,6 +75,8 @@ def _engine_options(database_url: str) -> dict:
     if dialect_name != "sqlite":
         options["pool_size"] = 10
         options["max_overflow"] = 20
+    if "+asyncpg" in database_url:
+        options["connect_args"] = {"ssl": True}
 
     return options
 
