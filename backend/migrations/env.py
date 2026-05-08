@@ -24,6 +24,10 @@ from epcr_app.models import Base  # noqa: E402
 
 target_metadata = Base.metadata
 
+# Use an EPCR-scoped alembic version table so we never touch a sibling
+# service's `alembic_version` row on shared RDS.
+_VERSION_TABLE = os.environ.get("EPCR_ALEMBIC_VERSION_TABLE", "epcr_alembic_version")
+
 # Accept EPCR_DATABASE_URL (preferred) or CARE_DATABASE_URL (legacy) or
 # DATABASE_URL (the actual ECS secret name in staging/production).
 _db_url = (
@@ -83,6 +87,7 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        version_table=_VERSION_TABLE,
     )
     with context.begin_transaction():
         context.run_migrations()
@@ -94,7 +99,7 @@ def do_run_migrations(connection: Connection) -> None:
     Args:
         connection: Active SQLAlchemy connection handed in by the async runner.
     """
-    context.configure(connection=connection, target_metadata=target_metadata)
+    context.configure(connection=connection, target_metadata=target_metadata, version_table=_VERSION_TABLE)
     with context.begin_transaction():
         context.run_migrations()
 
