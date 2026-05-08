@@ -1,0 +1,71 @@
+{
+  "containerDefinitions": [
+    {
+      "name": "epcr",
+      "image": "793439286972.dkr.ecr.us-east-1.amazonaws.com/adaptix-staging-epcr-service:main-0be3a8ca",
+      "cpu": 0,
+      "portMappings": [
+        {
+          "containerPort": 8000,
+          "hostPort": 8000,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        {
+          "name": "AWS_DEFAULT_REGION",
+          "value": "us-east-1"
+        },
+        {
+          "name": "ENVIRONMENT",
+          "value": "staging"
+        }
+      ],
+      "mountPoints": [],
+      "volumesFrom": [],
+      "secrets": [
+        {
+          "name": "DATABASE_URL",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:793439286972:secret:adaptix/staging/DB-WEEj2C:database_url::"
+        },
+        {
+          "name": "REDIS_URL",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:793439286972:secret:adaptix/staging/Redis-8EAxzB:redis_url::"
+        },
+        {
+          "name": "JWT_SECRET_KEY",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:793439286972:secret:adaptix-staging/app/config-k6Aw9Y:JWT_SECRET_KEY::"
+        },
+        {
+          "name": "ADAPTIX_JWT_PRIVATE_KEY",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:793439286972:secret:adaptix/staging/jwt/private_key-RClK9j"
+        },
+        {
+          "name": "ADAPTIX_JWT_PUBLIC_KEY",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:793439286972:secret:adaptix/staging/jwt/public_key-WVuvgz"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/adaptix-staging",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "epcr"
+        }
+      },
+      "systemControls": []
+    }
+  ],
+  "family": "adaptix-staging-epcr",
+  "taskRoleArn": "arn:aws:iam::793439286972:role/adaptix-staging-ecs-task",
+  "executionRoleArn": "arn:aws:iam::793439286972:role/adaptix-staging-ecs-task-execution",
+  "networkMode": "awsvpc",
+  "volumes": [],
+  "placementConstraints": [],
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "512",
+  "memory": "1024"
+}

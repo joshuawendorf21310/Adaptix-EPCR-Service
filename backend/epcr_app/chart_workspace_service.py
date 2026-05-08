@@ -23,6 +23,10 @@ from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from epcr_app.dependencies import CurrentUser
+from epcr_app.chart_finalization_service import (
+    ChartFinalizationError,
+    ChartFinalizationService,
+)
 from epcr_app.models import (
     AssessmentFinding,
     Chart,
@@ -256,7 +260,11 @@ class ChartWorkspaceService:
 
     @staticmethod
     async def _load_workspace(
-        session: AsyncSession, tenant_id: str, chart_id: str
+        session: AsyncSession,
+        tenant_id: str,
+        chart_id: str,
+        *,
+        schematron_payload: dict[str, Any] | None = None,
     ) -> dict:
         chart = await ChartService.get_chart(session, tenant_id, chart_id)
         if not chart:
@@ -456,7 +464,7 @@ class ChartWorkspaceService:
 
         # Schematron status: only known when finalize is exercised. Present
         # as ``unknown`` here so the UI does not infer a passing verdict.
-        schematron: dict[str, Any] = {
+        schematron: dict[str, Any] = schematron_payload or {
             "status": "unknown",
             "evaluated_at": None,
         }
@@ -742,27 +750,25 @@ class ChartWorkspaceService:
     ) -> dict:
         tenant_id = ChartWorkspaceService._tenant(current_user)
         user_id = ChartWorkspaceService._user(current_user)
-        readiness = await ChartService.check_nemsis_compliance(
-            session, tenant_id, chart_id
-        )
-        if not readiness.get("is_fully_compliant"):
-            raise ChartWorkspaceError(
-                "Chart cannot be finalized: NEMSIS 3.5.1 compliance incomplete",
-                status_code=422,
-                detail={
-                    "message": "Chart cannot be finalized: NEMSIS 3.5.1 compliance incomplete",
-                    "missing_mandatory_fields": readiness.get("missing_mandatory_fields", []),
-                    "compliance_percentage": readiness.get("compliance_percentage", 0),
-                },
-            )
         try:
-            await ChartService.transition_chart_status(
-                session=session, tenant_id=tenant_id, chart_id=chart_id,
-                to_status=ChartStatus.FINALIZED, user_id=user_id,
+            result = await ChartFinalizationService.finalize_chart(
+                session,
+                tenant_id=tenant_id,
+                user_id=user_id,
+                chart_id=chart_id,
             )
-        except ValueError as exc:
-            raise ChartWorkspaceError(str(exc), status_code=422) from exc
-        return await ChartWorkspaceService._load_workspace(session, tenant_id, chart_id)
+        except ChartFinalizationError as exc:
+            raise ChartWorkspaceError(
+                str(exc),
+                status_code=exc.status_code,
+                detail=exc.detail,
+            ) from exc
+        return await ChartWorkspaceService._load_workspace(
+            session,
+            tenant_id,
+            chart_id,
+            schematron_payload=result.schematron.to_payload(),
+        )
 
     @staticmethod
     async def export_workspace(

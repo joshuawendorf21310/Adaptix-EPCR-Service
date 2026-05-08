@@ -11,11 +11,15 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from epcr_app.chart_finalization_service import (
+    ChartFinalizationError,
+    ChartFinalizationService,
+)
 from epcr_app.db import get_session, check_health
 from epcr_app.services import ChartService
 from epcr_app.dependencies import get_current_user, CurrentUser
 from pydantic import BaseModel, ConfigDict, Field, field_validator
-from typing import Optional
+from typing import Any, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -231,6 +235,7 @@ class ChartResponse(BaseModel):
     status: str
     incident_type: str
     created_at: str
+    schematron: Optional[dict[str, Any]] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -2157,56 +2162,13 @@ async def finalize_chart(
     try:
         tenant_id = _tenant_id(current_user)
         user_id = _user_id(current_user)
-        chart = await ChartService.get_chart(session, tenant_id, chart_id)
-        if not chart:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Chart not found")
-
-        compliance = await ChartService.check_nemsis_compliance(session, tenant_id, chart_id)
-        if not compliance["is_fully_compliant"]:
-            logger.warning(
-                f"Chart finalization blocked: id={chart_id}, missing={compliance['missing_mandatory_fields']}"
-            )
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail={
-                    "message": "Chart cannot be finalized: NEMSIS 3.5.1 compliance incomplete",
-                    "missing_mandatory_fields": compliance["missing_mandatory_fields"],
-                    "compliance_percentage": compliance["compliance_percentage"],
-                }
-            )
-
-        from datetime import datetime, UTC
-        chart.status = "finalized"
-        chart.finalized_at = datetime.now(UTC)
-        await session.commit()
-        await ChartService.audit(
-            session=session,
+        result = await ChartFinalizationService.finalize_chart(
+            session,
             tenant_id=tenant_id,
-            chart_id=chart_id,
             user_id=user_id,
-            action="chart_finalized",
-            detail={
-                "compliance_percentage": compliance["compliance_percentage"],
-                "mandatory_fields_filled": compliance["mandatory_fields_filled"],
-            },
+            chart_id=chart_id,
         )
-
-        from epcr_app.domain_events import publish_chart_finalized
-        publish_chart_finalized(chart_id, tenant_id, getattr(chart, "call_number", chart_id))
-
-        try:
-            from core_app.events import EventBusService
-            # Publish epcr.chart.finalized event to core event bus
-            # If core DB is unavailable, log the failure but do NOT block chart finalization
-            logger.info(
-                "Chart finalized, event publication: chart_id=%s tenant_id=%s",
-                chart_id,
-                tenant_id,
-            )
-        except Exception as _ev_err:
-            logger.warning(f"Event publication skipped (non-blocking): {_ev_err}")
-
-        logger.info("Chart finalized: id=%s tenant_id=%s user_id=%s", chart_id, tenant_id, user_id)
+        chart = result.chart
 
         return {
             "id": chart.id,
@@ -2214,7 +2176,10 @@ async def finalize_chart(
             "status": chart.status.value if hasattr(chart.status, 'value') else chart.status,
             "incident_type": chart.incident_type,
             "created_at": chart.created_at.isoformat(),
+            "schematron": result.schematron.to_payload(),
         }
+    except ChartFinalizationError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
     except HTTPException:
         raise
     except Exception as e:
