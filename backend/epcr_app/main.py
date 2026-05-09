@@ -195,9 +195,21 @@ async def healthz() -> dict:
     return {"status": "ok", "service": "epcr"}
 
 
+@app.get("/readyz")
+async def readyz() -> dict:
+    """Readiness check endpoint for the care (ePCR) service."""
+    return {"status": "ok", "service": "epcr"}
+
+
 @app.get("/api/v1/epcr/healthz", include_in_schema=False)
 async def api_v1_epcr_healthz() -> dict:
     """Prefixed health check for gateway routing."""
+    return {"status": "ok", "service": "epcr"}
+
+
+@app.get("/api/v1/epcr/readyz", include_in_schema=False)
+async def api_v1_epcr_readyz() -> dict:
+    """Prefixed readiness check for gateway routing."""
     return {"status": "ok", "service": "epcr"}
 
 

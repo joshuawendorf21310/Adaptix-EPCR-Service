@@ -25,10 +25,10 @@ Database-backed. Migration state must be verified in production. Prior notes fla
 NEMSIS validation/export, state/CTA endpoint where applicable, Web-App ePCR workspace, CAD linkage, field app sync.
 
 ## Health/Readiness Endpoint Status
-Health/readiness must be verified in deployed production. Current full production proof is missing.
+Health exists in production (`GET /api/v1/epcr/healthz` returned `200 {"status":"ok","service":"epcr"}` on 2026-05-08). Source parity for readiness was restored on 2026-05-08 in `backend/epcr_app/main.py` by adding `/readyz` and `/api/v1/epcr/readyz`, and the new regression test passed locally. Current full production proof is still missing because the live deployed route continued to return `404 {"detail":"Not Found"}` until redeploy.
 
 ## Test Status
-Local CTA/XML evidence exists in repo memory. Live CTA EMS case-recognition remains externally blocked or unresolved in the current evidence set.
+Local CTA/XML evidence exists in repo memory, and current-session focused NEMSIS validation is green: `tests/test_health_routes.py`, `tests/test_nemsis_routes.py`, and `tests/test_nemsis_allergy_vertical_slice.py` all passed. Live CTA EMS case-recognition remains externally blocked or unresolved in the current evidence set.
 
 ## Deployment Status
 Production deployment and production export smoke are not fully proven.
@@ -37,6 +37,7 @@ Production deployment and production export smoke are not fully proven.
 - NEMSIS 3.5.1 production export is not fully verified.
 - CTA/state validation production pass is not complete for all required cases.
 - Chart lifecycle, finalization, and export audit proof must be verified in deployed runtime.
+- Deployed EPCR service image has not yet been revalidated after the `/readyz` route parity fix.
 
 ## Remediation Completed
 - NEMSIS ownership and CTA blocker evidence are documented in repo memory.
