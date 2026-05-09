@@ -2,6 +2,8 @@
 
 Electronic Patient Care Report (ePCR) microservice for the [Adaptix](https://adaptixcore.com) EMS platform. Manages the full clinical charting lifecycle — from chart creation through NEMSIS 3.5.1 XML export and state submission.
 
+Built for EMS agencies that need a reliable, standards-compliant charting backend. Every chart operation is tenant-scoped, audited, and idempotent — with built-in NEMSIS 3.5.1 validation so exports pass state acceptance on the first submission.
+
 ## Features
 
 | Area | Capabilities |
