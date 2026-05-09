@@ -47,3 +47,37 @@ jwt_pub.pem
 artifact/cta/parsed-result.json
 backend/artifact/validation/schematron_cache/
 
+# Scratch / debug files — never commit ad-hoc exploration outputs
+*.log
+*.out
+*.patch
+_*.py
+_*.json
+_*.txt
+*.tmp
+.tmp_*
+.local-*
+.cta_*
+.element_enum_*
+
+# One-off JSON/XML dumps from local testing
+art*.json
+resp_*.json
+login*.json
+export_*.xml
+export_*.json
+export_resp.*
+token.txt
+headers*.txt
+ready.json
+val.json
+validate.json
+gen.json
+exp.json
+openapi.json
+openapi_*.json
+build.log
+chart_get.out
+
+# ECS task-definition scratch files
+epcr-taskdef*.json

@@ -101,7 +101,7 @@ def test_deactivated_package_can_be_deleted(package_app) -> None:
 @pytest.mark.asyncio
 async def test_delete_is_tenant_scoped_and_audited_and_falls_back_to_baked(package_app) -> None:
     app, sessionmaker, tmp_path = package_app
-    cta_template_dir = Path("c:\\Users\\fusio\\Desktop\\workspace\\Adaptix-EPCR-Service\\backend\\nemsis\\templates\\cta")
+    cta_template_dir = Path(__file__).resolve().parent.parent / "nemsis" / "templates" / "cta"
     with TestClient(app) as client:
         package_id = _upload(client, "tenant")
         deleted = client.request("DELETE", f"/api/v1/epcr/nemsis/schematron-packages/{package_id}", json={"reason": "cleanup"})
