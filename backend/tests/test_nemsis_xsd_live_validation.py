@@ -54,6 +54,14 @@ def _chart() -> SimpleNamespace:
     )
 
 
+_NEMSIS_ASSETS_AVAILABLE = bool(os.environ.get("NEMSIS_XSD_PATH")) and bool(os.environ.get("NEMSIS_SCHEMATRON_PATH"))
+_skip_no_assets = pytest.mark.skipif(
+    not _NEMSIS_ASSETS_AVAILABLE,
+    reason="NEMSIS_XSD_PATH / NEMSIS_SCHEMATRON_PATH not set — live XSD tests require pre-installed NEMSIS assets",
+)
+
+
+@_skip_no_assets
 def test_live_xsd_assets_present_on_disk():
     xsd_path = os.environ.get("NEMSIS_XSD_PATH", "")
     sch_path = os.environ.get("NEMSIS_SCHEMATRON_PATH", "")
@@ -61,11 +69,13 @@ def test_live_xsd_assets_present_on_disk():
     assert sch_path and Path(sch_path).exists(), f"NEMSIS_SCHEMATRON_PATH missing: {sch_path!r}"
 
 
+@_skip_no_assets
 def test_live_validator_runtime_libraries_available():
     import lxml.etree  # noqa: F401
     import saxonche  # noqa: F401
 
 
+@_skip_no_assets
 def test_live_xsd_validator_runs_against_real_export():
     from epcr_app.nemsis_xml_builder import NemsisXmlBuilder
     from epcr_app.nemsis_xsd_validator import NemsisXSDValidator
