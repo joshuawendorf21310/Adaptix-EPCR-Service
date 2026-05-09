@@ -27,7 +27,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "backend"))
 
 try:
     from epcr_app.nemsis.xsd_validator import OfficialXsdValidator
-    from epcr_app.nemsis.schematron_validator import validate_schematron
+    from epcr_app.nemsis.schematron_validator import OfficialSchematronValidator
     _VALIDATORS_AVAILABLE = True
 except Exception as _e:
     _VALIDATORS_AVAILABLE = False
@@ -113,10 +113,11 @@ def run_proof() -> dict:
 
         # 4. Schematron validation
         try:
-            sch_result = validate_schematron(xml_bytes, dataset="EMSDataSet")
+            schematron_validator = OfficialSchematronValidator()
+            sch_result = schematron_validator.validate(xml_bytes)
             results["checks"]["schematron_validation"] = {
                 "status": "PASS" if sch_result.is_valid else "FAIL",
-                "errors": sch_result.errors[:10] if sch_result.errors else [],
+                "errors": [issue.text for issue in sch_result.errors[:10]] if sch_result.errors else [],
             }
         except Exception as ex:
             results["checks"]["schematron_validation"] = {"status": "ERROR", "detail": str(ex)}
