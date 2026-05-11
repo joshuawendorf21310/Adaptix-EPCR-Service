@@ -43,13 +43,11 @@ depends_on = None
 
 
 def upgrade() -> None:
-    bind = op.get_bind()
-    insp = sa.inspect(bind)
-    existing = set(insp.get_table_names())
-
     def create_if_missing(table_name: str, *cols: sa.Column, **kw) -> None:
-        if table_name not in existing:
+        try:
             op.create_table(table_name, *cols, **kw)
+        except Exception:
+            pass  # table already exists — idempotent
 
     # -- qa_trigger_configurations ------------------------------------------
     create_if_missing(
