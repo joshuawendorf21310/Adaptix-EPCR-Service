@@ -181,9 +181,9 @@ jobs:
       - name: Ensure CloudWatch log group exists for migration task logs
         run: |
           aws logs create-log-group \
-            --log-group-name "/ecs/adaptix-production-epcr" \
+            --log-group-name "/adaptix/production/epcr" \
             --region "${{ env.AWS_REGION }}" 2>&1 || true
-          echo "Log group ready."
+          echo "Log group /adaptix/production/epcr ready."
 
       - name: Run production database migrations (alembic upgrade head)
         env:
@@ -272,21 +272,19 @@ jobs:
 
           if [ "${EXIT_CODE}" != "0" ]; then
             echo "::error::alembic upgrade head failed (exit ${EXIT_CODE}). Aborting deploy."
-            echo "--- Fetching CloudWatch logs ---"
+            echo "--- Fetching CloudWatch logs from /adaptix/production/epcr ---"
             TASK_ID="${TASK_ARN##*/}"
-            LOG_GROUP="/ecs/adaptix-production-epcr"
-            sleep 5
-            # ECS awslogs stream name format: prefix/container/taskId
-            # Try both common formats
-            for STREAM in "ecs/epcr/${TASK_ID}" "adaptix-production-epcr/epcr/${TASK_ID}"; do
-              echo "Trying log stream: ${STREAM}"
-              aws logs get-log-events \
-                --log-group-name "${LOG_GROUP}" \
-                --log-stream-name "${STREAM}" \
-                --region "${{ env.AWS_REGION }}" \
-                --query 'events[*].message' \
-                --output text 2>&1 && break || true
-            done
+            LOG_GROUP="/adaptix/production/epcr"
+            sleep 10
+            # awslogs-stream-prefix=ecs, container=epcr → stream: ecs/epcr/{taskId}
+            STREAM="ecs/epcr/${TASK_ID}"
+            echo "Fetching: ${LOG_GROUP}/${STREAM}"
+            aws logs get-log-events \
+              --log-group-name "${LOG_GROUP}" \
+              --log-stream-name "${STREAM}" \
+              --region "${{ env.AWS_REGION }}" \
+              --query 'events[*].message' \
+              --output text 2>&1 || echo "Could not fetch log stream"
             exit 1
           fi
 
