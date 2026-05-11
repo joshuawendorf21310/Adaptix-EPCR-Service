@@ -156,6 +156,8 @@ async def init_db():
         import epcr_app.models_vitals_ext  # noqa: F401
         import epcr_app.models_medication_admin_ext  # noqa: F401
         import epcr_app.models_intervention_ext  # noqa: F401
+        import epcr_app.models_ai  # noqa: F401 — AI clinical intelligence tables
+        import epcr_app.models_quality  # noqa: F401 — Medical Director, QA, QI quality module tables
         async with _get_engine(_require_database_url()).begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
         logger.info("Database initialized successfully")
