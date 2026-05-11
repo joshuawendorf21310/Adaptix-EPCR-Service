@@ -168,6 +168,64 @@ jobs:
             echo "recreated=false" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Ensure EPCR ALB listener rule has priority below backend catch-all
+        run: |
+          # The staging backend service catches /api/* at priority 10.
+          # The EPCR listener rule must have a LOWER number (higher priority)
+          # so that /api/v1/epcr/* routes to the EPCR target group first.
+          # Target priority: 4 (same as the Terraform module would set).
+          TG_ARN="arn:aws:elasticloadbalancing:us-east-1:793439286972:targetgroup/adaptix-staging-epcr/fd0072bb1bee740e"
+          ALB_NAME="adaptix-staging-alb"
+          DESIRED_PRIORITY=4
+
+          LISTENER_ARN=$(aws elbv2 describe-load-balancers \
+            --names "$ALB_NAME" \
+            --query 'LoadBalancers[0].LoadBalancerArn' \
+            --output text 2>/dev/null || true)
+
+          if [ -z "$LISTENER_ARN" ] || [ "$LISTENER_ARN" = "None" ]; then
+            echo "Could not find ALB $ALB_NAME — skipping priority check"
+            exit 0
+          fi
+
+          LISTENER_ARN=$(aws elbv2 describe-listeners \
+            --load-balancer-arn "$LISTENER_ARN" \
+            --query 'Listeners[?Protocol==`HTTPS`].ListenerArn | [0]' \
+            --output text 2>/dev/null || true)
+
+          if [ -z "$LISTENER_ARN" ] || [ "$LISTENER_ARN" = "None" ]; then
+            echo "Could not find HTTPS listener — skipping priority check"
+            exit 0
+          fi
+
+          RULE_INFO=$(aws elbv2 describe-rules \
+            --listener-arn "$LISTENER_ARN" \
+            --query "Rules[?Actions[0].TargetGroupArn=='$TG_ARN'].[RuleArn,Priority]" \
+            --output text 2>/dev/null || true)
+
+          if [ -z "$RULE_INFO" ]; then
+            echo "No EPCR listener rule found on ALB — nothing to fix"
+            exit 0
+          fi
+
+          RULE_ARN=$(echo "$RULE_INFO" | awk '{print $1}')
+          CURRENT_PRIORITY=$(echo "$RULE_INFO" | awk '{print $2}')
+          echo "EPCR listener rule: ARN=$RULE_ARN priority=$CURRENT_PRIORITY"
+
+          if [ "$CURRENT_PRIORITY" = "default" ]; then
+            echo "Rule is the default rule — skipping"
+            exit 0
+          fi
+
+          if [ "$CURRENT_PRIORITY" -le "$DESIRED_PRIORITY" ] 2>/dev/null; then
+            echo "Priority $CURRENT_PRIORITY is already <= $DESIRED_PRIORITY — no change needed"
+          else
+            echo "Priority $CURRENT_PRIORITY > $DESIRED_PRIORITY — setting to $DESIRED_PRIORITY"
+            aws elbv2 set-rule-priorities \
+              --rule-priorities "RuleArn=$RULE_ARN,Priority=$DESIRED_PRIORITY" \
+              2>&1 || echo "set-rule-priorities failed — may conflict with existing rule"
+          fi
+
       - name: Update ECS service to new task definition
         if: steps.wire-lb.outputs.recreated != 'true'
         run: |
