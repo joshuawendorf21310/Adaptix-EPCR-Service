@@ -14,10 +14,14 @@ from sqlalchemy import (
     Boolean,
     Column,
     DateTime,
+    JSON,
     String,
     Text,
 )
-from sqlalchemy.dialects.postgresql import JSONB
+
+# Use database-agnostic JSON so tests run on SQLite; JSONB behaviour is
+# preserved at the driver level by asyncpg in production.
+JSONB = JSON
 
 from epcr_app.models import Base
 
