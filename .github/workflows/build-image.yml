@@ -266,19 +266,46 @@ jobs:
           d = json.load(sys.stdin)
           print(d['tasks'][0].get('stoppedReason', ''))
           ")
+          CONTAINER_REASON=$(echo "${STOP_OUT}" | python3 -c "
+          import json, sys
+          d = json.load(sys.stdin)
+          t = d['tasks'][0]
+          for c in t.get('containers', []):
+              if c.get('name') == 'epcr':
+                  print(c.get('reason', 'no container reason'))
+                  break
+          else:
+              print('epcr container not found in task')
+          ")
 
           echo "Migration task exit code: ${EXIT_CODE}"
           echo "Migration task stop reason: ${STOP_REASON}"
+          echo "Migration container reason: ${CONTAINER_REASON}"
+          echo "--- Full task state ---"
+          echo "${STOP_OUT}" | python3 -c "
+          import json, sys
+          d = json.load(sys.stdin)
+          t = d['tasks'][0]
+          print('Task status:', t.get('lastStatus'))
+          print('Stopped reason:', t.get('stoppedReason'))
+          for c in t.get('containers', []):
+              print(f'Container {c.get(\"name\")}: status={c.get(\"lastStatus\")} exitCode={c.get(\"exitCode\")} reason={c.get(\"reason\",\"\")}')
+          "
 
           if [ "${EXIT_CODE}" != "0" ]; then
             echo "::error::alembic upgrade head failed (exit ${EXIT_CODE}). Aborting deploy."
-            echo "--- Fetching CloudWatch logs from /adaptix/production/epcr ---"
             TASK_ID="${TASK_ARN##*/}"
             LOG_GROUP="/adaptix/production/epcr"
             sleep 10
+            echo "--- Listing log streams in ${LOG_GROUP} for task ${TASK_ID} ---"
+            aws logs describe-log-streams \
+              --log-group-name "${LOG_GROUP}" \
+              --log-stream-name-prefix "ecs/epcr/${TASK_ID}" \
+              --region "${{ env.AWS_REGION }}" \
+              --output json 2>&1 || echo "Could not list log streams"
             # awslogs-stream-prefix=ecs, container=epcr → stream: ecs/epcr/{taskId}
             STREAM="ecs/epcr/${TASK_ID}"
-            echo "Fetching: ${LOG_GROUP}/${STREAM}"
+            echo "--- Fetching: ${LOG_GROUP}/${STREAM} ---"
             aws logs get-log-events \
               --log-group-name "${LOG_GROUP}" \
               --log-stream-name "${STREAM}" \
