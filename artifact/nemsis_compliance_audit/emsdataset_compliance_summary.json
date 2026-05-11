@@ -1,0 +1,232 @@
+{
+  "generated_at": "2026-05-09T22:43:36.191545+00:00",
+  "dictionary_version": "3.5.1",
+  "source_mode": "official_partial",
+  "source_commit": "9bff090cbf95db614529bdff5e1e988a93f89717",
+  "total_ems_fields": 450,
+  "total_mandatory": 21,
+  "total_required": 131,
+  "total_blocking_defects": 323,
+  "sections_covered": 26,
+  "sections_required": 25,
+  "sections_with_implementation": 25,
+  "sections_with_tests": 8,
+  "unimplemented_sections": [],
+  "untested_sections": [
+    "eCrew",
+    "eTimes",
+    "eScene",
+    "eSituation",
+    "eInjury",
+    "eArrest",
+    "eVitals",
+    "eLabs",
+    "eExam",
+    "eProtocols",
+    "eMedications",
+    "eProcedures",
+    "eAirway",
+    "eDevice",
+    "eDisposition",
+    "eOutcome",
+    "eOther"
+  ],
+  "by_section": {
+    "eAirway": {
+      "total": 11,
+      "mandatory": 0,
+      "required": 0,
+      "recommended": 7,
+      "optional": 4
+    },
+    "eArrest": {
+      "total": 19,
+      "mandatory": 0,
+      "required": 15,
+      "recommended": 1,
+      "optional": 3
+    },
+    "eCrew": {
+      "total": 3,
+      "mandatory": 0,
+      "required": 0,
+      "recommended": 3,
+      "optional": 0
+    },
+    "eCustomConfiguration": {
+      "total": 9,
+      "mandatory": 5,
+      "required": 0,
+      "recommended": 0,
+      "optional": 4
+    },
+    "eCustomResults": {
+      "total": 3,
+      "mandatory": 2,
+      "required": 0,
+      "recommended": 0,
+      "optional": 1
+    },
+    "eDevice": {
+      "total": 12,
+      "mandatory": 0,
+      "required": 0,
+      "recommended": 0,
+      "optional": 12
+    },
+    "eDispatch": {
+      "total": 6,
+      "mandatory": 1,
+      "required": 1,
+      "recommended": 0,
+      "optional": 4
+    },
+    "eDisposition": {
+      "total": 31,
+      "mandatory": 1,
+      "required": 17,
+      "recommended": 3,
+      "optional": 10
+    },
+    "eExam": {
+      "total": 24,
+      "mandatory": 0,
+      "required": 0,
+      "recommended": 3,
+      "optional": 21
+    },
+    "eHistory": {
+      "total": 20,
+      "mandatory": 0,
+      "required": 2,
+      "recommended": 4,
+      "optional": 14
+    },
+    "eInjury": {
+      "total": 29,
+      "mandatory": 0,
+      "required": 3,
+      "recommended": 2,
+      "optional": 24
+    },
+    "eLabs": {
+      "total": 8,
+      "mandatory": 0,
+      "required": 0,
+      "recommended": 0,
+      "optional": 8
+    },
+    "eMedications": {
+      "total": 13,
+      "mandatory": 0,
+      "required": 9,
+      "recommended": 2,
+      "optional": 2
+    },
+    "eNarrative": {
+      "total": 1,
+      "mandatory": 0,
+      "required": 0,
+      "recommended": 1,
+      "optional": 0
+    },
+    "eOther": {
+      "total": 22,
+      "mandatory": 0,
+      "required": 0,
+      "recommended": 3,
+      "optional": 19
+    },
+    "eOutcome": {
+      "total": 15,
+      "mandatory": 0,
+      "required": 11,
+      "recommended": 0,
+      "optional": 4
+    },
+    "ePatient": {
+      "total": 25,
+      "mandatory": 0,
+      "required": 8,
+      "recommended": 4,
+      "optional": 13
+    },
+    "ePayment": {
+      "total": 59,
+      "mandatory": 0,
+      "required": 2,
+      "recommended": 0,
+      "optional": 57
+    },
+    "eProcedures": {
+      "total": 15,
+      "mandatory": 0,
+      "required": 8,
+      "recommended": 4,
+      "optional": 3
+    },
+    "eProtocols": {
+      "total": 2,
+      "mandatory": 0,
+      "required": 1,
+      "recommended": 1,
+      "optional": 0
+    },
+    "eRecord": {
+      "total": 4,
+      "mandatory": 4,
+      "required": 0,
+      "recommended": 0,
+      "optional": 0
+    },
+    "eResponse": {
+      "total": 23,
+      "mandatory": 6,
+      "required": 8,
+      "recommended": 1,
+      "optional": 8
+    },
+    "eScene": {
+      "total": 25,
+      "mandatory": 0,
+      "required": 8,
+      "recommended": 7,
+      "optional": 10
+    },
+    "eSituation": {
+      "total": 20,
+      "mandatory": 0,
+      "required": 11,
+      "recommended": 7,
+      "optional": 2
+    },
+    "eTimes": {
+      "total": 17,
+      "mandatory": 2,
+      "required": 7,
+      "recommended": 1,
+      "optional": 7
+    },
+    "eVitals": {
+      "total": 34,
+      "mandatory": 0,
+      "required": 20,
+      "recommended": 7,
+      "optional": 7
+    }
+  },
+  "compliance_status": "PARTIALLY_COMPLIANT",
+  "compliance_gaps": [
+    "Schematron validation skippable in current validator (not acceptable for certification/production)",
+    "No per-field validation engine (usage, recurrence, NOT values, PN, nillable, code-list)",
+    "No validation mode enforcement (development/certification/production)",
+    "No frontend rendering contract (metadata-driven field renderer)",
+    "Multiple sections have no dedicated test coverage",
+    "Chart finalization gate uses small hardcoded mandatory list, not full EMSDataSet matrix"
+  ],
+  "blocking_for_certification": [
+    "NEMSIS_VALIDATION_MODE=certification requires Schematron to not be skippable",
+    "Universal field validator must enforce all 18 validation dimensions",
+    "All 25 EMSDataSet sections must have save/reload/export tests"
+  ]
+}
