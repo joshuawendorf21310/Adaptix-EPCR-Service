@@ -162,11 +162,14 @@ jobs:
               --deployment-configuration "maximumPercent=200,minimumHealthyPercent=50"
 
             echo "Service recreated with ALB target group wired."
+            echo "recreated=true" >> "$GITHUB_OUTPUT"
           else
             echo "ALB already wired (loadBalancers count: ${LB_COUNT}) — updating normally."
+            echo "recreated=false" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Update ECS service to new task definition
+        if: steps.wire-lb.outputs.recreated != 'true'
         run: |
           aws ecs update-service \
             --cluster "${{ env.ECS_CLUSTER }}" \
