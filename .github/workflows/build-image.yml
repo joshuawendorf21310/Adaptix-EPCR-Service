@@ -98,6 +98,71 @@ jobs:
           echo "new_td_arn=${NEW_TD_ARN}" >> "$GITHUB_OUTPUT"
           echo "Registered task definition: ${NEW_TD_ARN}"
 
+      - name: Wire ALB target group if missing (one-time migration)
+        id: wire-lb
+        run: |
+          # The EPCR target group already exists on the staging ALB. If the ECS
+          # service was created without a load_balancer entry, tasks never register
+          # and all requests get 503. Detect this and recreate the service with the
+          # target group wired in.
+          TG_ARN="arn:aws:elasticloadbalancing:us-east-1:793439286972:targetgroup/adaptix-staging-epcr/fd0072bb1bee740e"
+          CLUSTER="${{ env.ECS_CLUSTER }}"
+          SERVICE="${{ env.ECS_SERVICE }}"
+          TD_ARN="${{ steps.register-td.outputs.new_td_arn }}"
+
+          LB_COUNT=$(aws ecs describe-services \
+            --cluster "$CLUSTER" \
+            --services "$SERVICE" \
+            --query 'length(services[0].loadBalancers)' \
+            --output text 2>/dev/null || echo "0")
+
+          if [ "${LB_COUNT}" = "0" ] || [ "${LB_COUNT}" = "None" ]; then
+            echo "No load balancer on service — draining and recreating with ALB wired..."
+
+            # Drain the service (set desired count to 0, wait, then delete)
+            aws ecs update-service --cluster "$CLUSTER" --service "$SERVICE" \
+              --desired-count 0 2>/dev/null || true
+            aws ecs wait services-stable --cluster "$CLUSTER" --services "$SERVICE" 2>/dev/null || true
+            aws ecs delete-service --cluster "$CLUSTER" --service "$SERVICE" \
+              --force 2>/dev/null || true
+
+            # Get VPC, subnets, security groups from the existing task def
+            VPC_SUBNETS=$(aws ecs describe-task-definition \
+              --task-definition "$TD_ARN" \
+              --query 'taskDefinition.networkConfiguration.awsvpcConfiguration' \
+              --output json 2>/dev/null || echo '{}')
+
+            # Fallback: use staging private subnets from secrets
+            SUBNETS="${{ secrets.PROD_PRIVATE_SUBNET_IDS }}"
+            SG="${{ secrets.PROD_EPCR_SECURITY_GROUP_ID }}"
+
+            # Describe current service config to get subnets/SGs
+            SVC_NET=$(aws ecs describe-services \
+              --cluster "$CLUSTER" --services "$SERVICE" \
+              --query 'services[0].deployments[0].networkConfiguration.awsvpcConfiguration' \
+              --output json 2>/dev/null || echo 'null')
+            if [ "$SVC_NET" != "null" ] && [ -n "$SVC_NET" ]; then
+              SUBNETS=$(echo "$SVC_NET" | python3 -c "import json,sys; d=json.load(sys.stdin); print(','.join(d.get('subnets',[])))" 2>/dev/null || echo "")
+              SG=$(echo "$SVC_NET" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('securityGroups',[''])[0])" 2>/dev/null || echo "")
+            fi
+
+            # Re-create with load balancer
+            aws ecs create-service \
+              --cluster "$CLUSTER" \
+              --service-name "$SERVICE" \
+              --task-definition "$TD_ARN" \
+              --desired-count 1 \
+              --launch-type FARGATE \
+              --network-configuration "awsvpcConfiguration={subnets=[${SUBNETS}],securityGroups=[${SG}],assignPublicIp=DISABLED}" \
+              --load-balancers "targetGroupArn=${TG_ARN},containerName=${{ env.CONTAINER_NAME }},containerPort=8000" \
+              --health-check-grace-period-seconds 120 \
+              --deployment-configuration "maximumPercent=200,minimumHealthyPercent=50"
+
+            echo "Service recreated with ALB target group wired."
+          else
+            echo "ALB already wired (loadBalancers count: ${LB_COUNT}) — updating normally."
+          fi
+
       - name: Update ECS service to new task definition
         run: |
           aws ecs update-service \
