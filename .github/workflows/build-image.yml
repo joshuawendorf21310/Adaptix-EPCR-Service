@@ -119,32 +119,35 @@ jobs:
           if [ "${LB_COUNT}" = "0" ] || [ "${LB_COUNT}" = "None" ]; then
             echo "No load balancer on service — draining and recreating with ALB wired..."
 
-            # Drain the service (set desired count to 0, wait, then delete)
+            # Capture network config BEFORE deleting the service
+            SVC_NET=$(aws ecs describe-services \
+              --cluster "$CLUSTER" --services "$SERVICE" \
+              --query 'services[0].networkConfiguration.awsvpcConfiguration' \
+              --output json 2>/dev/null || echo 'null')
+            SUBNETS=$(echo "$SVC_NET" | python3 -c "import json,sys; d=json.load(sys.stdin); print(','.join(d.get('subnets',[])))" 2>/dev/null || echo "")
+            SG=$(echo "$SVC_NET" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('securityGroups',[''])[0])" 2>/dev/null || echo "")
+            echo "Captured subnets: ${SUBNETS}"
+            echo "Captured SG: ${SG}"
+
+            # Drain then delete
             aws ecs update-service --cluster "$CLUSTER" --service "$SERVICE" \
               --desired-count 0 2>/dev/null || true
             aws ecs wait services-stable --cluster "$CLUSTER" --services "$SERVICE" 2>/dev/null || true
             aws ecs delete-service --cluster "$CLUSTER" --service "$SERVICE" \
               --force 2>/dev/null || true
 
-            # Get VPC, subnets, security groups from the existing task def
-            VPC_SUBNETS=$(aws ecs describe-task-definition \
-              --task-definition "$TD_ARN" \
-              --query 'taskDefinition.networkConfiguration.awsvpcConfiguration' \
-              --output json 2>/dev/null || echo '{}')
-
-            # Fallback: use staging private subnets from secrets
-            SUBNETS="${{ secrets.PROD_PRIVATE_SUBNET_IDS }}"
-            SG="${{ secrets.PROD_EPCR_SECURITY_GROUP_ID }}"
-
-            # Describe current service config to get subnets/SGs
-            SVC_NET=$(aws ecs describe-services \
-              --cluster "$CLUSTER" --services "$SERVICE" \
-              --query 'services[0].deployments[0].networkConfiguration.awsvpcConfiguration' \
-              --output json 2>/dev/null || echo 'null')
-            if [ "$SVC_NET" != "null" ] && [ -n "$SVC_NET" ]; then
-              SUBNETS=$(echo "$SVC_NET" | python3 -c "import json,sys; d=json.load(sys.stdin); print(','.join(d.get('subnets',[])))" 2>/dev/null || echo "")
-              SG=$(echo "$SVC_NET" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('securityGroups',[''])[0])" 2>/dev/null || echo "")
-            fi
+            # Wait for deletion to complete (poll until service is INACTIVE or gone)
+            for i in $(seq 1 30); do
+              STATUS=$(aws ecs describe-services \
+                --cluster "$CLUSTER" --services "$SERVICE" \
+                --query 'services[0].status' --output text 2>/dev/null || echo "MISSING")
+              echo "Delete poll $i: service status = $STATUS"
+              if [ "$STATUS" = "INACTIVE" ] || [ "$STATUS" = "None" ] || [ "$STATUS" = "MISSING" ]; then
+                echo "Service fully deleted."
+                break
+              fi
+              sleep 10
+            done
 
             # Re-create with load balancer
             aws ecs create-service \
