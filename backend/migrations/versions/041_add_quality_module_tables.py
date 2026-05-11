@@ -43,8 +43,14 @@ depends_on = None
 
 
 def upgrade() -> None:
+    def create_if_missing(table_name: str, *cols: sa.Column, **kw) -> None:
+        try:
+            op.create_table(table_name, *cols, **kw)
+        except Exception:
+            pass  # table already exists — idempotent
+
     # -- qa_trigger_configurations ------------------------------------------
-    op.create_table(
+    create_if_missing(
         "qa_trigger_configurations",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("tenant_id", sa.String(36), nullable=False),
@@ -64,7 +70,7 @@ def upgrade() -> None:
     op.create_index("ix_qa_trigger_tenant", "qa_trigger_configurations", ["tenant_id"])
 
     # -- qa_case_records -------------------------------------------------------
-    op.create_table(
+    create_if_missing(
         "qa_case_records",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("tenant_id", sa.String(36), nullable=False),
@@ -102,7 +108,7 @@ def upgrade() -> None:
     op.create_index("ix_qa_case_case_number", "qa_case_records", ["case_number"])
 
     # -- qa_scores -------------------------------------------------------------
-    op.create_table(
+    create_if_missing(
         "qa_scores",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("tenant_id", sa.String(36), nullable=False),
@@ -134,7 +140,7 @@ def upgrade() -> None:
     op.create_index("ix_qa_score_case", "qa_scores", ["qa_case_id"])
 
     # -- qa_review_findings ----------------------------------------------------
-    op.create_table(
+    create_if_missing(
         "qa_review_findings",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("tenant_id", sa.String(36), nullable=False),
@@ -163,7 +169,7 @@ def upgrade() -> None:
     op.create_index("ix_qa_finding_tenant_case", "qa_review_findings", ["tenant_id", "qa_case_id"])
 
     # -- peer_reviews ----------------------------------------------------------
-    op.create_table(
+    create_if_missing(
         "peer_reviews",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("tenant_id", sa.String(36), nullable=False),
@@ -194,7 +200,7 @@ def upgrade() -> None:
     op.create_index("ix_peer_review_tenant_reviewer", "peer_reviews", ["tenant_id", "reviewer_id"])
 
     # -- peer_review_assignments -----------------------------------------------
-    op.create_table(
+    create_if_missing(
         "peer_review_assignments",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("tenant_id", sa.String(36), nullable=False),
@@ -214,7 +220,7 @@ def upgrade() -> None:
     op.create_index("ix_peer_review_assignment_review", "peer_review_assignments", ["peer_review_id"])
 
     # -- medical_director_reviews ----------------------------------------------
-    op.create_table(
+    create_if_missing(
         "medical_director_reviews",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("tenant_id", sa.String(36), nullable=False),
@@ -247,7 +253,7 @@ def upgrade() -> None:
     op.create_index("ix_md_review_qa_case", "medical_director_reviews", ["qa_case_id"])
 
     # -- medical_director_notes ------------------------------------------------
-    op.create_table(
+    create_if_missing(
         "medical_director_notes",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("tenant_id", sa.String(36), nullable=False),
@@ -269,7 +275,7 @@ def upgrade() -> None:
     op.create_index("ix_md_note_tenant_review", "medical_director_notes", ["tenant_id", "medical_director_review_id"])
 
     # -- clinical_variances ----------------------------------------------------
-    op.create_table(
+    create_if_missing(
         "clinical_variances",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("tenant_id", sa.String(36), nullable=False),
@@ -298,7 +304,7 @@ def upgrade() -> None:
     op.create_index("ix_clinical_variance_tenant_provider", "clinical_variances", ["tenant_id", "provider_id"])
 
     # -- protocol_documents ----------------------------------------------------
-    op.create_table(
+    create_if_missing(
         "protocol_documents",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("tenant_id", sa.String(36), nullable=False),
@@ -319,7 +325,7 @@ def upgrade() -> None:
     op.create_index("ix_protocol_document_tenant", "protocol_documents", ["tenant_id"])
 
     # -- protocol_versions -----------------------------------------------------
-    op.create_table(
+    create_if_missing(
         "protocol_versions",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("tenant_id", sa.String(36), nullable=False),
@@ -346,7 +352,7 @@ def upgrade() -> None:
     op.create_index("ix_protocol_version_protocol", "protocol_versions", ["protocol_id"])
 
     # -- protocol_acknowledgments ----------------------------------------------
-    op.create_table(
+    create_if_missing(
         "protocol_acknowledgments",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("tenant_id", sa.String(36), nullable=False),
@@ -366,7 +372,7 @@ def upgrade() -> None:
     op.create_index("ix_protocol_ack_provider", "protocol_acknowledgments", ["provider_id"])
 
     # -- standing_orders -------------------------------------------------------
-    op.create_table(
+    create_if_missing(
         "standing_orders",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("tenant_id", sa.String(36), nullable=False),
@@ -394,7 +400,7 @@ def upgrade() -> None:
     op.create_index("ix_standing_order_tenant", "standing_orders", ["tenant_id"])
 
     # -- standing_order_versions -----------------------------------------------
-    op.create_table(
+    create_if_missing(
         "standing_order_versions",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("tenant_id", sa.String(36), nullable=False),
@@ -417,7 +423,7 @@ def upgrade() -> None:
     op.create_index("ix_standing_order_version_order", "standing_order_versions", ["standing_order_id"])
 
     # -- education_followups ---------------------------------------------------
-    op.create_table(
+    create_if_missing(
         "education_followups",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("tenant_id", sa.String(36), nullable=False),
@@ -447,7 +453,7 @@ def upgrade() -> None:
     op.create_index("ix_education_tenant_status", "education_followups", ["tenant_id", "status"])
 
     # -- provider_feedbacks ----------------------------------------------------
-    op.create_table(
+    create_if_missing(
         "provider_feedbacks",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("tenant_id", sa.String(36), nullable=False),
@@ -473,7 +479,7 @@ def upgrade() -> None:
     op.create_index("ix_provider_feedback_tenant_provider", "provider_feedbacks", ["tenant_id", "provider_id"])
 
     # -- provider_acknowledgments ----------------------------------------------
-    op.create_table(
+    create_if_missing(
         "provider_acknowledgments",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("tenant_id", sa.String(36), nullable=False),
@@ -491,7 +497,7 @@ def upgrade() -> None:
     op.create_index("ix_provider_ack_reference", "provider_acknowledgments", ["reference_id"])
 
     # -- qi_initiatives --------------------------------------------------------
-    op.create_table(
+    create_if_missing(
         "qi_initiatives",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("tenant_id", sa.String(36), nullable=False),
@@ -527,7 +533,7 @@ def upgrade() -> None:
     op.create_index("ix_qi_initiative_tenant_owner", "qi_initiatives", ["tenant_id", "owner_id"])
 
     # -- qi_initiative_metrics -------------------------------------------------
-    op.create_table(
+    create_if_missing(
         "qi_initiative_metrics",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("tenant_id", sa.String(36), nullable=False),
@@ -546,7 +552,7 @@ def upgrade() -> None:
     op.create_index("ix_qi_metric_tenant_initiative", "qi_initiative_metrics", ["tenant_id", "initiative_id"])
 
     # -- qi_action_items -------------------------------------------------------
-    op.create_table(
+    create_if_missing(
         "qi_action_items",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("tenant_id", sa.String(36), nullable=False),
@@ -567,7 +573,7 @@ def upgrade() -> None:
     op.create_index("ix_qi_action_tenant_initiative", "qi_action_items", ["tenant_id", "initiative_id"])
 
     # -- qi_committee_reviews --------------------------------------------------
-    op.create_table(
+    create_if_missing(
         "qi_committee_reviews",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("tenant_id", sa.String(36), nullable=False),
@@ -586,7 +592,7 @@ def upgrade() -> None:
     op.create_index("ix_qi_committee_tenant", "qi_committee_reviews", ["tenant_id"])
 
     # -- qa_trend_aggregations -------------------------------------------------
-    op.create_table(
+    create_if_missing(
         "qa_trend_aggregations",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("tenant_id", sa.String(36), nullable=False),
@@ -617,7 +623,7 @@ def upgrade() -> None:
     op.create_index("ix_qa_trend_tenant", "qa_trend_aggregations", ["tenant_id"])
 
     # -- quality_audit_events --------------------------------------------------
-    op.create_table(
+    create_if_missing(
         "quality_audit_events",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("tenant_id", sa.String(36), nullable=False),
@@ -638,7 +644,7 @@ def upgrade() -> None:
     op.create_index("ix_quality_audit_occurred_at", "quality_audit_events", ["tenant_id", "occurred_at"])
 
     # -- accreditation_evidence_packages ---------------------------------------
-    op.create_table(
+    create_if_missing(
         "accreditation_evidence_packages",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("tenant_id", sa.String(36), nullable=False),
@@ -665,7 +671,7 @@ def upgrade() -> None:
     op.create_index("ix_accreditation_tenant", "accreditation_evidence_packages", ["tenant_id"])
 
     # -- quality_dashboard_snapshots -------------------------------------------
-    op.create_table(
+    create_if_missing(
         "quality_dashboard_snapshots",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("tenant_id", sa.String(36), nullable=False),
