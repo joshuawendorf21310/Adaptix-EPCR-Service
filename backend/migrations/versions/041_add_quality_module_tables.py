@@ -51,7 +51,7 @@ def upgrade() -> None:
 
     def index_if_missing(index_name: str, table_name: str, columns: list, **kw) -> None:
         try:
-            index_if_missing(index_name, table_name, columns, **kw)
+            op.create_index(index_name, table_name, columns, **kw)
         except Exception:
             pass  # index already exists — idempotent
 
