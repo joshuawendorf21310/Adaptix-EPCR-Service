@@ -43,17 +43,20 @@ depends_on = None
 
 
 def upgrade() -> None:
+    bind = op.get_bind()
+    inspector = sa.inspect(bind)
+    pre_existing_tables = set(inspector.get_table_names())
+
     def create_if_missing(table_name: str, *cols: sa.Column, **kw) -> None:
-        try:
+        if table_name not in pre_existing_tables:
             op.create_table(table_name, *cols, **kw)
-        except Exception:
-            pass  # table already exists — idempotent
 
     def index_if_missing(index_name: str, table_name: str, columns: list, **kw) -> None:
-        try:
-            op.create_index(index_name, table_name, columns, **kw)
-        except Exception:
-            pass  # index already exists — idempotent
+        if table_name in pre_existing_tables:
+            existing_indexes = {ix["name"] for ix in inspector.get_indexes(table_name)}
+            if index_name in existing_indexes:
+                return
+        op.create_index(index_name, table_name, columns, **kw)
 
     # -- qa_trigger_configurations ------------------------------------------
     create_if_missing(
