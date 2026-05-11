@@ -12,6 +12,8 @@ Routers included:
 - api_nemsis_submissions: NEMSIS state submission lifecycle (8 routes)
 - api_nemsis_validation: NEMSIS validation persistence and history (3 routes)
 - api_timeline: Patient state timeline tracking (3 routes)
+- api_transfer_packet: Transfer packet OCR extraction + review manifest (7 routes)
+- api_audit: Chart field audit trail (5 routes)
 """
 import logging
 from contextlib import asynccontextmanager
@@ -34,6 +36,7 @@ from epcr_app.api_nemsis_validation import router as nemsis_validation_router
 from epcr_app.api_timeline import router as timeline_router
 from epcr_app.api_cpae import router as cpae_router
 from epcr_app.api_vision import router as vision_router
+from epcr_app.api_ocr import router as ocr_router
 from epcr_app.api_clinical_extended import router as clinical_extended_router
 from epcr_app.api_smart_text_address import router as smart_text_address_router
 from epcr_app.api_desktop import router as desktop_router
@@ -61,10 +64,17 @@ from epcr_app.api_chart_arrest import router as chart_arrest_router
 from epcr_app.api_chart_disposition import router as chart_disposition_router
 from epcr_app.api_chart_payment import router as chart_payment_router
 from epcr_app.api_chart_outcome import router as chart_outcome_router
+from epcr_app.api_chart_exam import router as chart_exam_router
 from epcr_app.api_patient_profile_ext import router as patient_profile_ext_router
 from epcr_app.api_vitals_ext import router as vitals_ext_router
 from epcr_app.api_medication_admin_ext import router as medication_admin_ext_router
 from epcr_app.api_intervention_ext import router as intervention_ext_router
+from epcr_app.api_ai import router as ai_router
+from epcr_app.api_transfer_packet import router as transfer_packet_router
+from epcr_app.api_audit import router as audit_router
+from epcr_app.api_quality import router as quality_router
+import epcr_app.models_audit  # noqa: F401 — ensures audit tables are registered with Base
+import epcr_app.models_quality  # noqa: F401 — ensures quality module tables are registered with Base
 from epcr_app.db import init_db
 from adaptix_contracts.event_contracts import LocalEventConsumerRegistry
 from epcr_app.background_worker import EventProcessingWorker
@@ -194,6 +204,7 @@ app.include_router(nemsis_validation_router)
 app.include_router(timeline_router)
 app.include_router(cpae_router)
 app.include_router(vision_router)
+app.include_router(ocr_router)
 app.include_router(clinical_extended_router)
 app.include_router(smart_text_address_router)
 app.include_router(desktop_router)
@@ -225,8 +236,16 @@ app.include_router(patient_profile_ext_router)
 app.include_router(vitals_ext_router)
 app.include_router(medication_admin_ext_router)
 app.include_router(intervention_ext_router)
+app.include_router(chart_exam_router)
+# AI clinical intelligence engine
+app.include_router(ai_router)
+# Transfer packet intelligence + chart field audit trail
+app.include_router(transfer_packet_router)
+app.include_router(audit_router)
+# Medical Director, QA, and QI quality governance module
+app.include_router(quality_router)
 
-logger.info("Care service configured with all routers: CareGraph, CPAE, VAS, Vision, CriticalCare, Sync, Dashboard, SmartText, Address, Desktop, NEMSIS v3.5.1 slices (eTimes, eDispatch, eCrew, eResponse, eScene, eSituation, eHistory, eInjury, eArrest, eDisposition, ePayment, eOutcome, ePatient-ext, eVitals-ext, eMedications-ext, eProcedures-ext)")
+logger.info("Care service configured with all routers: CareGraph, CPAE, VAS, Vision, CriticalCare, Sync, Dashboard, SmartText, Address, Desktop, NEMSIS v3.5.1 slices (eTimes, eDispatch, eCrew, eResponse, eScene, eSituation, eHistory, eInjury, eArrest, eDisposition, ePayment, eOutcome, eExam, ePatient-ext, eVitals-ext, eMedications-ext, eProcedures-ext), AI, TransferPacket, Audit")
 
 
 @app.get("/healthz")

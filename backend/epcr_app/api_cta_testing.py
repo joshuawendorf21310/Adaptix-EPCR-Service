@@ -36,6 +36,7 @@ from __future__ import annotations
 import hashlib
 import logging
 import os
+import tempfile
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal
@@ -188,8 +189,8 @@ class CtaUploadResponse(BaseModel):
 
 
 class CtaValidationRunRequest(BaseModel):
-    test_case_id: str
-    mode: Literal["uploaded_xml", "generated_chart_xml", "fixture_xml"]
+    test_case_id: str | None = None
+    mode: Literal["uploaded_xml", "generated_chart_xml", "fixture_xml"] = "fixture_xml"
     xml_upload_id: str | None = None
     chart_id: str | None = None
     use_deployed_assets: bool = True
@@ -452,8 +453,8 @@ async def create_upload(
         "purpose": final_purpose,
         "created_at": _now_iso(),
         "created_by_user_id": str(current_user.user_id),
-        # Bytes retained only for XML inputs so they can be validated later.
-        "_bytes": payload if suffix == ".xml" else None,
+        # Bytes retained for XML and Schematron assets so they can be used in validation runs.
+        "_bytes": payload if suffix in (".xml", ".sch", ".xsl", ".xslt") else None,
     }
     _UPLOADS[upload_id] = record
     return CtaUploadResponse(
@@ -470,7 +471,12 @@ async def create_validation_run(
     body: CtaValidationRunRequest,
     current_user: CurrentUser = Depends(get_current_user),
 ) -> CtaValidationRunResponse:
-    test_case = _require_test_case(body.test_case_id)
+    # test_case_id is optional when mode=uploaded_xml with a custom schematron
+    if body.test_case_id:
+        test_case = _require_test_case(body.test_case_id)
+    else:
+        # Default to first EMS case for metadata purposes; XML is supplied externally
+        test_case = _CTA_2025_TEST_CASES[1]
     tenant_id = str(current_user.tenant_id)
 
     # Resolve XML bytes from selected mode.
@@ -508,18 +514,30 @@ async def create_validation_run(
             detail=f"Unsupported mode: {body.mode}",
         )
 
-    # Optional asset overrides — only for rehearsal. Honest blocking
-    # reason if the operator asked for an asset that wasn't uploaded.
+    # Optional asset overrides — only for rehearsal.
     if body.xsd_asset_upload_id:
         _require_upload(body.xsd_asset_upload_id, tenant_id)
+
+    # Resolve custom schematron path from uploaded .sch file
+    custom_sch_path: str | None = None
+    _sch_tempdir: tempfile.TemporaryDirectory[str] | None = None
     if body.schematron_asset_upload_id:
-        _require_upload(body.schematron_asset_upload_id, tenant_id)
+        sch_record = _require_upload(body.schematron_asset_upload_id, tenant_id)
+        sch_bytes = sch_record.get("_bytes")
+        if sch_bytes:
+            _sch_tempdir = tempfile.TemporaryDirectory()
+            sch_filename = sch_record.get("filename", "custom.sch")
+            custom_sch_path = os.path.join(_sch_tempdir.name, sch_filename)
+            with open(custom_sch_path, "wb") as f:
+                f.write(bytes(sch_bytes))
 
     validator = NemsisXSDValidator()
     try:
-        result = validator.validate_xml(xml_bytes)
+        result = validator.validate_xml(xml_bytes, custom_sch_path=custom_sch_path)
     finally:
         validator.close()
+        if _sch_tempdir is not None:
+            _sch_tempdir.cleanup()
 
     run_id = str(uuid4())
     record = {
@@ -698,6 +716,149 @@ async def create_evidence_packet(
         generated_at=_now_iso(),
         generated_by_user_id=str(current_user.user_id),
     )
+
+
+# --------------------------------------------------------------------------- #
+# Uploads list
+# --------------------------------------------------------------------------- #
+
+
+@router.get("/uploads")
+async def list_uploads(
+    current_user: CurrentUser = Depends(get_current_user),
+) -> dict:
+    tenant_id = str(current_user.tenant_id)
+    records = [
+        {k: v for k, v in rec.items() if not k.startswith("_")}
+        for rec in _UPLOADS.values()
+        if rec["tenant_id"] == tenant_id
+    ]
+    return {"uploads": records, "count": len(records)}
+
+
+# --------------------------------------------------------------------------- #
+# Credentials status
+# --------------------------------------------------------------------------- #
+
+
+@router.get("/credentials/status")
+async def get_credentials_status(
+    current_user: CurrentUser = Depends(get_current_user),
+) -> dict:
+    _ = current_user
+    endpoint = (
+        os.environ.get("NEMSIS_CTA_ENDPOINT")
+        or os.environ.get("NEMSIS_TAC_ENDPOINT")
+        or "https://cta.nemsis.org:443/ComplianceTestingWs/endpoints/"
+    )
+    username = (
+        os.environ.get("NEMSIS_CTA_USERNAME")
+        or os.environ.get("NEMSIS_TAC_USERNAME")
+        or ""
+    )
+    password = (
+        os.environ.get("NEMSIS_CTA_PASSWORD")
+        or os.environ.get("NEMSIS_TAC_PASSWORD")
+        or ""
+    )
+    configured = bool(username and password)
+    masked: str | None = None
+    if username:
+        if len(username) <= 4:
+            masked = username[0] + "***"
+        else:
+            masked = username[:2] + "***" + username[-2:]
+    return {"configured": configured, "username_masked": masked, "endpoint": endpoint}
+
+
+# --------------------------------------------------------------------------- #
+# CTA direct submission
+# --------------------------------------------------------------------------- #
+
+
+class CtaSubmitRequest(BaseModel):
+    validation_run_id: str
+    dataset_type: Literal["EMS", "DEM"] = "EMS"
+    label: str = ""
+    force: bool = False
+
+
+@router.post("/cta-submit")
+async def cta_submit(
+    body: CtaSubmitRequest,
+    current_user: CurrentUser = Depends(get_current_user),
+) -> dict:
+    tenant_id = str(current_user.tenant_id)
+    run = _require_run(body.validation_run_id, tenant_id)
+
+    # Resolve the XML bytes from the run's source
+    xml_bytes: bytes | None = None
+    xml_upload_id = run.get("xml_upload_id")
+    if xml_upload_id:
+        upload = _UPLOADS.get(xml_upload_id)
+        if upload and upload.get("_bytes"):
+            xml_bytes = bytes(upload["_bytes"])
+
+    if xml_bytes is None:
+        # Fall back to fixture XML
+        test_case_id = run.get("test_case_id")
+        test_case = _TEST_CASE_BY_ID.get(test_case_id or "") or _CTA_2025_TEST_CASES[1]
+        try:
+            xml_bytes = _load_fixture_xml(test_case)
+        except Exception:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Cannot resolve XML for submission — re-upload and revalidate.",
+            )
+
+    # Resolve CTA credentials
+    endpoint = (
+        os.environ.get("NEMSIS_CTA_ENDPOINT")
+        or os.environ.get("NEMSIS_TAC_ENDPOINT")
+        or "https://cta.nemsis.org:443/ComplianceTestingWs/endpoints/"
+    )
+    username = os.environ.get("NEMSIS_CTA_USERNAME") or os.environ.get("NEMSIS_TAC_USERNAME") or ""
+    password = os.environ.get("NEMSIS_CTA_PASSWORD") or os.environ.get("NEMSIS_TAC_PASSWORD") or ""
+    organization = os.environ.get("NEMSIS_CTA_ORGANIZATION") or os.environ.get("NEMSIS_TAC_ORGANIZATION") or ""
+
+    if not (username and password):
+        raise HTTPException(
+            status_code=status.HTTP_424_FAILED_DEPENDENCY,
+            detail="CTA credentials not configured (NEMSIS_CTA_USERNAME / NEMSIS_CTA_PASSWORD).",
+        )
+
+    data_schema = "62" if body.dataset_type == "DEM" else "61"
+    label = body.label or f"Adaptix {body.dataset_type} TAC submission"
+
+    try:
+        from epcr_app.nemsis.cta_client import CtaSubmissionClient
+        client = CtaSubmissionClient(
+            endpoint=endpoint,
+            username=username,
+            password=password,
+            organization=organization,
+        )
+        result = client.submit(
+            xml_bytes=xml_bytes,
+            request_data_schema=data_schema,
+            additional_info=label,
+        )
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=f"CTA submission failed: {exc}",
+        )
+
+    return {
+        "submitted": result.submitted,
+        "status_code": str(result.status_code or ""),
+        "request_handle": str(result.request_handle or ""),
+        "message": str(result.message or ""),
+        "request_body": str(result.request_body or ""),
+        "response_body": str(result.response_body or ""),
+        "endpoint": endpoint,
+        "submitted_at": _now_iso(),
+    }
 
 
 # --------------------------------------------------------------------------- #

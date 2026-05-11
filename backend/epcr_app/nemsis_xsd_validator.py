@@ -171,7 +171,7 @@ class NemsisXSDValidator:
                     return os.path.join(r, name)
         return None
 
-    def validate_xml(self, xml: str | bytes) -> dict[str, Any]:
+    def validate_xml(self, xml: str | bytes, custom_sch_path: str | None = None) -> dict[str, Any]:
         start = perf_counter()
 
         xml_bytes = xml.encode() if isinstance(xml, str) else xml
@@ -230,7 +230,7 @@ class NemsisXSDValidator:
                 schematron_skipped = True
                 logger.info("Schematron skipped (unavailable): %s", _sch_unavailable_reason)
             else:
-                sch_file = self.get_schematron_asset_path(dataset)
+                sch_file = custom_sch_path if custom_sch_path is not None else self.get_schematron_asset_path(dataset)
                 if not sch_file:
                     # Missing .sch file — warn but do not fail the export.
                     schematron_skipped = True

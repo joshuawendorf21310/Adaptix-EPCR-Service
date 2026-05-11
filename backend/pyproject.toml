@@ -25,6 +25,7 @@ dependencies = [
     "saxonche>=12.5.0",
     "zeep>=4.2.1",
     "httpx>=0.27.0",
+    "anthropic>=0.28.0",
     "adaptix-contracts @ git+https://github.com/joshuawendorf21310/Adaptix-Contracts.git",
 ]
 
