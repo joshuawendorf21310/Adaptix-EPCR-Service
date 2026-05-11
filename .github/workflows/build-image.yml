@@ -258,6 +258,16 @@ jobs:
 
           if [ "${EXIT_CODE}" != "0" ]; then
             echo "::error::alembic upgrade head failed (exit ${EXIT_CODE}). Aborting deploy."
+            echo "--- Fetching CloudWatch logs for task ${TASK_ARN} ---"
+            TASK_ID="${TASK_ARN##*/}"
+            LOG_STREAM="ecs/epcr/${TASK_ID}"
+            LOG_GROUP="/ecs/adaptix-production-epcr"
+            aws logs get-log-events \
+              --log-group-name "${LOG_GROUP}" \
+              --log-stream-name "${LOG_STREAM}" \
+              --region "${{ env.AWS_REGION }}" \
+              --query 'events[*].message' \
+              --output text 2>&1 || echo "Could not fetch CloudWatch logs (stream may not exist yet)"
             exit 1
           fi
 
