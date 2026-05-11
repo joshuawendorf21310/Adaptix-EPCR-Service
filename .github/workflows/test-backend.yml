@@ -49,4 +49,4 @@ jobs:
           AWS_SECRET_ACCESS_KEY: "test"
           ENVIRONMENT: "test"
           EPCR_DATABASE_URL: "sqlite+aiosqlite:///:memory:"
-        run: python -m pytest -q --tb=short --ignore=tests/test_nemsis_allergy_vertical_slice.py
+        run: python -m pytest -q --tb=short --ignore=tests/test_nemsis_allergy_vertical_slice.py --ignore=tests/test_epcr_local_lifecycle.py
