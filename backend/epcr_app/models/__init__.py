@@ -25,9 +25,11 @@ def _load_legacy_models_module():
 _legacy_models = _load_legacy_models_module()
 
 Base = _legacy_models.Base
+AgencyProfile = _legacy_models.AgencyProfile
 Chart = _legacy_models.Chart
 ChartStatus = _legacy_models.ChartStatus
 ComplianceStatus = _legacy_models.ComplianceStatus
+EpcrNumberingSequence = _legacy_models.EpcrNumberingSequence
 FieldSource = _legacy_models.FieldSource
 ReviewState = _legacy_models.ReviewState
 FindingEvolution = _legacy_models.FindingEvolution
@@ -41,6 +43,13 @@ DerivedOutputType = _legacy_models.DerivedOutputType
 Vitals = _legacy_models.Vitals
 Assessment = _legacy_models.Assessment
 PatientProfile = _legacy_models.PatientProfile
+PatientRegistryProfile = _legacy_models.PatientRegistryProfile
+PatientRegistryIdentifier = _legacy_models.PatientRegistryIdentifier
+PatientRegistryChartLink = _legacy_models.PatientRegistryChartLink
+EpcrChartingAcceleratorImport = _legacy_models.EpcrChartingAcceleratorImport
+PatientRegistryMergeCandidate = _legacy_models.PatientRegistryMergeCandidate
+PatientRegistryMergeAudit = _legacy_models.PatientRegistryMergeAudit
+PatientRegistryAlias = _legacy_models.PatientRegistryAlias
 AssessmentFinding = _legacy_models.AssessmentFinding
 VisualOverlay = _legacy_models.VisualOverlay
 ArSession = _legacy_models.ArSession
@@ -86,9 +95,11 @@ from epcr_app.models.structured_extraction import StructuredExtraction  # noqa: 
 
 __all__ = [
     "Base",
+    "AgencyProfile",
     "Chart",
     "ChartStatus",
     "ComplianceStatus",
+    "EpcrNumberingSequence",
     "FieldSource",
     "ReviewState",
     "FindingEvolution",
@@ -102,6 +113,13 @@ __all__ = [
     "Vitals",
     "Assessment",
     "PatientProfile",
+    "PatientRegistryProfile",
+    "PatientRegistryIdentifier",
+    "PatientRegistryChartLink",
+    "EpcrChartingAcceleratorImport",
+    "PatientRegistryMergeCandidate",
+    "PatientRegistryMergeAudit",
+    "PatientRegistryAlias",
     "AssessmentFinding",
     "VisualOverlay",
     "ArSession",

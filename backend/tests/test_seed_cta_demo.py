@@ -33,6 +33,7 @@ from epcr_app.models import (  # noqa: E402  (import after sys.path edit)
     EpcrAuditLog,
     NemsisMappingRecord,
 )
+from tests.agency_helpers import seed_active_agency
 
 from scripts.seed_cta_demo import (  # noqa: E402
     DEMO_TENANT_ID,
@@ -55,6 +56,9 @@ async def session_factory():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     factory = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+    async with factory() as s:
+        await seed_active_agency(s, tenant_id=DEMO_TENANT_ID)
+        await s.commit()
     yield factory
     await engine.dispose()
 
@@ -133,6 +137,10 @@ async def test_seeder_is_idempotent(session_factory):
 @pytest.mark.asyncio
 async def test_seeded_records_are_tenant_scoped(session_factory):
     other_tenant = "other-tenant-aaaa-bbbb-cccc-dddd"
+    # Seed the agency profile for the second tenant before calling the seeder.
+    async with session_factory() as s:
+        await seed_active_agency(s, tenant_id=other_tenant, agency_code="OTHER001")
+        await s.commit()
     await seed_demo_tenant(session_factory, tenant_id=DEMO_TENANT_ID)
     await seed_demo_tenant(session_factory, tenant_id=other_tenant)
 

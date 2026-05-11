@@ -14,6 +14,7 @@ from epcr_app.api import router
 from epcr_app.db import get_session
 from epcr_app.dependencies import CurrentUser, get_current_user
 from epcr_app.models import Base
+from tests.agency_helpers import seed_active_agency
 
 
 TENANT_ID = str(uuid4())
@@ -37,6 +38,10 @@ async def session_factory():
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+
+    async with session_maker() as s:
+        await seed_active_agency(s, tenant_id=TENANT_ID)
+        await s.commit()
 
     yield session_maker
 

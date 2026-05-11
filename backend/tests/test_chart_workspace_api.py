@@ -8,7 +8,9 @@ does not require live authentication infrastructure.
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from types import SimpleNamespace
+from uuid import uuid4
 
 import pytest
 import pytest_asyncio
@@ -23,7 +25,7 @@ from sqlalchemy.ext.asyncio import (
 from epcr_app.api_chart_workspace import router as chart_workspace_router
 from epcr_app.db import get_session
 from epcr_app.dependencies import get_current_user
-from epcr_app.models import Base
+from epcr_app.models import AgencyProfile, Base
 
 
 @pytest_asyncio.fixture
@@ -32,6 +34,34 @@ async def workspace_app():
     sessionmaker = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+
+    async with sessionmaker() as session:
+        now = datetime.now(UTC)
+        session.add(
+            AgencyProfile(
+                id=str(uuid4()),
+                tenant_id="tenant-api",
+                agency_code="MADISONEMS",
+                agency_name="Madison EMS",
+                numbering_policy_json="{}",
+                activated_at=now,
+                created_at=now,
+                updated_at=now,
+            )
+        )
+        session.add(
+            AgencyProfile(
+                id=str(uuid4()),
+                tenant_id="tenant-other",
+                agency_code="MADISONEMS",
+                agency_name="Madison EMS Other",
+                numbering_policy_json="{}",
+                activated_at=now,
+                created_at=now,
+                updated_at=now,
+            )
+        )
+        await session.commit()
 
     app = FastAPI()
     app.include_router(chart_workspace_router)
@@ -59,7 +89,7 @@ def test_create_get_status_workspace_round_trip(workspace_app) -> None:
     with TestClient(workspace_app) as client:
         create = client.post(
             "/api/v1/epcr/chart-workspaces",
-            json={"call_number": "API-CALL-001", "incident_type": "medical"},
+            json={"call_number": "API-CALL-001", "incident_type": "medical", "agency_code": "MADISONEMS"},
         )
         assert create.status_code == 201, create.text
         body = create.json()
@@ -83,7 +113,7 @@ def test_unsupported_section_returns_422_field_not_mapped(workspace_app) -> None
     with TestClient(workspace_app) as client:
         create = client.post(
             "/api/v1/epcr/chart-workspaces",
-            json={"call_number": "API-CALL-002", "incident_type": "medical"},
+            json={"call_number": "API-CALL-002", "incident_type": "medical", "agency_code": "MADISONEMS"},
         )
         chart_id = create.json()["chart"]["id"]
         resp = client.patch(
@@ -99,7 +129,7 @@ def test_finalize_blocks_when_compliance_incomplete(workspace_app) -> None:
     with TestClient(workspace_app) as client:
         create = client.post(
             "/api/v1/epcr/chart-workspaces",
-            json={"call_number": "API-CALL-003", "incident_type": "medical"},
+            json={"call_number": "API-CALL-003", "incident_type": "medical", "agency_code": "MADISONEMS"},
         )
         chart_id = create.json()["chart"]["id"]
         resp = client.post(f"/api/v1/epcr/chart-workspaces/{chart_id}/finalize")
@@ -118,7 +148,7 @@ def test_export_endpoint_reports_not_generated(workspace_app) -> None:
     with TestClient(workspace_app) as client:
         create = client.post(
             "/api/v1/epcr/chart-workspaces",
-            json={"call_number": "API-CALL-004", "incident_type": "medical"},
+            json={"call_number": "API-CALL-004", "incident_type": "medical", "agency_code": "MADISONEMS"},
         )
         chart_id = create.json()["chart"]["id"]
         resp = client.post(f"/api/v1/epcr/chart-workspaces/{chart_id}/export")
@@ -132,7 +162,7 @@ def test_submit_endpoint_reports_unavailable(workspace_app) -> None:
     with TestClient(workspace_app) as client:
         create = client.post(
             "/api/v1/epcr/chart-workspaces",
-            json={"call_number": "API-CALL-005", "incident_type": "medical"},
+            json={"call_number": "API-CALL-005", "incident_type": "medical", "agency_code": "MADISONEMS"},
         )
         chart_id = create.json()["chart"]["id"]
         resp = client.post(f"/api/v1/epcr/chart-workspaces/{chart_id}/submit")
@@ -146,13 +176,13 @@ def test_duplicate_call_number_same_tenant_returns_409(workspace_app) -> None:
     with TestClient(workspace_app) as client:
         first = client.post(
             "/api/v1/epcr/chart-workspaces",
-            json={"call_number": "DUP-CALL-001", "incident_type": "medical"},
+            json={"call_number": "DUP-CALL-001", "incident_type": "medical", "agency_code": "MADISONEMS"},
         )
         assert first.status_code == 201, first.text
 
         second = client.post(
             "/api/v1/epcr/chart-workspaces",
-            json={"call_number": "DUP-CALL-001", "incident_type": "medical"},
+            json={"call_number": "DUP-CALL-001", "incident_type": "medical", "agency_code": "MADISONEMS"},
         )
         assert second.status_code == 409, second.text
         body = second.json()
@@ -169,7 +199,7 @@ def test_same_call_number_across_tenants_is_allowed(workspace_app) -> None:
     with TestClient(workspace_app) as client:
         first = client.post(
             "/api/v1/epcr/chart-workspaces",
-            json={"call_number": "CROSS-TENANT-001", "incident_type": "medical"},
+            json={"call_number": "CROSS-TENANT-001", "incident_type": "medical", "agency_code": "MADISONEMS"},
         )
         assert first.status_code == 201, first.text
 
@@ -189,7 +219,7 @@ def test_same_call_number_across_tenants_is_allowed(workspace_app) -> None:
         with TestClient(workspace_app) as client:
             second = client.post(
                 "/api/v1/epcr/chart-workspaces",
-                json={"call_number": "CROSS-TENANT-001", "incident_type": "medical"},
+                json={"call_number": "CROSS-TENANT-001", "incident_type": "medical", "agency_code": "MADISONEMS"},
             )
             assert second.status_code == 201, second.text
     finally:

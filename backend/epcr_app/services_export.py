@@ -593,6 +593,9 @@ class NemsisExportService:
                 artifact_mime_type = "application/xml"
                 artifact_size_bytes = len(exc.xml_bytes or b"") or None
                 artifact_checksum_sha256 = exc.checksum
+            elif isinstance(exc, ClientError):
+                failure_status = ExportLifecycleStatus.PERSISTENCE_FAILED.value
+                failure_type = ExportFailureType.PERSISTENCE_ERROR.value
             elif "NEMSIS_EXPORT_S3_BUCKET not configured" in str(exc):
                 failure_status = ExportLifecycleStatus.PERSISTENCE_FAILED.value
                 failure_type = ExportFailureType.PERSISTENCE_ERROR.value

@@ -170,7 +170,7 @@ class CtaTestCase(BaseModel):
 class CtaTestCasesResponse(BaseModel):
     test_cases: list[CtaTestCase]
     nemsis_version: str = "3.5.1"
-    nemsis_asset_version: str = "3.5.1.250403CP1"
+    nemsis_asset_version: str = "3.5.1.251001CP2"
 
 
 class CtaUploadResponse(BaseModel):

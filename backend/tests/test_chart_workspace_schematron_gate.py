@@ -18,6 +18,7 @@ from epcr_app.nemsis_finalization_gate import (
     SchematronGateEvaluation,
     SchematronGateIssue,
 )
+from tests.agency_helpers import seed_active_agency
 
 
 @pytest_asyncio.fixture
@@ -26,6 +27,9 @@ async def workspace_db():
     sessionmaker = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    async with sessionmaker() as s:
+        await seed_active_agency(s, tenant_id="tenant-gate")
+        await s.commit()
     yield sessionmaker
     await engine.dispose()
 

@@ -28,7 +28,7 @@ Sources of truth, in order:
    of silently 5xx-ing.
 
 NEMSIS pinning (do not drift): version 3.5.1, asset version
-3.5.1.250403CP1. These are constants of the EPCR contract and live
+3.5.1.251001CP2. These are constants of the EPCR contract and live
 here next to the version endpoint so a single GET surfaces both the
 deployed code identity and the deployed NEMSIS contract identity.
 """
@@ -49,10 +49,10 @@ logger = logging.getLogger(__name__)
 
 # NEMSIS contract pins. Source of truth: the NEMSIS 3.5.1 release imported
 # at commit 9bff090cbf95db614529bdff5e1e988a93f89717, asset version
-# 3.5.1.250403CP1. These values are referenced by builder/exporter/validator
+# 3.5.1.251001CP2. These values are referenced by builder/exporter/validator
 # and asserted in the live XSD validation tests.
 _NEMSIS_VERSION = "3.5.1"
-_NEMSIS_ASSET_VERSION = "3.5.1.250403CP1"
+_NEMSIS_ASSET_VERSION = "3.5.1.251001CP2"
 
 _DEFAULT_BUILD_INFO_PATH = "/app/.build_info.json"
 
@@ -67,7 +67,7 @@ class VersionResponse(BaseModel):
     build_time: str = Field(..., description="ISO-8601 build timestamp, or 'unknown'.")
     nemsis_version: str = Field(..., description="Pinned NEMSIS dictionary version.")
     nemsis_asset_version: str = Field(
-        ..., description="Pinned NEMSIS asset version (e.g. 3.5.1.250403CP1)."
+        ..., description="Pinned NEMSIS asset version (e.g. 3.5.1.251001CP2)."
     )
 
 

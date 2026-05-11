@@ -12,6 +12,7 @@ from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from epcr_app.models import (
+    AgencyProfile,
     Chart,
     ChartStatus,
     Vitals,
@@ -41,7 +42,11 @@ from epcr_app.models import (
     ClinicalNoteReviewState,
     ProtocolRecommendationState,
     DerivedOutputType,
+    PatientRegistryProfile,
+    PatientRegistryChartLink,
 )
+from epcr_app.incident_numbering_service import IncidentNumberingService
+from epcr_app.patient_registry_service import PatientRegistryService
 
 logger = logging.getLogger(__name__)
 
@@ -156,6 +161,10 @@ class ChartService:
         profile_data: dict,
     ) -> PatientProfile:
         """Create or update chart-scoped patient demographics owned by ePCR."""
+        if "phone_number" not in profile_data and profile_data.get("phone") is not None:
+            profile_data = dict(profile_data)
+            profile_data["phone_number"] = profile_data.get("phone")
+
         chart = await ChartService.get_chart(session, tenant_id, chart_id)
         if not chart:
             raise ValueError(f"Chart {chart_id} not found")
@@ -194,6 +203,14 @@ class ChartService:
             profile.allergies_json = json.dumps(profile_data.get("allergies") or [])
         profile.updated_at = datetime.now(UTC)
         chart.patient_id = profile.id
+
+        await PatientRegistryService.sync_chart_patient_profile(
+            session=session,
+            tenant_id=tenant_id,
+            chart_id=chart_id,
+            provider_id=provider_id,
+            patient_profile=profile,
+        )
 
         await session.commit()
         await ChartService.audit(
@@ -681,11 +698,15 @@ class ChartService:
     async def create_chart(
         session: AsyncSession,
         tenant_id: str,
-        call_number: str,
+        call_number: str | None,
         incident_type: str,
         created_by_user_id: str,
         client_reference_id: str = None,
-        patient_id: str = None
+        patient_id: str = None,
+        agency_id: str | None = None,
+        agency_code: str | None = None,
+        incident_datetime: datetime | None = None,
+        cad_incident_number: str | None = None,
     ) -> Chart:
         """Create new ePCR chart with NEMSIS compliance tracking.
         
@@ -708,10 +729,6 @@ class ChartService:
             logger.warning("Chart creation rejected: invalid tenant_id")
             raise ValueError("tenant_id is required and cannot be empty")
         
-        if not call_number or not isinstance(call_number, str) or len(call_number.strip()) == 0:
-            logger.warning(f"Chart creation rejected for tenant {tenant_id}: invalid call_number")
-            raise ValueError("call_number is required and cannot be empty")
-        
         if not created_by_user_id or not isinstance(created_by_user_id, str) or len(created_by_user_id.strip()) == 0:
             logger.warning("Chart creation rejected: invalid created_by_user_id")
             raise ValueError("created_by_user_id is required and cannot be empty")
@@ -722,10 +739,42 @@ class ChartService:
             raise ValueError(f"incident_type must be one of: {', '.join(valid_incident_types)}")
         
         try:
+            profile = await IncidentNumberingService.resolve_agency_profile(
+                session=session,
+                tenant_id=tenant_id.strip(),
+                agency_id=agency_id,
+                agency_code=agency_code,
+            )
+            numbering_policy = IncidentNumberingService.parse_numbering_policy(profile)
+            numbering = await IncidentNumberingService.generate_incident_number(
+                session=session,
+                tenant_id=tenant_id.strip(),
+                agency_code=profile.agency_code,
+                incident_datetime=incident_datetime,
+            )
+            authoritative_incident_number = numbering.incident_number
+            if numbering_policy.get("incidentNumberSource") == "cad_imported":
+                if not cad_incident_number or not str(cad_incident_number).strip():
+                    raise ValueError(
+                        "cad_incident_number is required when incidentNumberSource is cad_imported"
+                    )
+                authoritative_incident_number = str(cad_incident_number).strip()
+
             chart = Chart(
                 id=client_reference_id or str(uuid.uuid4()),
                 tenant_id=tenant_id.strip(),
-                call_number=call_number.strip(),
+                call_number=(call_number or authoritative_incident_number).strip(),
+                agency_code=numbering.agency_code,
+                incident_year=numbering.incident_year,
+                incident_sequence=numbering.incident_sequence,
+                response_sequence=numbering.response_sequence,
+                pcr_sequence=numbering.pcr_sequence,
+                billing_sequence=numbering.billing_sequence,
+                incident_number=authoritative_incident_number,
+                response_number=numbering.response_number,
+                pcr_number=numbering.pcr_number,
+                billing_case_number=numbering.billing_case_number,
+                cad_incident_number=(str(cad_incident_number).strip() if cad_incident_number else None),
                 incident_type=incident_type,
                 created_by_user_id=created_by_user_id.strip(),
                 patient_id=patient_id
@@ -758,8 +807,28 @@ class ChartService:
                 action="chart_created",
                 detail={
                     "call_number": chart.call_number,
+                    "agency_code": chart.agency_code,
+                    "incident_number": chart.incident_number,
+                    "response_number": chart.response_number,
+                    "pcr_number": chart.pcr_number,
+                    "billing_case_number": chart.billing_case_number,
                     "incident_type": chart.incident_type,
                     "patient_id": chart.patient_id,
+                },
+            )
+            await ChartService.audit(
+                session=session,
+                tenant_id=tenant_id.strip(),
+                chart_id=chart.id,
+                user_id=created_by_user_id.strip(),
+                action="incident_numbers_assigned",
+                detail={
+                    "incident_number": chart.incident_number,
+                    "response_number": chart.response_number,
+                    "pcr_number": chart.pcr_number,
+                    "billing_case_number": chart.billing_case_number,
+                    "agency_code": chart.agency_code,
+                    "incident_year": chart.incident_year,
                 },
             )
             logger.info(f"Chart created: id={chart.id}, call_number={call_number}, incident_type={incident_type}, tenant_id={tenant_id}")

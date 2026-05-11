@@ -75,7 +75,7 @@ def test_list_test_cases_returns_six_2025_cases() -> None:
     assert resp.status_code == 200, resp.text
     body = resp.json()
     assert body["nemsis_version"] == "3.5.1"
-    assert body["nemsis_asset_version"] == "3.5.1.250403CP1"
+    assert body["nemsis_asset_version"] == "3.5.1.251001CP2"
     ids = [c["test_case_id"] for c in body["test_cases"]]
     assert ids == [c["test_case_id"] for c in _CTA_2025_TEST_CASES]
     assert "2025-DEM1" in ids

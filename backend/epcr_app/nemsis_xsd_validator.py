@@ -109,6 +109,10 @@ class NemsisXSDValidator:
             fallback = Path(__file__).resolve().parents[1] / "nemsis" / "xsd"
             if fallback.is_dir():
                 return str(fallback)
+            # Local-repo layout: epcr_app/nemsis_resources/official/raw
+            local = Path(__file__).resolve().parent / "nemsis_resources" / "official" / "raw"
+            if local.is_dir():
+                return str(local)
             raise NemsisValidationError("NEMSIS_XSD_PATH not configured")
 
         if os.path.isdir(self._xsd_path):
@@ -136,6 +140,27 @@ class NemsisXSDValidator:
         legacy = Path(__file__).resolve().parent / "nemsis_pretesting_v351" / "schematron"
         if legacy.is_dir():
             return str(legacy)
+
+        # Current local-repo layout: epcr_app/nemsis_resources/official/raw/schematron/compliance_active_2025
+        local_compliance = (
+            Path(__file__).resolve().parent
+            / "nemsis_resources"
+            / "official"
+            / "raw"
+            / "schematron"
+            / "compliance_active_2025"
+        )
+        if local_compliance.is_dir():
+            return str(local_compliance)
+        local_root = (
+            Path(__file__).resolve().parent
+            / "nemsis_resources"
+            / "official"
+            / "raw"
+            / "schematron"
+        )
+        if local_root.is_dir():
+            return str(local_root)
 
         raise NemsisValidationError("NEMSIS_SCHEMATRON_PATH invalid")
 
