@@ -49,6 +49,12 @@ def upgrade() -> None:
         except Exception:
             pass  # table already exists — idempotent
 
+    def index_if_missing(index_name: str, table_name: str, columns: list, **kw) -> None:
+        try:
+            index_if_missing(index_name, table_name, columns, **kw)
+        except Exception:
+            pass  # index already exists — idempotent
+
     # -- qa_trigger_configurations ------------------------------------------
     create_if_missing(
         "qa_trigger_configurations",
@@ -67,7 +73,7 @@ def upgrade() -> None:
         sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
         sa.UniqueConstraint("tenant_id", "trigger_key", name="uq_qa_trigger_tenant_key"),
     )
-    op.create_index("ix_qa_trigger_tenant", "qa_trigger_configurations", ["tenant_id"])
+    index_if_missing("ix_qa_trigger_tenant", "qa_trigger_configurations", ["tenant_id"])
 
     # -- qa_case_records -------------------------------------------------------
     create_if_missing(
@@ -101,11 +107,11 @@ def upgrade() -> None:
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
     )
-    op.create_index("ix_qa_case_tenant_id", "qa_case_records", ["tenant_id"])
-    op.create_index("ix_qa_case_tenant_status", "qa_case_records", ["tenant_id", "status"])
-    op.create_index("ix_qa_case_tenant_reviewer", "qa_case_records", ["tenant_id", "assigned_to"])
-    op.create_index("ix_qa_case_tenant_chart", "qa_case_records", ["tenant_id", "source_chart_id"])
-    op.create_index("ix_qa_case_case_number", "qa_case_records", ["case_number"])
+    index_if_missing("ix_qa_case_tenant_id", "qa_case_records", ["tenant_id"])
+    index_if_missing("ix_qa_case_tenant_status", "qa_case_records", ["tenant_id", "status"])
+    index_if_missing("ix_qa_case_tenant_reviewer", "qa_case_records", ["tenant_id", "assigned_to"])
+    index_if_missing("ix_qa_case_tenant_chart", "qa_case_records", ["tenant_id", "source_chart_id"])
+    index_if_missing("ix_qa_case_case_number", "qa_case_records", ["case_number"])
 
     # -- qa_scores -------------------------------------------------------------
     create_if_missing(
@@ -136,8 +142,8 @@ def upgrade() -> None:
         sa.Column("updated_by", sa.String(36), nullable=True),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
     )
-    op.create_index("ix_qa_score_tenant", "qa_scores", ["tenant_id"])
-    op.create_index("ix_qa_score_case", "qa_scores", ["qa_case_id"])
+    index_if_missing("ix_qa_score_tenant", "qa_scores", ["tenant_id"])
+    index_if_missing("ix_qa_score_case", "qa_scores", ["qa_case_id"])
 
     # -- qa_review_findings ----------------------------------------------------
     create_if_missing(
@@ -165,8 +171,8 @@ def upgrade() -> None:
         sa.Column("updated_by", sa.String(36), nullable=True),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
     )
-    op.create_index("ix_qa_finding_tenant", "qa_review_findings", ["tenant_id"])
-    op.create_index("ix_qa_finding_tenant_case", "qa_review_findings", ["tenant_id", "qa_case_id"])
+    index_if_missing("ix_qa_finding_tenant", "qa_review_findings", ["tenant_id"])
+    index_if_missing("ix_qa_finding_tenant_case", "qa_review_findings", ["tenant_id", "qa_case_id"])
 
     # -- peer_reviews ----------------------------------------------------------
     create_if_missing(
@@ -195,9 +201,9 @@ def upgrade() -> None:
         sa.Column("updated_by", sa.String(36), nullable=True),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
     )
-    op.create_index("ix_peer_review_tenant", "peer_reviews", ["tenant_id"])
-    op.create_index("ix_peer_review_tenant_case", "peer_reviews", ["tenant_id", "qa_case_id"])
-    op.create_index("ix_peer_review_tenant_reviewer", "peer_reviews", ["tenant_id", "reviewer_id"])
+    index_if_missing("ix_peer_review_tenant", "peer_reviews", ["tenant_id"])
+    index_if_missing("ix_peer_review_tenant_case", "peer_reviews", ["tenant_id", "qa_case_id"])
+    index_if_missing("ix_peer_review_tenant_reviewer", "peer_reviews", ["tenant_id", "reviewer_id"])
 
     # -- peer_review_assignments -----------------------------------------------
     create_if_missing(
@@ -216,8 +222,8 @@ def upgrade() -> None:
         sa.Column("created_by", sa.String(36), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
     )
-    op.create_index("ix_peer_review_assignment_tenant", "peer_review_assignments", ["tenant_id"])
-    op.create_index("ix_peer_review_assignment_review", "peer_review_assignments", ["peer_review_id"])
+    index_if_missing("ix_peer_review_assignment_tenant", "peer_review_assignments", ["tenant_id"])
+    index_if_missing("ix_peer_review_assignment_review", "peer_review_assignments", ["peer_review_id"])
 
     # -- medical_director_reviews ----------------------------------------------
     create_if_missing(
@@ -247,10 +253,10 @@ def upgrade() -> None:
         sa.Column("updated_by", sa.String(36), nullable=True),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
     )
-    op.create_index("ix_md_review_tenant", "medical_director_reviews", ["tenant_id"])
-    op.create_index("ix_md_review_tenant_status", "medical_director_reviews", ["tenant_id", "status"])
-    op.create_index("ix_md_review_tenant_md", "medical_director_reviews", ["tenant_id", "medical_director_id"])
-    op.create_index("ix_md_review_qa_case", "medical_director_reviews", ["qa_case_id"])
+    index_if_missing("ix_md_review_tenant", "medical_director_reviews", ["tenant_id"])
+    index_if_missing("ix_md_review_tenant_status", "medical_director_reviews", ["tenant_id", "status"])
+    index_if_missing("ix_md_review_tenant_md", "medical_director_reviews", ["tenant_id", "medical_director_id"])
+    index_if_missing("ix_md_review_qa_case", "medical_director_reviews", ["qa_case_id"])
 
     # -- medical_director_notes ------------------------------------------------
     create_if_missing(
@@ -271,8 +277,8 @@ def upgrade() -> None:
         sa.Column("updated_by", sa.String(36), nullable=True),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
     )
-    op.create_index("ix_md_note_tenant", "medical_director_notes", ["tenant_id"])
-    op.create_index("ix_md_note_tenant_review", "medical_director_notes", ["tenant_id", "medical_director_review_id"])
+    index_if_missing("ix_md_note_tenant", "medical_director_notes", ["tenant_id"])
+    index_if_missing("ix_md_note_tenant_review", "medical_director_notes", ["tenant_id", "medical_director_review_id"])
 
     # -- clinical_variances ----------------------------------------------------
     create_if_missing(
@@ -299,9 +305,9 @@ def upgrade() -> None:
         sa.Column("updated_by", sa.String(36), nullable=True),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
     )
-    op.create_index("ix_clinical_variance_tenant", "clinical_variances", ["tenant_id"])
-    op.create_index("ix_clinical_variance_tenant_type", "clinical_variances", ["tenant_id", "variance_type"])
-    op.create_index("ix_clinical_variance_tenant_provider", "clinical_variances", ["tenant_id", "provider_id"])
+    index_if_missing("ix_clinical_variance_tenant", "clinical_variances", ["tenant_id"])
+    index_if_missing("ix_clinical_variance_tenant_type", "clinical_variances", ["tenant_id", "variance_type"])
+    index_if_missing("ix_clinical_variance_tenant_provider", "clinical_variances", ["tenant_id", "provider_id"])
 
     # -- protocol_documents ----------------------------------------------------
     create_if_missing(
@@ -322,7 +328,7 @@ def upgrade() -> None:
         sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
         sa.UniqueConstraint("tenant_id", "protocol_code", name="uq_protocol_tenant_code"),
     )
-    op.create_index("ix_protocol_document_tenant", "protocol_documents", ["tenant_id"])
+    index_if_missing("ix_protocol_document_tenant", "protocol_documents", ["tenant_id"])
 
     # -- protocol_versions -----------------------------------------------------
     create_if_missing(
@@ -348,8 +354,8 @@ def upgrade() -> None:
         sa.Column("updated_by", sa.String(36), nullable=True),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
     )
-    op.create_index("ix_protocol_version_tenant", "protocol_versions", ["tenant_id"])
-    op.create_index("ix_protocol_version_protocol", "protocol_versions", ["protocol_id"])
+    index_if_missing("ix_protocol_version_tenant", "protocol_versions", ["tenant_id"])
+    index_if_missing("ix_protocol_version_protocol", "protocol_versions", ["protocol_id"])
 
     # -- protocol_acknowledgments ----------------------------------------------
     create_if_missing(
@@ -367,9 +373,9 @@ def upgrade() -> None:
             name="uq_protocol_ack_tenant_version_provider",
         ),
     )
-    op.create_index("ix_protocol_ack_tenant", "protocol_acknowledgments", ["tenant_id"])
-    op.create_index("ix_protocol_ack_version", "protocol_acknowledgments", ["protocol_version_id"])
-    op.create_index("ix_protocol_ack_provider", "protocol_acknowledgments", ["provider_id"])
+    index_if_missing("ix_protocol_ack_tenant", "protocol_acknowledgments", ["tenant_id"])
+    index_if_missing("ix_protocol_ack_version", "protocol_acknowledgments", ["protocol_version_id"])
+    index_if_missing("ix_protocol_ack_provider", "protocol_acknowledgments", ["provider_id"])
 
     # -- standing_orders -------------------------------------------------------
     create_if_missing(
@@ -397,7 +403,7 @@ def upgrade() -> None:
         sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
         sa.UniqueConstraint("tenant_id", "order_code", name="uq_standing_order_tenant_code"),
     )
-    op.create_index("ix_standing_order_tenant", "standing_orders", ["tenant_id"])
+    index_if_missing("ix_standing_order_tenant", "standing_orders", ["tenant_id"])
 
     # -- standing_order_versions -----------------------------------------------
     create_if_missing(
@@ -419,8 +425,8 @@ def upgrade() -> None:
         sa.Column("updated_by", sa.String(36), nullable=True),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
     )
-    op.create_index("ix_standing_order_version_tenant", "standing_order_versions", ["tenant_id"])
-    op.create_index("ix_standing_order_version_order", "standing_order_versions", ["standing_order_id"])
+    index_if_missing("ix_standing_order_version_tenant", "standing_order_versions", ["tenant_id"])
+    index_if_missing("ix_standing_order_version_order", "standing_order_versions", ["standing_order_id"])
 
     # -- education_followups ---------------------------------------------------
     create_if_missing(
@@ -448,9 +454,9 @@ def upgrade() -> None:
         sa.Column("updated_by", sa.String(36), nullable=True),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
     )
-    op.create_index("ix_education_tenant", "education_followups", ["tenant_id"])
-    op.create_index("ix_education_tenant_provider", "education_followups", ["tenant_id", "provider_id"])
-    op.create_index("ix_education_tenant_status", "education_followups", ["tenant_id", "status"])
+    index_if_missing("ix_education_tenant", "education_followups", ["tenant_id"])
+    index_if_missing("ix_education_tenant_provider", "education_followups", ["tenant_id", "provider_id"])
+    index_if_missing("ix_education_tenant_status", "education_followups", ["tenant_id", "status"])
 
     # -- provider_feedbacks ----------------------------------------------------
     create_if_missing(
@@ -475,8 +481,8 @@ def upgrade() -> None:
         sa.Column("updated_by", sa.String(36), nullable=True),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
     )
-    op.create_index("ix_provider_feedback_tenant", "provider_feedbacks", ["tenant_id"])
-    op.create_index("ix_provider_feedback_tenant_provider", "provider_feedbacks", ["tenant_id", "provider_id"])
+    index_if_missing("ix_provider_feedback_tenant", "provider_feedbacks", ["tenant_id"])
+    index_if_missing("ix_provider_feedback_tenant_provider", "provider_feedbacks", ["tenant_id", "provider_id"])
 
     # -- provider_acknowledgments ----------------------------------------------
     create_if_missing(
@@ -492,9 +498,9 @@ def upgrade() -> None:
         sa.Column("created_by", sa.String(36), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
     )
-    op.create_index("ix_provider_ack_tenant", "provider_acknowledgments", ["tenant_id"])
-    op.create_index("ix_provider_ack_provider", "provider_acknowledgments", ["tenant_id", "provider_id"])
-    op.create_index("ix_provider_ack_reference", "provider_acknowledgments", ["reference_id"])
+    index_if_missing("ix_provider_ack_tenant", "provider_acknowledgments", ["tenant_id"])
+    index_if_missing("ix_provider_ack_provider", "provider_acknowledgments", ["tenant_id", "provider_id"])
+    index_if_missing("ix_provider_ack_reference", "provider_acknowledgments", ["reference_id"])
 
     # -- qi_initiatives --------------------------------------------------------
     create_if_missing(
@@ -528,9 +534,9 @@ def upgrade() -> None:
         sa.Column("updated_by", sa.String(36), nullable=True),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
     )
-    op.create_index("ix_qi_initiative_tenant", "qi_initiatives", ["tenant_id"])
-    op.create_index("ix_qi_initiative_tenant_status", "qi_initiatives", ["tenant_id", "status"])
-    op.create_index("ix_qi_initiative_tenant_owner", "qi_initiatives", ["tenant_id", "owner_id"])
+    index_if_missing("ix_qi_initiative_tenant", "qi_initiatives", ["tenant_id"])
+    index_if_missing("ix_qi_initiative_tenant_status", "qi_initiatives", ["tenant_id", "status"])
+    index_if_missing("ix_qi_initiative_tenant_owner", "qi_initiatives", ["tenant_id", "owner_id"])
 
     # -- qi_initiative_metrics -------------------------------------------------
     create_if_missing(
@@ -548,8 +554,8 @@ def upgrade() -> None:
         sa.Column("created_by", sa.String(36), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
     )
-    op.create_index("ix_qi_metric_tenant", "qi_initiative_metrics", ["tenant_id"])
-    op.create_index("ix_qi_metric_tenant_initiative", "qi_initiative_metrics", ["tenant_id", "initiative_id"])
+    index_if_missing("ix_qi_metric_tenant", "qi_initiative_metrics", ["tenant_id"])
+    index_if_missing("ix_qi_metric_tenant_initiative", "qi_initiative_metrics", ["tenant_id", "initiative_id"])
 
     # -- qi_action_items -------------------------------------------------------
     create_if_missing(
@@ -569,8 +575,8 @@ def upgrade() -> None:
         sa.Column("updated_by", sa.String(36), nullable=True),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
     )
-    op.create_index("ix_qi_action_tenant", "qi_action_items", ["tenant_id"])
-    op.create_index("ix_qi_action_tenant_initiative", "qi_action_items", ["tenant_id", "initiative_id"])
+    index_if_missing("ix_qi_action_tenant", "qi_action_items", ["tenant_id"])
+    index_if_missing("ix_qi_action_tenant_initiative", "qi_action_items", ["tenant_id", "initiative_id"])
 
     # -- qi_committee_reviews --------------------------------------------------
     create_if_missing(
@@ -589,7 +595,7 @@ def upgrade() -> None:
         sa.Column("updated_by", sa.String(36), nullable=True),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
     )
-    op.create_index("ix_qi_committee_tenant", "qi_committee_reviews", ["tenant_id"])
+    index_if_missing("ix_qi_committee_tenant", "qi_committee_reviews", ["tenant_id"])
 
     # -- qa_trend_aggregations -------------------------------------------------
     create_if_missing(
@@ -620,7 +626,7 @@ def upgrade() -> None:
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.UniqueConstraint("tenant_id", "period", name="uq_qa_trend_tenant_period"),
     )
-    op.create_index("ix_qa_trend_tenant", "qa_trend_aggregations", ["tenant_id"])
+    index_if_missing("ix_qa_trend_tenant", "qa_trend_aggregations", ["tenant_id"])
 
     # -- quality_audit_events --------------------------------------------------
     create_if_missing(
@@ -637,11 +643,11 @@ def upgrade() -> None:
         sa.Column("correlation_id", sa.String(36), nullable=True),
         sa.Column("occurred_at", sa.DateTime(timezone=True), nullable=False),
     )
-    op.create_index("ix_quality_audit_tenant", "quality_audit_events", ["tenant_id"])
-    op.create_index("ix_quality_audit_tenant_type", "quality_audit_events", ["tenant_id", "event_type"])
-    op.create_index("ix_quality_audit_tenant_actor", "quality_audit_events", ["tenant_id", "actor_id"])
-    op.create_index("ix_quality_audit_tenant_ref", "quality_audit_events", ["tenant_id", "reference_id"])
-    op.create_index("ix_quality_audit_occurred_at", "quality_audit_events", ["tenant_id", "occurred_at"])
+    index_if_missing("ix_quality_audit_tenant", "quality_audit_events", ["tenant_id"])
+    index_if_missing("ix_quality_audit_tenant_type", "quality_audit_events", ["tenant_id", "event_type"])
+    index_if_missing("ix_quality_audit_tenant_actor", "quality_audit_events", ["tenant_id", "actor_id"])
+    index_if_missing("ix_quality_audit_tenant_ref", "quality_audit_events", ["tenant_id", "reference_id"])
+    index_if_missing("ix_quality_audit_occurred_at", "quality_audit_events", ["tenant_id", "occurred_at"])
 
     # -- accreditation_evidence_packages ---------------------------------------
     create_if_missing(
@@ -668,7 +674,7 @@ def upgrade() -> None:
         sa.Column("updated_by", sa.String(36), nullable=True),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
     )
-    op.create_index("ix_accreditation_tenant", "accreditation_evidence_packages", ["tenant_id"])
+    index_if_missing("ix_accreditation_tenant", "accreditation_evidence_packages", ["tenant_id"])
 
     # -- quality_dashboard_snapshots -------------------------------------------
     create_if_missing(
@@ -682,7 +688,7 @@ def upgrade() -> None:
         sa.Column("created_by", sa.String(36), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
     )
-    op.create_index("ix_quality_snapshot_tenant", "quality_dashboard_snapshots", ["tenant_id"])
+    index_if_missing("ix_quality_snapshot_tenant", "quality_dashboard_snapshots", ["tenant_id"])
 
 
 def downgrade() -> None:
