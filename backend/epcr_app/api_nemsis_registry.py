@@ -83,6 +83,17 @@ class RegistryManifestResponse(BaseModel):
 
 
 class RegistryFieldPayload(BaseModel):
+    """Registry field payload.
+
+    The boolean facets accept either ``bool`` (the canonical post-import
+    shape produced by ``nemsis_registry_importer``) or the legacy string
+    values (``"True"``/``"False"``/``"Yes"``/``"No"``) that older seed
+    files still carry. They are normalised to ``bool`` on the way out so
+    the API contract is stable.
+    """
+
+    model_config = {"arbitrary_types_allowed": True}
+
     field_id: str
     element_id: str | None = None
     dataset: str
@@ -94,14 +105,14 @@ class RegistryFieldPayload(BaseModel):
     data_type: str | None = None
     usage: str | None = None
     required_level: str | None = None
-    national_element: str | None = None
-    state_element: str | None = None
+    national_element: bool | str | None = None
+    state_element: bool | str | None = None
     recurrence: str | None = None
     min_occurs: str | None = None
     max_occurs: str | None = None
-    nillable: str | None = None
-    not_value_allowed: str | None = None
-    pertinent_negative_allowed: str | None = None
+    nillable: bool | str | None = None
+    not_value_allowed: bool | str | None = None
+    pertinent_negative_allowed: bool | str | None = None
     required_if: str | None = None
     defined_list_ref: str | None = None
     enumeration_ref: str | None = None

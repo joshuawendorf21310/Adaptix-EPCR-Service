@@ -14,19 +14,27 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sess
 from epcr_app.models import Base, Chart, NemsisCompliance, ChartStatus, ComplianceStatus, EpcrAuditLog
 from epcr_app.services import ChartService
 from epcr_app.db import check_health
+from tests.agency_helpers import seed_active_agency
 
 
 @pytest_asyncio.fixture
 async def test_db():
-    """Create temporary in-memory test database."""
+    """Create temporary in-memory test database with an activated AgencyProfile."""
     engine = create_async_engine("sqlite+aiosqlite:///:memory:")
     async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
-    
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    
+
+    # Seed an activated agency for every tenant used in this suite so that
+    # ChartService.create_chart() can resolve the required AgencyProfile.
+    async with async_session() as s:
+        for tid in ("test-tenant", "tenant-a", "tenant-b"):
+            await seed_active_agency(s, tenant_id=tid)
+        await s.commit()
+
     yield async_session
-    
+
     await engine.dispose()
 
 
@@ -57,8 +65,10 @@ async def test_create_chart_success(test_db):
             select(EpcrAuditLog).where(EpcrAuditLog.chart_id == chart.id)
         )
         entries = audit.scalars().all()
-        assert len(entries) == 1
-        assert entries[0].action == "chart_created"
+        # chart_service now emits at least "chart_created" plus any
+        # incident-numbering audit entries; assert presence, not exact count.
+        assert len(entries) >= 1
+        assert any(e.action == "chart_created" for e in entries)
 
 
 @pytest.mark.asyncio
@@ -77,16 +87,24 @@ async def test_create_chart_invalid_tenant_id(test_db):
 
 @pytest.mark.asyncio
 async def test_create_chart_invalid_call_number(test_db):
-    """Test chart creation rejects empty call_number."""
+    """Test chart creation with empty call_number uses auto-generated incident number.
+
+    NOTE: chart_service.py now auto-generates the call_number from the
+    agency's incident-numbering sequence when call_number is None or empty,
+    so an empty call_number is no longer a hard error — the chart is
+    created with the auto-generated number.
+    """
     async with test_db() as session:
-        with pytest.raises(ValueError, match="call_number is required"):
-            await ChartService.create_chart(
-                session=session,
-                tenant_id="test-tenant",
-                call_number="",  # Invalid
-                incident_type="medical",
-                created_by_user_id="user-123"
-            )
+        chart = await ChartService.create_chart(
+            session=session,
+            tenant_id="test-tenant",
+            call_number="",  # falls back to auto-generated number
+            incident_type="medical",
+            created_by_user_id="user-123",
+        )
+        # The chart must be created successfully with a non-empty call_number.
+        assert chart.id is not None
+        assert chart.call_number  # truthy — auto-generated
 
 
 @pytest.mark.asyncio

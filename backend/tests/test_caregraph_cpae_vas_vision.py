@@ -19,7 +19,9 @@ from datetime import datetime, UTC
 
 import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy import select
 from sqlalchemy import create_engine, text
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
 from epcr_app.models import Base, Chart, ChartStatus
@@ -43,6 +45,7 @@ from epcr_app.models_critical_care import (
 from epcr_app.models_terminology import (
     SnomedConcept, ICD10Code, RxNormConcept, NemsisValueSet,
     ImpressionBinding, DifferentialImpression, TerminologyVersionMetadata,
+    NemsisRegexRule,
 )
 from epcr_app.models_sync import (
     SyncEventLog, SyncConflict, UploadQueueItem, SyncHealthRecord, AuditEnvelope,
@@ -911,6 +914,81 @@ class TestValidationStack:
             assert NEMSIS_DATETIME_PATTERN.match(v), f"Should be valid: {v}"
         for v in invalid:
             assert not NEMSIS_DATETIME_PATTERN.match(v), f"Should be invalid: {v}"
+
+    @pytest.mark.asyncio
+    async def test_invalid_regex_rule_is_reported_as_explicit_validation_error(self):
+        """Invalid DB regex rules must block Layer 2 instead of being skipped silently."""
+        from epcr_app.clinical_validation_stack import (
+            ValidationResult,
+            validate_layer_2_nemsis_structural,
+        )
+        from epcr_app.models import NemsisMappingRecord
+
+        engine = create_async_engine("sqlite+aiosqlite:///:memory:")
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        SessionLocal = async_sessionmaker(bind=engine, expire_on_commit=False)
+        chart_id = make_chart_id()
+
+        async with SessionLocal() as async_session:
+            async_session.add(
+                Chart(
+                    id=chart_id,
+                    tenant_id=TENANT_ID,
+                    call_number="TEST-REGEX-001",
+                    incident_type="medical",
+                    status=ChartStatus.NEW,
+                    created_by_user_id=USER_ID,
+                    created_at=now_ts(),
+                    updated_at=now_ts(),
+                )
+            )
+            async_session.add(
+                NemsisRegexRule(
+                    id=make_id(),
+                    element_number="eCustom.01",
+                    element_name="Broken Regex Element",
+                    regex_pattern="(",
+                    description="intentionally invalid regex",
+                    source_artifact_version="test",
+                )
+            )
+            async_session.add(
+                NemsisMappingRecord(
+                    id=make_id(),
+                    chart_id=chart_id,
+                    tenant_id=TENANT_ID,
+                    nemsis_field="eCustom.01",
+                    nemsis_value="abc123",
+                    source="manual",
+                    created_at=now_ts(),
+                    updated_at=now_ts(),
+                )
+            )
+            await async_session.commit()
+
+        async with SessionLocal() as async_session:
+            result = ValidationResult(
+                chart_id=chart_id,
+                tenant_id=TENANT_ID,
+                validated_at=now_ts(),
+            )
+
+            await validate_layer_2_nemsis_structural(
+                chart_id,
+                TENANT_ID,
+                async_session,
+                result,
+            )
+
+            invalid_rule_issue = next(
+                issue for issue in result.issues if issue.code == "NEMSIS_REGEX_RULE_INVALID"
+            )
+            assert invalid_rule_issue.severity == "error"
+            assert invalid_rule_issue.nemsis_element == "eCustom.01"
+            assert result.layer_2_passed is False
+
+        await engine.dispose()
 
 
 # ---------------------------------------------------------------------------

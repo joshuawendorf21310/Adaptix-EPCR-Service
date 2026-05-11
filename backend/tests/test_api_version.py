@@ -7,7 +7,7 @@ Asserts the security and correctness contract of
 * Reports commit_sha from /app/.build_info.json when present,
   falling back to BUILD_COMMIT_SHA env, falling back to 'unknown'.
 * Reports the pinned NEMSIS version (3.5.1) and asset version
-  (3.5.1.250403CP1) regardless of build identity.
+  (3.5.1.251001CP2) regardless of build identity.
 * Does not leak secrets, env vars, tenant ids, or request state.
 * Both the gateway-prefixed path (/api/v1/epcr/version) and the
   non-prefixed convenience path (/version) return identical payloads.
@@ -60,7 +60,7 @@ def test_version_endpoint_returns_200_with_required_shape(monkeypatch):
     assert set(body.keys()) == expected_keys
     assert body["service"] == "Adaptix-EPCR-Service"
     assert body["nemsis_version"] == "3.5.1"
-    assert body["nemsis_asset_version"] == "3.5.1.250403CP1"
+    assert body["nemsis_asset_version"] == "3.5.1.251001CP2"
 
 
 def test_version_endpoint_reads_commit_sha_from_build_info_file(
@@ -120,7 +120,7 @@ def test_version_endpoint_returns_unknown_when_no_metadata(monkeypatch):
     assert body["build_time"] == "unknown"
     # NEMSIS pin is independent of build identity.
     assert body["nemsis_version"] == "3.5.1"
-    assert body["nemsis_asset_version"] == "3.5.1.250403CP1"
+    assert body["nemsis_asset_version"] == "3.5.1.251001CP2"
 
 
 def test_version_endpoint_does_not_leak_environment(monkeypatch):

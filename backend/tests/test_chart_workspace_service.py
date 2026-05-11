@@ -9,10 +9,13 @@ produce real artifacts.
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from types import SimpleNamespace
+from uuid import uuid4
 
 import pytest
 import pytest_asyncio
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
@@ -26,7 +29,7 @@ from epcr_app.chart_workspace_service import (
     ChartWorkspaceError,
     ChartWorkspaceService,
 )
-from epcr_app.models import Base, Chart, ChartStatus
+from epcr_app.models import AgencyProfile, Base, Chart, ChartStatus, PatientRegistryChartLink
 from epcr_app.services import ChartService
 
 
@@ -36,6 +39,33 @@ async def workspace_db():
     sessionmaker = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    async with sessionmaker() as session:
+        now = datetime.now(UTC)
+        session.add_all(
+            [
+                AgencyProfile(
+                    id=str(uuid4()),
+                    tenant_id="tenant-ws",
+                    agency_code="MADISONEMS",
+                    agency_name="Madison EMS",
+                    numbering_policy_json="{}",
+                    activated_at=now,
+                    created_at=now,
+                    updated_at=now,
+                ),
+                AgencyProfile(
+                    id=str(uuid4()),
+                    tenant_id="tenant-A",
+                    agency_code="TENANTAEMS",
+                    agency_name="Tenant A EMS",
+                    numbering_policy_json="{}",
+                    activated_at=now,
+                    created_at=now,
+                    updated_at=now,
+                ),
+            ]
+        )
+        await session.commit()
     yield sessionmaker
     await engine.dispose()
 
@@ -54,10 +84,30 @@ async def test_create_workspace_chart_creates_real_chart(workspace_db) -> None:
         )
         assert result["chart"]["id"]
         assert result["chart"]["call_number"] == "CALL-WS-001"
+        assert result["chart"]["incident_number"] == "2026-MADISONEMS-000001"
+        assert result["chart"]["response_number"] == "2026-MADISONEMS-000001-R01"
+        assert result["chart"]["pcr_number"] == "2026-MADISONEMS-000001-PCR01"
+        assert result["chart"]["billing_case_number"] == "2026-MADISONEMS-000001-BILL01"
         assert result["chart"]["status"] == ChartStatus.NEW.value
         # Verify the chart actually exists via canonical service
         fetched = await ChartService.get_chart(session, "tenant-ws", result["chart"]["id"])
         assert fetched is not None
+
+
+@pytest.mark.asyncio
+async def test_create_workspace_chart_allows_missing_legacy_call_number(workspace_db) -> None:
+    async with workspace_db() as session:
+        result = await ChartWorkspaceService.create_workspace_chart(
+            session,
+            _user(),
+            {"incident_type": "medical"},
+        )
+        assert result["chart"]["call_number"] == "2026-MADISONEMS-000001"
+        assert result["chart"]["incident_number"] == "2026-MADISONEMS-000001"
+        assert result["incident_number"] == "2026-MADISONEMS-000001"
+        assert result["response_number"] == "2026-MADISONEMS-000001-R01"
+        assert result["pcr_number"] == "2026-MADISONEMS-000001-PCR01"
+        assert result["billing_case_number"] == "2026-MADISONEMS-000001-BILL01"
 
 
 @pytest.mark.asyncio
@@ -90,6 +140,10 @@ async def test_get_workspace_returns_full_aggregate(workspace_db) -> None:
         ):
             assert key in ws, f"missing workspace key: {key}"
         assert ws["chart"]["incident_type"] == "trauma"
+        assert ws["incident_number"] == "2026-MADISONEMS-000001"
+        assert ws["response_number"] == "2026-MADISONEMS-000001-R01"
+        assert ws["pcr_number"] == "2026-MADISONEMS-000001-PCR01"
+        assert ws["billing_case_number"] == "2026-MADISONEMS-000001-BILL01"
         assert ws["vitals"] == []
         assert ws["procedures"] == []
 
@@ -148,6 +202,10 @@ async def test_patient_section_persists_via_canonical_service(workspace_db) -> N
         # Confirm canonical service sees the same row
         profile = await ChartService.get_patient_profile(session, "tenant-ws", chart_id)
         assert profile is not None and profile.first_name == "Ada"
+        registry = await session.execute(select(PatientRegistryChartLink).where(PatientRegistryChartLink.chart_id == chart_id))
+        registry_link = registry.scalars().first()
+        assert registry_link is not None
+        assert registry_link.link_status == "linked"
 
 
 @pytest.mark.asyncio

@@ -142,6 +142,55 @@ class DerivedOutputType(str, Enum):
     CLINICAL_SUMMARY = "clinical_summary"
 
 
+class AgencyProfile(Base):
+    """Agency onboarding/provisioning record used by incident numbering."""
+
+    __tablename__ = "agency_profiles"
+    __table_args__ = (
+        UniqueConstraint(
+            "tenant_id",
+            "agency_code",
+            name="uq_agency_profiles_tenant_agency_code",
+        ),
+    )
+
+    id = Column(String(36), primary_key=True, index=True)
+    tenant_id = Column(String(36), index=True, nullable=False)
+    agency_code = Column(String(12), nullable=False, index=True)
+    agency_name = Column(String(255), nullable=False)
+    agency_type = Column(String(64), nullable=True)
+    state = Column(String(8), nullable=True)
+    operational_mode = Column(String(64), nullable=True)
+    billing_mode = Column(String(64), nullable=True)
+    numbering_policy_json = Column(Text, nullable=False, default="{}")
+    activated_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False)
+    deleted_at = Column(DateTime(timezone=True), nullable=True, index=True)
+
+
+class EpcrNumberingSequence(Base):
+    """Tenant + agency + year-scoped incident sequence state."""
+
+    __tablename__ = "epcr_numbering_sequences"
+    __table_args__ = (
+        UniqueConstraint(
+            "tenant_id",
+            "agency_code",
+            "sequence_year",
+            name="uq_epcr_numbering_sequences_scope",
+        ),
+    )
+
+    id = Column(String(36), primary_key=True, index=True)
+    tenant_id = Column(String(36), index=True, nullable=False)
+    agency_code = Column(String(12), nullable=False, index=True)
+    sequence_year = Column(Integer, nullable=False)
+    next_incident_sequence = Column(Integer, nullable=False, server_default=text("1"))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False)
+
+
 class Chart(Base):
     """ePCR chart model: single patient encounter record.
     
@@ -178,6 +227,18 @@ class Chart(Base):
     id = Column(String(36), primary_key=True, index=True)
     tenant_id = Column(String(36), index=True, nullable=False)
     call_number = Column(String(50), nullable=False, index=True)
+    agency_code = Column(String(12), nullable=True, index=True)
+    incident_year = Column(Integer, nullable=True)
+    incident_sequence = Column(Integer, nullable=True)
+    response_sequence = Column(Integer, nullable=True)
+    pcr_sequence = Column(Integer, nullable=True)
+    billing_sequence = Column(Integer, nullable=True)
+    incident_number = Column(String(64), nullable=True, index=True)
+    response_number = Column(String(72), nullable=True, index=True)
+    pcr_number = Column(String(76), nullable=True, index=True)
+    billing_case_number = Column(String(80), nullable=True, index=True)
+    cad_incident_number = Column(String(64), nullable=True)
+    external_incident_number = Column(String(64), nullable=True)
     patient_id = Column(String(36), nullable=True)
     incident_type = Column(String(50), default="medical", nullable=False)
     status = Column(SQLEnum(ChartStatus), default=ChartStatus.NEW, nullable=False)
@@ -325,6 +386,198 @@ class PatientProfile(Base):
     deleted_at = Column(DateTime(timezone=True), nullable=True)
 
     chart = relationship("Chart", back_populates="patient_profile")
+
+
+class PatientRegistryProfile(Base):
+    """Tenant-scoped repeat-patient registry profile."""
+
+    __tablename__ = "patient_registry_profiles"
+    __table_args__ = (
+        UniqueConstraint(
+            "tenant_id",
+            "canonical_patient_key",
+            name="uq_patient_registry_profiles_tenant_canonical_key",
+        ),
+    )
+
+    id = Column(String(36), primary_key=True)
+    tenant_id = Column(String(36), index=True, nullable=False)
+    canonical_patient_key = Column(String(64), index=True, nullable=True)
+    first_name = Column(String(120), nullable=True)
+    middle_name = Column(String(120), nullable=True)
+    last_name = Column(String(120), nullable=True)
+    first_name_norm = Column(String(120), nullable=True)
+    last_name_norm = Column(String(120), nullable=True)
+    date_of_birth = Column(String(32), nullable=True)
+    sex = Column(String(32), nullable=True)
+    phone_last4 = Column(String(4), nullable=True)
+    primary_phone_hash = Column(String(64), nullable=True)
+    merged_into_patient_id = Column(String(36), ForeignKey("patient_registry_profiles.id"), nullable=True, index=True)
+    ai_assisted = Column(Boolean, nullable=False, server_default=text("0"))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
+    version = Column(Integer, nullable=False, server_default=text("1"))
+
+
+class PatientRegistryIdentifier(Base):
+    """Hashed identifiers attached to a registry profile."""
+
+    __tablename__ = "patient_registry_identifiers"
+    __table_args__ = (
+        UniqueConstraint(
+            "patient_registry_profile_id",
+            "identifier_type",
+            "identifier_hash",
+            name="uq_patient_registry_identifiers_profile_identifier",
+        ),
+    )
+
+    id = Column(String(36), primary_key=True)
+    tenant_id = Column(String(36), index=True, nullable=False)
+    patient_registry_profile_id = Column(
+        String(36),
+        ForeignKey("patient_registry_profiles.id"),
+        nullable=False,
+        index=True,
+    )
+    identifier_type = Column(String(32), nullable=False)
+    identifier_hash = Column(String(64), nullable=False, index=True)
+    identifier_last4 = Column(String(16), nullable=True)
+    is_primary = Column(Boolean, nullable=False, server_default=text("0"))
+    source_chart_id = Column(String(36), ForeignKey("epcr_charts.id"), nullable=True, index=True)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
+    version = Column(Integer, nullable=False, server_default=text("1"))
+
+
+class PatientRegistryChartLink(Base):
+    """Tenant-scoped link between a chart and a registry profile."""
+
+    __tablename__ = "patient_registry_chart_links"
+    __table_args__ = (
+        UniqueConstraint("chart_id", name="uq_patient_registry_chart_links_chart_id"),
+    )
+
+    id = Column(String(36), primary_key=True)
+    tenant_id = Column(String(36), index=True, nullable=False)
+    patient_registry_profile_id = Column(
+        String(36),
+        ForeignKey("patient_registry_profiles.id"),
+        nullable=False,
+        index=True,
+    )
+    chart_id = Column(String(36), ForeignKey("epcr_charts.id"), nullable=False, index=True)
+    link_status = Column(String(32), nullable=False, server_default=text("'linked'"))
+    confidence_status = Column(String(32), nullable=True)
+    linked_by_user_id = Column(String(255), nullable=True)
+    rejected_reason = Column(Text, nullable=True)
+    linked_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
+    version = Column(Integer, nullable=False, server_default=text("1"))
+
+
+class EpcrChartingAcceleratorImport(Base):
+    """Provider-confirmed charting accelerator import audit."""
+
+    __tablename__ = "epcr_charting_accelerator_imports"
+    __table_args__ = (
+        UniqueConstraint(
+            "chart_id",
+            "source_chart_id",
+            "section_name",
+            "dedupe_key",
+            name="uq_epcr_charting_accelerator_imports_scope",
+        ),
+    )
+
+    id = Column(String(36), primary_key=True)
+    tenant_id = Column(String(36), index=True, nullable=False)
+    chart_id = Column(String(36), ForeignKey("epcr_charts.id"), nullable=False, index=True)
+    source_chart_id = Column(String(36), ForeignKey("epcr_charts.id"), nullable=False, index=True)
+    section_name = Column(String(64), nullable=False)
+    dedupe_key = Column(String(128), nullable=False)
+    imported_fields_json = Column(Text, nullable=True)
+    provider_confirmed = Column(Boolean, nullable=False, server_default=text("0"))
+    confirmed_by_user_id = Column(String(255), nullable=True)
+    confirmed_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
+    version = Column(Integer, nullable=False, server_default=text("1"))
+
+
+class PatientRegistryMergeCandidate(Base):
+    """Scored duplicate candidate awaiting review."""
+
+    __tablename__ = "patient_registry_merge_candidates"
+    __table_args__ = (
+        UniqueConstraint(
+            "tenant_id",
+            "left_patient_id",
+            "right_patient_id",
+            name="uq_patient_registry_merge_candidates_pair",
+        ),
+    )
+
+    id = Column(String(36), primary_key=True)
+    tenant_id = Column(String(36), index=True, nullable=False)
+    left_patient_id = Column(String(36), ForeignKey("patient_registry_profiles.id"), nullable=False, index=True)
+    right_patient_id = Column(String(36), ForeignKey("patient_registry_profiles.id"), nullable=False, index=True)
+    confidence_status = Column(String(32), nullable=False)
+    score = Column(Float, nullable=False, server_default=text("0"))
+    requires_human_review = Column(Boolean, nullable=False, server_default=text("1"))
+    match_reasons_json = Column(Text, nullable=True)
+    conflicting_signals_json = Column(Text, nullable=True)
+    review_status = Column(String(32), nullable=False, server_default=text("'pending'"))
+    reviewed_by_user_id = Column(String(255), nullable=True)
+    reviewed_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
+    version = Column(Integer, nullable=False, server_default=text("1"))
+
+
+class PatientRegistryMergeAudit(Base):
+    """Immutable audit record for merge and rollback actions."""
+
+    __tablename__ = "patient_registry_merge_audit"
+
+    id = Column(String(36), primary_key=True)
+    tenant_id = Column(String(36), index=True, nullable=False)
+    canonical_patient_id = Column(String(36), ForeignKey("patient_registry_profiles.id"), nullable=False, index=True)
+    merged_patient_id = Column(String(36), ForeignKey("patient_registry_profiles.id"), nullable=False, index=True)
+    snapshot_json = Column(Text, nullable=False)
+    merged_by_user_id = Column(String(255), nullable=False)
+    merged_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False)
+    rolled_back_at = Column(DateTime(timezone=True), nullable=True)
+    rolled_back_by_user_id = Column(String(255), nullable=True)
+    rollback_snapshot_json = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
+    version = Column(Integer, nullable=False, server_default=text("1"))
+
+
+class PatientRegistryAlias(Base):
+    """Alias mapping preserved after patient merges."""
+
+    __tablename__ = "patient_registry_aliases"
+    __table_args__ = (
+        UniqueConstraint("tenant_id", "alias_patient_id", name="uq_patient_registry_aliases_tenant_alias"),
+    )
+
+    id = Column(String(36), primary_key=True)
+    tenant_id = Column(String(36), index=True, nullable=False)
+    canonical_patient_id = Column(String(36), ForeignKey("patient_registry_profiles.id"), nullable=False, index=True)
+    alias_patient_id = Column(String(36), ForeignKey("patient_registry_profiles.id"), nullable=False, index=True)
+    alias_reason = Column(String(64), nullable=False)
+    created_by_user_id = Column(String(255), nullable=False)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
+    version = Column(Integer, nullable=False, server_default=text("1"))
 
 
 class AssessmentFinding(Base):

@@ -16,6 +16,8 @@ from epcr_app.chart_finalization_service import (
     ChartFinalizationService,
 )
 from epcr_app.db import get_session, check_health
+from epcr_app.incident_numbering_service import IncidentNumberingService
+from epcr_app.models import AgencyProfile, Chart
 from epcr_app.services import ChartService
 from epcr_app.dependencies import get_current_user, CurrentUser
 from pydantic import BaseModel, ConfigDict, Field, field_validator
@@ -33,6 +35,14 @@ def _tenant_id(current_user: CurrentUser) -> str:
 def _user_id(current_user: CurrentUser) -> str:
     """Extract user_id from authenticated user context."""
     return str(current_user.user_id)
+
+
+def _require_admin_role(current_user: CurrentUser) -> None:
+    if not any(role in {"admin", "billing_admin", "system_admin"} for role in current_user.roles):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin role is required for this operation",
+        )
 
 
 
@@ -197,17 +207,23 @@ class CreateChartRequest(BaseModel):
         incident_type: Type of incident: medical, trauma, behavioral, other.
         patient_id: Optional existing patient identifier.
     """
-    call_number: str = Field(..., min_length=1, max_length=50, description="Unique call/dispatch number")
+    call_number: Optional[str] = Field(None, min_length=1, max_length=50, description="Legacy call/dispatch number")
     incident_type: str = Field("medical", description="Incident type: medical, trauma, behavioral, other")
     client_reference_id: Optional[str] = Field(None, max_length=36, description="Optional client-generated deterministic identifier")
     patient_id: Optional[str] = Field(None, max_length=36, description="Optional patient identifier")
+    agency_id: Optional[str] = Field(None, max_length=36, description="Provisioned agency profile identifier")
+    agency_code: Optional[str] = Field(None, max_length=12, description="Provisioned agency code override")
+    incident_datetime: Optional[str] = Field(None, description="Optional incident datetime to derive the numbering year")
+    cad_incident_number: Optional[str] = Field(None, max_length=64, description="Imported CAD incident number stored separately")
     
     @field_validator("call_number")
     @classmethod
-    def validate_call_number(cls, v: str) -> str:
-        """Validate call_number is non-empty string."""
-        if not v or not v.strip():
-            raise ValueError("call_number cannot be empty")
+    def validate_call_number(cls, v: Optional[str]) -> Optional[str]:
+        """Normalize optional legacy call_number."""
+        if v is None:
+            return None
+        if not v.strip():
+            raise ValueError("call_number cannot be empty when supplied")
         return v.strip()
     
     @field_validator("incident_type")
@@ -232,12 +248,67 @@ class ChartResponse(BaseModel):
     """
     id: str
     call_number: str
+    agency_code: Optional[str] = None
+    incident_number: Optional[str] = None
+    response_number: Optional[str] = None
+    pcr_number: Optional[str] = None
+    billing_case_number: Optional[str] = None
     status: str
     incident_type: str
     created_at: str
     schematron: Optional[dict[str, Any]] = None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class ChartIdentifiersResponse(BaseModel):
+    chart_id: str
+    agency_code: Optional[str] = None
+    incident_year: Optional[int] = None
+    incident_sequence: Optional[int] = None
+    response_sequence: Optional[int] = None
+    pcr_sequence: Optional[int] = None
+    billing_sequence: Optional[int] = None
+    incident_number: Optional[str] = None
+    response_number: Optional[str] = None
+    pcr_number: Optional[str] = None
+    billing_case_number: Optional[str] = None
+    cad_incident_number: Optional[str] = None
+    external_incident_number: Optional[str] = None
+
+
+class AgencyProfileUpsertRequest(BaseModel):
+    agency_name: str = Field(..., min_length=1, max_length=255)
+    agency_code: str = Field(..., min_length=2, max_length=12)
+    agency_type: Optional[str] = Field(None, max_length=64)
+    state: Optional[str] = Field(None, max_length=8)
+    operational_mode: Optional[str] = Field(None, max_length=64)
+    billing_mode: Optional[str] = Field(None, max_length=64)
+    activate: bool = Field(True)  # agencies are active on provision by default
+
+    @field_validator("agency_code")
+    @classmethod
+    def validate_agency_code(cls, v: str) -> str:
+        return IncidentNumberingService.validate_agency_code(v)
+
+
+class NumberingPolicyRequest(BaseModel):
+    incidentNumberSource: Optional[str] = Field(None)
+    allowAdminOverride: Optional[bool] = Field(None)
+    resetFrequency: Optional[str] = Field(None)
+
+
+class AgencyProfileResponse(BaseModel):
+    id: str
+    tenant_id: str
+    agency_name: str
+    agency_code: str
+    agency_type: Optional[str] = None
+    state: Optional[str] = None
+    operational_mode: Optional[str] = None
+    billing_mode: Optional[str] = None
+    numbering_policy: dict[str, Any]
+    activated_at: Optional[str] = None
 
 
 class ComplianceResponse(BaseModel):
@@ -899,7 +970,11 @@ async def create_chart(
             incident_type=request.incident_type,
             created_by_user_id=user_id,
             client_reference_id=request.client_reference_id,
-            patient_id=request.patient_id
+            patient_id=request.patient_id,
+            agency_id=request.agency_id,
+            agency_code=request.agency_code,
+            incident_datetime=(datetime.fromisoformat(request.incident_datetime.replace("Z", "+00:00")) if request.incident_datetime else None),
+            cad_incident_number=request.cad_incident_number,
         )
         logger.info("Chart created via API: id=%s tenant_id=%s user_id=%s", chart.id, tenant_id, user_id)
         
@@ -907,6 +982,11 @@ async def create_chart(
         return {
             "id": chart.id,
             "call_number": chart.call_number,
+            "agency_code": chart.agency_code,
+            "incident_number": chart.incident_number,
+            "response_number": chart.response_number,
+            "pcr_number": chart.pcr_number,
+            "billing_case_number": chart.billing_case_number,
             "status": chart.status.value,
             "incident_type": chart.incident_type,
             "created_at": chart.created_at.isoformat()
@@ -953,6 +1033,11 @@ async def get_chart(
         return {
             "id": chart.id,
             "call_number": chart.call_number,
+            "agency_code": chart.agency_code,
+            "incident_number": chart.incident_number,
+            "response_number": chart.response_number,
+            "pcr_number": chart.pcr_number,
+            "billing_case_number": chart.billing_case_number,
             "status": chart.status.value,
             "incident_type": chart.incident_type,
             "patient_id": chart.patient_id,
@@ -1004,6 +1089,236 @@ async def check_nemsis_compliance(
     except Exception as e:
         logger.error(f"Compliance check error for chart {chart_id}: {str(e)}", exc_info=True)
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Compliance check failed")
+
+
+@router.get("/charts/{chart_id}/identifiers", response_model=ChartIdentifiersResponse)
+async def get_chart_identifiers(
+    chart_id: str,
+    session: AsyncSession = Depends(get_session),
+    current_user: CurrentUser = Depends(get_current_user),
+):
+    chart = await ChartService.get_chart(session, _tenant_id(current_user), chart_id)
+    if not chart:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Chart not found")
+    return {
+        "chart_id": chart.id,
+        "agency_code": chart.agency_code,
+        "incident_year": chart.incident_year,
+        "incident_sequence": chart.incident_sequence,
+        "response_sequence": chart.response_sequence,
+        "pcr_sequence": chart.pcr_sequence,
+        "billing_sequence": chart.billing_sequence,
+        "incident_number": chart.incident_number,
+        "response_number": chart.response_number,
+        "pcr_number": chart.pcr_number,
+        "billing_case_number": chart.billing_case_number,
+        "cad_incident_number": chart.cad_incident_number,
+        "external_incident_number": chart.external_incident_number,
+    }
+
+
+@router.post("/charts/{chart_id}/identifiers/regenerate-preview", response_model=ChartIdentifiersResponse)
+async def preview_chart_identifiers(
+    chart_id: str,
+    session: AsyncSession = Depends(get_session),
+    current_user: CurrentUser = Depends(get_current_user),
+):
+    chart = await ChartService.get_chart(session, _tenant_id(current_user), chart_id)
+    if not chart:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Chart not found")
+    if not chart.agency_code:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Chart has no agency_code")
+    preview = await IncidentNumberingService.generate_incident_number(
+        session=session,
+        tenant_id=str(chart.tenant_id),
+        agency_code=chart.agency_code,
+        incident_datetime=chart.created_at,
+    )
+    await session.rollback()
+    return {
+        "chart_id": chart.id,
+        "agency_code": preview.agency_code,
+        "incident_year": preview.incident_year,
+        "incident_sequence": preview.incident_sequence,
+        "response_sequence": preview.response_sequence,
+        "pcr_sequence": preview.pcr_sequence,
+        "billing_sequence": preview.billing_sequence,
+        "incident_number": preview.incident_number,
+        "response_number": preview.response_number,
+        "pcr_number": preview.pcr_number,
+        "billing_case_number": preview.billing_case_number,
+        "cad_incident_number": chart.cad_incident_number,
+        "external_incident_number": chart.external_incident_number,
+    }
+
+
+@router.post("/charts/{chart_id}/identifiers/admin-override", response_model=ChartIdentifiersResponse)
+async def admin_override_chart_identifiers(
+    chart_id: str,
+    request: ChartIdentifiersResponse,
+    session: AsyncSession = Depends(get_session),
+    current_user: CurrentUser = Depends(get_current_user),
+):
+    _require_admin_role(current_user)
+    chart = await ChartService.get_chart(session, _tenant_id(current_user), chart_id)
+    if not chart:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Chart not found")
+
+    if request.incident_number:
+        chart.incident_number = request.incident_number
+    if request.response_number:
+        chart.response_number = request.response_number
+    if request.pcr_number:
+        chart.pcr_number = request.pcr_number
+    if request.billing_case_number:
+        chart.billing_case_number = request.billing_case_number
+    if request.cad_incident_number is not None:
+        chart.cad_incident_number = request.cad_incident_number
+    if request.external_incident_number is not None:
+        chart.external_incident_number = request.external_incident_number
+    chart.updated_at = datetime.utcnow()
+    await session.commit()
+    await ChartService.audit(
+        session=session,
+        tenant_id=_tenant_id(current_user),
+        chart_id=chart.id,
+        user_id=_user_id(current_user),
+        action="incident_identifiers_admin_override",
+        detail={
+            "incident_number": chart.incident_number,
+            "response_number": chart.response_number,
+            "pcr_number": chart.pcr_number,
+            "billing_case_number": chart.billing_case_number,
+        },
+    )
+    return {
+        "chart_id": chart.id,
+        "agency_code": chart.agency_code,
+        "incident_year": chart.incident_year,
+        "incident_sequence": chart.incident_sequence,
+        "response_sequence": chart.response_sequence,
+        "pcr_sequence": chart.pcr_sequence,
+        "billing_sequence": chart.billing_sequence,
+        "incident_number": chart.incident_number,
+        "response_number": chart.response_number,
+        "pcr_number": chart.pcr_number,
+        "billing_case_number": chart.billing_case_number,
+        "cad_incident_number": chart.cad_incident_number,
+        "external_incident_number": chart.external_incident_number,
+    }
+
+
+def _serialize_agency_profile(profile: AgencyProfile) -> dict[str, Any]:
+    return {
+        "id": profile.id,
+        "tenant_id": profile.tenant_id,
+        "agency_name": profile.agency_name,
+        "agency_code": profile.agency_code,
+        "agency_type": profile.agency_type,
+        "state": profile.state,
+        "operational_mode": profile.operational_mode,
+        "billing_mode": profile.billing_mode,
+        "numbering_policy": IncidentNumberingService.parse_numbering_policy(profile),
+        "activated_at": profile.activated_at.isoformat() if profile.activated_at else None,
+    }
+
+
+@router.post("/agencies", response_model=AgencyProfileResponse, status_code=201)
+async def provision_agency_profile(
+    request: AgencyProfileUpsertRequest,
+    session: AsyncSession = Depends(get_session),
+    current_user: CurrentUser = Depends(get_current_user),
+):
+    _require_admin_role(current_user)
+    tenant_id = _tenant_id(current_user)
+    existing_result = await session.execute(
+        select(AgencyProfile).where(
+            and_(
+                AgencyProfile.tenant_id == tenant_id,
+                AgencyProfile.agency_code == request.agency_code,
+                AgencyProfile.deleted_at.is_(None),
+            )
+        )
+    )
+    existing = existing_result.scalars().first()
+    if existing:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="agency_code already exists for this tenant")
+
+    profile = AgencyProfile(
+        id=request.agency_id if hasattr(request, "agency_id") else None,
+        tenant_id=tenant_id,
+        agency_name=request.agency_name.strip(),
+        agency_code=request.agency_code.strip().upper(),
+        agency_type=request.agency_type,
+        state=request.state,
+        operational_mode=request.operational_mode,
+        billing_mode=request.billing_mode,
+        numbering_policy_json=json.dumps(
+            IncidentNumberingService.default_numbering_policy(request.agency_code.strip().upper())
+        ),
+        activated_at=(datetime.utcnow() if request.activate else None),
+    )
+    if not profile.id:
+        from uuid import uuid4
+        profile.id = str(uuid4())
+    session.add(profile)
+    await session.commit()
+    return _serialize_agency_profile(profile)
+
+
+@router.get("/agencies/{agency_id}/numbering-policy")
+async def get_numbering_policy(
+    agency_id: str,
+    session: AsyncSession = Depends(get_session),
+    current_user: CurrentUser = Depends(get_current_user),
+):
+    result = await session.execute(
+        select(AgencyProfile).where(
+            and_(
+                AgencyProfile.id == agency_id,
+                AgencyProfile.tenant_id == _tenant_id(current_user),
+                AgencyProfile.deleted_at.is_(None),
+            )
+        )
+    )
+    profile = result.scalars().first()
+    if not profile:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Agency not found")
+    return _serialize_agency_profile(profile)
+
+
+@router.put("/agencies/{agency_id}/numbering-policy")
+async def update_numbering_policy(
+    agency_id: str,
+    request: NumberingPolicyRequest,
+    session: AsyncSession = Depends(get_session),
+    current_user: CurrentUser = Depends(get_current_user),
+):
+    _require_admin_role(current_user)
+    result = await session.execute(
+        select(AgencyProfile).where(
+            and_(
+                AgencyProfile.id == agency_id,
+                AgencyProfile.tenant_id == _tenant_id(current_user),
+                AgencyProfile.deleted_at.is_(None),
+            )
+        )
+    )
+    profile = result.scalars().first()
+    if not profile:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Agency not found")
+
+    policy = IncidentNumberingService.parse_numbering_policy(profile)
+    if request.incidentNumberSource is not None:
+        policy["incidentNumberSource"] = request.incidentNumberSource
+    if request.allowAdminOverride is not None:
+        policy["allowAdminOverride"] = request.allowAdminOverride
+    if request.resetFrequency is not None:
+        policy["resetFrequency"] = request.resetFrequency
+    profile.numbering_policy_json = json.dumps(policy)
+    profile.updated_at = datetime.utcnow()
+    await session.commit()
+    return _serialize_agency_profile(profile)
 
 
 @router.patch("/charts/{chart_id}", response_model=ChartUpdateResponse, status_code=200)

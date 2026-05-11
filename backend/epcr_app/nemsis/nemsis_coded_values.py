@@ -7,8 +7,8 @@ its schema-version and source URL, and exposes strict lookup helpers that raise
 
 Data provenance
 ---------------
-* Schema version: ``3.5.1.250403CP1``
-* Primary source: https://nemsis.org/media/nemsis_v3/3.5.1.250403CP1/
+* Schema version: ``3.5.1.251001CP2``
+* Primary source: https://nemsis.org/media/nemsis_v3/3.5.1.251001CP2/
 * FIPS state / county / city codes: U.S. Census Bureau FIPS (2020 vintage)
 
 No lookup in this module generates a value, falls back to a default, or
@@ -184,7 +184,7 @@ _FIPS_CITIES: Mapping[str, str] = MappingProxyType(
 # Element-specific coded-value tables
 #
 # Each inner dict maps human-readable label → NEMSIS code for one element.
-# All codes extracted verbatim from the NEMSIS v3.5.1.250403CP1 XSD files.
+# All codes extracted verbatim from the NEMSIS v3.5.1.251001CP2 XSD files.
 # Source: dAgency_v3.xsd, dContact_v3.xsd, dConfiguration_v3.xsd,
 #         dVehicle_v3.xsd, dPersonnel_v3.xsd, commonTypes_v3.xsd
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1910,8 +1910,8 @@ class CodedValueSet:
 # ─────────────────────────────────────────────────────────────────────────────
 
 NEMSIS_V351_CODED_VALUES: CodedValueSet = CodedValueSet(
-    version="3.5.1.250403CP1",
-    source_url="https://nemsis.org/media/nemsis_v3/3.5.1.250403CP1/",
+    version="3.5.1.251001CP2",
+    source_url="https://nemsis.org/media/nemsis_v3/3.5.1.251001CP2/",
     states=_FIPS_STATES,
     countries=_ISO_COUNTRIES,
     counties=_FIPS_COUNTIES,

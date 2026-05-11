@@ -123,6 +123,18 @@ class ChartWorkspaceService:
         return {
             "id": chart.id,
             "call_number": chart.call_number,
+            "agency_code": chart.agency_code,
+            "incident_year": chart.incident_year,
+            "incident_sequence": chart.incident_sequence,
+            "response_sequence": chart.response_sequence,
+            "pcr_sequence": chart.pcr_sequence,
+            "billing_sequence": chart.billing_sequence,
+            "incident_number": chart.incident_number,
+            "response_number": chart.response_number,
+            "pcr_number": chart.pcr_number,
+            "billing_case_number": chart.billing_case_number,
+            "cad_incident_number": chart.cad_incident_number,
+            "external_incident_number": chart.external_incident_number,
             "incident_type": chart.incident_type,
             "status": chart.status.value if chart.status else None,
             "patient_id": chart.patient_id,
@@ -471,10 +483,30 @@ class ChartWorkspaceService:
 
         return {
             "chart": ChartWorkspaceService._serialize_chart(chart),
+            "chart_id": chart.id,
+            "tenant_id": chart.tenant_id,
+            "status": chart.status.value if chart.status else None,
+            "call_number": chart.call_number,
+            "agency_code": chart.agency_code,
+            "incident_number": chart.incident_number,
+            "response_number": chart.response_number,
+            "pcr_number": chart.pcr_number,
+            "billing_case_number": chart.billing_case_number,
+            "cad_incident_number": chart.cad_incident_number,
+            "incident_datetime": chart.created_at.isoformat() if chart.created_at else None,
+            "created_at": chart.created_at.isoformat() if chart.created_at else None,
+            "updated_at": chart.updated_at.isoformat() if chart.updated_at else None,
+            "finalized_at": chart.finalized_at.isoformat() if chart.finalized_at else None,
             "patient": ChartWorkspaceService._serialize_patient(patient),
             "incident": {
                 "incident_type": chart.incident_type,
                 "call_number": chart.call_number,
+                "agency_code": chart.agency_code,
+                "incident_number": chart.incident_number,
+                "response_number": chart.response_number,
+                "pcr_number": chart.pcr_number,
+                "billing_case_number": chart.billing_case_number,
+                "cad_incident_number": chart.cad_incident_number,
             },
             "response": {"status": "field_not_mapped"},
             "crew": {"status": "field_not_mapped"},
@@ -543,14 +575,14 @@ class ChartWorkspaceService:
         user_id = ChartWorkspaceService._user(current_user)
         call_number = (payload.get("call_number") or "").strip()
         incident_type = (payload.get("incident_type") or "").strip()
-        if not call_number or not incident_type:
+        if not incident_type:
             raise ChartWorkspaceError(
-                "call_number and incident_type are required",
+                "incident_type is required",
                 status_code=400,
                 detail={
-                    "message": "call_number and incident_type are required",
+                    "message": "incident_type is required",
                     "missing_fields": [
-                        f for f, v in (("call_number", call_number), ("incident_type", incident_type)) if not v
+                        f for f, v in (("incident_type", incident_type),) if not v
                     ],
                 },
             )
@@ -558,11 +590,15 @@ class ChartWorkspaceService:
             chart = await ChartService.create_chart(
                 session=session,
                 tenant_id=tenant_id,
-                call_number=call_number,
+                call_number=call_number or None,
                 incident_type=incident_type,
                 created_by_user_id=user_id,
                 client_reference_id=payload.get("client_reference_id"),
                 patient_id=payload.get("patient_id"),
+                agency_id=payload.get("agency_id"),
+                agency_code=payload.get("agency_code"),
+                incident_datetime=ChartService._parse_optional_datetime(payload.get("incident_datetime")),
+                cad_incident_number=payload.get("cad_incident_number"),
             )
         except ValueError as exc:
             if str(exc) == "chart_call_number_conflict":

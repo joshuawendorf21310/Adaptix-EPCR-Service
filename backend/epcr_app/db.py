@@ -138,6 +138,24 @@ async def init_db():
         import epcr_app.models_dashboard  # noqa: F401
         import epcr_app.models_smart_text  # noqa: F401
         import epcr_app.models_tac_schematron  # noqa: F401
+        import epcr_app.models_nemsis_field_values  # noqa: F401
+        # NEMSIS v3.5.1 vertical slices (migrations 024..039)
+        import epcr_app.models_chart_times  # noqa: F401
+        import epcr_app.models_chart_dispatch  # noqa: F401
+        import epcr_app.models_chart_crew  # noqa: F401
+        import epcr_app.models_chart_response  # noqa: F401
+        import epcr_app.models_chart_scene  # noqa: F401
+        import epcr_app.models_chart_situation  # noqa: F401
+        import epcr_app.models_chart_history  # noqa: F401
+        import epcr_app.models_chart_injury  # noqa: F401
+        import epcr_app.models_chart_arrest  # noqa: F401
+        import epcr_app.models_chart_disposition  # noqa: F401
+        import epcr_app.models_chart_payment  # noqa: F401
+        import epcr_app.models_chart_outcome  # noqa: F401
+        import epcr_app.models_patient_profile_ext  # noqa: F401
+        import epcr_app.models_vitals_ext  # noqa: F401
+        import epcr_app.models_medication_admin_ext  # noqa: F401
+        import epcr_app.models_intervention_ext  # noqa: F401
         async with _get_engine(_require_database_url()).begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
         logger.info("Database initialized successfully")

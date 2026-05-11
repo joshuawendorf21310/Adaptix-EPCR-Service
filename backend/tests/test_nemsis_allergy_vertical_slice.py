@@ -25,17 +25,10 @@ _CTA_XML_DIR = (
     / "cta_uploaded_package"
     / "v3.5.1 C&S for vendors"
 )
-_CORE_CTA_UPLOAD_DIR = _WORKSPACE_ROOT / "Adaptix-Core-Service" / "cta_upload"
-_cta_available = (
-    _CTA_XML_DIR.exists()
-    and _CORE_CTA_UPLOAD_DIR.exists()
-    and any(_CTA_XML_DIR.glob("2025-EMS-*.xml"))
-    and (_CORE_CTA_UPLOAD_DIR / "2025-EMS-1-Allergy_v351.xml").exists()
-    and (_CORE_CTA_UPLOAD_DIR / "2025-DEM-1_v351.xml").exists()
-)
+_cta_available = _CTA_XML_DIR.exists() and any(_CTA_XML_DIR.glob("2025-EMS-*.xml"))
 _skip_no_cta = pytest.mark.skipif(
     not _cta_available,
-    reason="NEMSIS CTA vendor/core upload XML templates not present on disk",
+    reason="NEMSIS CTA vendor XML templates not present on disk",
 )
 
 
@@ -152,7 +145,6 @@ async def test_cta_client_can_submit_when_integration_enabled_with_mocked_networ
         endpoint="https://example.test/cta",
         username="demo-user",
         password="demo-pass",
-        organization="Adaptix Demo Organization",
         client_factory=FakeAsyncClient,
     )
     result = await client.submit(

@@ -38,13 +38,33 @@ from epcr_app.api_clinical_extended import router as clinical_extended_router
 from epcr_app.api_smart_text_address import router as smart_text_address_router
 from epcr_app.api_desktop import router as desktop_router
 from epcr_app.api_chart_workspace import router as chart_workspace_router
+from epcr_app.api_patient_registry import router as patient_registry_router
 from epcr_app.api_nemsis_defined_lists import router as nemsis_defined_lists_router
 from epcr_app.api_nemsis_custom_elements import router as nemsis_custom_elements_router
 from epcr_app.api_nemsis_field_graph import router as nemsis_field_graph_router
 from epcr_app.api_nemsis_registry import router as nemsis_registry_router
 from epcr_app.api_nemsis_scenarios import router as nemsis_scenarios_router
+from epcr_app.api_nemsis_field_values import router as nemsis_field_values_router
+from epcr_app.api_nemsis_datasets import router as nemsis_datasets_router
 from epcr_app.api_cta_testing import router as cta_testing_router
 from epcr_app.api_version import router as version_router
+# NEMSIS v3.5.1 vertical slices (migrations 024..039)
+from epcr_app.api_chart_times import router as chart_times_router
+from epcr_app.api_chart_dispatch import router as chart_dispatch_router
+from epcr_app.api_chart_crew import router as chart_crew_router
+from epcr_app.api_chart_response import router as chart_response_router
+from epcr_app.api_chart_scene import router as chart_scene_router
+from epcr_app.api_chart_situation import router as chart_situation_router
+from epcr_app.api_chart_history import router as chart_history_router
+from epcr_app.api_chart_injury import router as chart_injury_router
+from epcr_app.api_chart_arrest import router as chart_arrest_router
+from epcr_app.api_chart_disposition import router as chart_disposition_router
+from epcr_app.api_chart_payment import router as chart_payment_router
+from epcr_app.api_chart_outcome import router as chart_outcome_router
+from epcr_app.api_patient_profile_ext import router as patient_profile_ext_router
+from epcr_app.api_vitals_ext import router as vitals_ext_router
+from epcr_app.api_medication_admin_ext import router as medication_admin_ext_router
+from epcr_app.api_intervention_ext import router as intervention_ext_router
 from epcr_app.db import init_db
 from adaptix_contracts.event_contracts import LocalEventConsumerRegistry
 from epcr_app.background_worker import EventProcessingWorker
@@ -178,15 +198,35 @@ app.include_router(clinical_extended_router)
 app.include_router(smart_text_address_router)
 app.include_router(desktop_router)
 app.include_router(chart_workspace_router)
+app.include_router(patient_registry_router)
 app.include_router(nemsis_defined_lists_router)
 app.include_router(nemsis_custom_elements_router)
 app.include_router(nemsis_field_graph_router)
 app.include_router(nemsis_registry_router)
 app.include_router(nemsis_scenarios_router)
+app.include_router(nemsis_field_values_router)
+app.include_router(nemsis_datasets_router)
 app.include_router(cta_testing_router)
 app.include_router(version_router)
+# NEMSIS v3.5.1 vertical slice routers
+app.include_router(chart_times_router)
+app.include_router(chart_dispatch_router)
+app.include_router(chart_crew_router)
+app.include_router(chart_response_router)
+app.include_router(chart_scene_router)
+app.include_router(chart_situation_router)
+app.include_router(chart_history_router)
+app.include_router(chart_injury_router)
+app.include_router(chart_arrest_router)
+app.include_router(chart_disposition_router)
+app.include_router(chart_payment_router)
+app.include_router(chart_outcome_router)
+app.include_router(patient_profile_ext_router)
+app.include_router(vitals_ext_router)
+app.include_router(medication_admin_ext_router)
+app.include_router(intervention_ext_router)
 
-logger.info("Care service configured with all routers: CareGraph, CPAE, VAS, Vision, CriticalCare, Sync, Dashboard, SmartText, Address, Desktop")
+logger.info("Care service configured with all routers: CareGraph, CPAE, VAS, Vision, CriticalCare, Sync, Dashboard, SmartText, Address, Desktop, NEMSIS v3.5.1 slices (eTimes, eDispatch, eCrew, eResponse, eScene, eSituation, eHistory, eInjury, eArrest, eDisposition, ePayment, eOutcome, ePatient-ext, eVitals-ext, eMedications-ext, eProcedures-ext)")
 
 
 @app.get("/healthz")

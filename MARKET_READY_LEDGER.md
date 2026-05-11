@@ -1,5 +1,59 @@
 # MARKET READY LEDGER
 
+## 2026-05-10 — EPCR local lifecycle proof and storage-failure truth
+
+- Repo: Adaptix-EPCR-Service
+- Workflow: Local seeded chart workspace update and NEMSIS export lifecycle proof
+- Final status: WARN
+- Reason: The real local EPCR save/export path is now proven through the backend workspace and export services, but live artifact persistence remains blocked by invalid AWS credentials for the configured export bucket.
+
+### Files changed
+
+- `backend/tests/conftest.py`
+- `backend/tests/test_epcr_local_lifecycle.py`
+- `backend/epcr_app/services_export.py`
+
+### Migrations added
+
+- None
+
+### Tests added
+
+- `backend/tests/test_epcr_local_lifecycle.py`
+
+### Commands run
+
+- `cd Adaptix-EPCR-Service/backend && pytest tests/test_chart_workspace_service.py -k test_create_workspace_chart_creates_real_chart -q`
+- `cd Adaptix-EPCR-Service/backend && pytest tests/test_epcr_local_lifecycle.py -q`
+- `cd Adaptix-EPCR-Service/backend && pytest tests/test_chart_workspace_service.py::test_create_workspace_chart_creates_real_chart tests/test_epcr_local_lifecycle.py::test_seeded_chart_updates_and_exports_locally -q`
+- `cd Adaptix-EPCR-Service && python - <manual seeded export probe with real S3 client>`
+
+### Results observed
+
+- Backend SQLite harness now starts from a clean database file instead of reusing stale temp schema state
+- New local lifecycle regression passed: `1 passed`
+- Combined focused backend validation passed: `2 passed`
+- Deterministic seed chart loaded through `ChartWorkspaceService`, accepted a real narrative update, and generated a retrievable XML export through `NemsisExportService` when artifact storage was stubbed
+- Unstubbed seeded export returned `status='persistence_failed'` and `failure_type='persistence_error'` with the real AWS `InvalidAccessKeyId` message instead of a generic generation failure
+
+### Known limitations
+
+- Live export artifact persistence is still blocked until valid AWS credentials exist for `NEMSIS_EXPORT_S3_BUCKET`
+- This slice proves the backend workflow locally; no authenticated browser-level `/clinical/epcr` smoke was recorded in this session
+- `pytest-asyncio` still emits the pre-existing `asyncio_default_fixture_loop_scope` deprecation warning during focused test runs
+
+### Rollback instructions
+
+- Revert `backend/tests/conftest.py` if shared temp-database reset is intentionally replaced by another test isolation strategy
+- Remove `backend/tests/test_epcr_local_lifecycle.py` if the deterministic seed script is retired and replaced with another local proof fixture
+- Revert the `ClientError` persistence classification change in `backend/epcr_app/services_export.py` if storage failures are intentionally remapped to another export failure contract
+
+### Evidence pointers
+
+- `backend/tests/test_epcr_local_lifecycle.py`
+- `backend/tests/test_chart_workspace_service.py`
+- `backend/epcr_app/services_export.py`
+
 ## 2026-05-08 — EPCR health/readiness parity and local NEMSIS revalidation
 
 - Repo: Adaptix-EPCR-Service

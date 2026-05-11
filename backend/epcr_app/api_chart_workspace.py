@@ -36,10 +36,14 @@ router = APIRouter(
 class CreateWorkspaceRequest(BaseModel):
     model_config = ConfigDict(extra="allow")
 
-    call_number: str = Field(..., min_length=1)
+    call_number: str | None = None
     incident_type: str = Field(..., min_length=1)
     client_reference_id: str | None = None
     patient_id: str | None = None
+    agency_id: str | None = None
+    agency_code: str | None = None
+    incident_datetime: str | None = None
+    cad_incident_number: str | None = None
 
 
 class UpdateFieldRequest(BaseModel):

@@ -363,8 +363,17 @@ async def validate_layer_2_nemsis_structural(
                         nemsis_element=field_id,
                         remediation=f"Value must match pattern: {pattern}",
                     ))
-            except re.error:
-                pass  # Invalid regex in DB — skip
+            except re.error as exc:
+                issues.append(ValidationIssue(
+                    layer=2,
+                    severity="error",
+                    code="NEMSIS_REGEX_RULE_INVALID",
+                    message=(
+                        f"Field {field_id} regex rule is invalid and could not be evaluated: {exc}"
+                    ),
+                    nemsis_element=field_id,
+                    remediation="Repair the stored NEMSIS regex rule before export validation can proceed.",
+                ))
 
     result.issues.extend(issues)
     result.layer_2_passed = not any(i.severity == "error" for i in issues)

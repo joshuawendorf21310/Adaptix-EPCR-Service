@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 NEMSIS_NS = "http://www.nemsis.org"
 NEMSIS_VERSION = "3.5.1"
-NEMSIS_VERSION_FULL = "3.5.1.250403CP3"
+NEMSIS_VERSION_FULL = "3.5.1.251001CP2"
 NV_NOT_RECORDED = "7701003"
 NV_NOT_APPLICABLE = "7701001"
 NV_NOT_REPORTING = "7701005"
@@ -151,6 +151,7 @@ class NEMSISExporter:
         """
         root = ET.Element("EMSDataSet")
         root.set("xmlns", NEMSIS_NS)
+        root.set("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
         root.set("xsi:schemaLocation", f"{NEMSIS_NS} {NEMSIS_NS}")
         root.set("nemsisVersion", NEMSIS_VERSION)
         root.set("generatedAt", datetime.now(UTC).isoformat())
@@ -187,7 +188,7 @@ class NEMSISExporter:
     def _build_erecord(self, pcr: ET.Element, c: dict[str, Any]) -> None:
         """Build the eRecord section with software creator metadata."""
         erec = _sub(pcr, "eRecord")
-        _sub(erec, "eRecord.01", _nv(c.get("id")))
+        _sub(erec, "eRecord.01", _nv(c.get("pcr_number") or c.get("report_number") or c.get("id")))
         sw_grp = _sub(erec, "eRecord.SoftwareApplicationGroup")
         _sub(sw_grp, "eRecord.02", SOFTWARE_CREATOR)
         _sub(sw_grp, "eRecord.03", SOFTWARE_NAME)
@@ -196,7 +197,8 @@ class NEMSISExporter:
     def _build_eresponse(self, pcr: ET.Element, c: dict[str, Any]) -> None:
         """Build the eResponse section with unit and service level."""
         eresp = _sub(pcr, "eResponse")
-        _sub(eresp, "eResponse.04", _nv(c.get("call_type")))
+        _sub(eresp, "eResponse.03", _nv(c.get("incident_number")))
+        _sub(eresp, "eResponse.04", _nv(c.get("response_number")))
         _sub(eresp, "eResponse.05", _nv(c.get("priority")))
         _sub(eresp, "eResponse.23", _TRANSPORT_MODE_MAP.get(str(c.get("transport_mode", "")), NV_NOT_RECORDED))
         _sub(eresp, "eResponse.28", _LEVEL_OF_CARE_MAP.get(str(c.get("level_of_care", "")), NV_NOT_RECORDED))

@@ -58,11 +58,11 @@ XSI_SCHEMA_LOCATION = f"{{{XSI_NS}}}schemaLocation"
 
 DEM_SCHEMA_LOCATION = (
     "http://www.nemsis.org "
-    "https://nemsis.org/media/nemsis_v3/3.5.1.250403CP1/XSDs/NEMSIS_XSDs/DEMDataSet_v3.xsd"
+    "https://nemsis.org/media/nemsis_v3/3.5.1.251001CP2/XSDs/NEMSIS_XSDs/DEMDataSet_v3.xsd"
 )
 EMS_SCHEMA_LOCATION = (
     "http://www.nemsis.org "
-    "https://nemsis.org/media/nemsis_v3/3.5.1.250403CP1/XSDs/NEMSIS_XSDs/EMSDataSet_v3.xsd"
+    "https://nemsis.org/media/nemsis_v3/3.5.1.251001CP2/XSDs/NEMSIS_XSDs/EMSDataSet_v3.xsd"
 )
 
 

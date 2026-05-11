@@ -22,7 +22,7 @@ from epcr_app.nemsis_template_resolver import (
 logger = logging.getLogger(__name__)
 
 _NEMSIS_NS = "http://www.nemsis.org"
-_NEMSIS_VERSION = "3.5.1.250403CP1"
+_NEMSIS_VERSION = "3.5.1.251001CP2"
 _NEMSIS_XSI = "http://www.w3.org/2001/XMLSchema-instance"
 _SOFTWARE_CREATOR = "Adaptix Platform"
 _SOFTWARE_NAME = "Adaptix ePCR"
@@ -212,9 +212,10 @@ class NemsisXmlBuilder:
 
     def _require_report_identifier(self) -> str:
         identifier = (
-            getattr(self._chart, "call_number", None)
+            getattr(self._chart, "pcr_number", None)
             or getattr(self._chart, "report_number", None)
             or self._fields.get("eRecord.01")
+            or getattr(self._chart, "call_number", None)
             or getattr(self._chart, "id", None)
         )
         if not identifier:
@@ -238,7 +239,9 @@ class NemsisXmlBuilder:
                     return resolve_test_case_id_for_response_number(str(attr_value)) or str(attr_value)
                 except Exception:
                     continue
-        return resolve_test_case_id_for_response_number(self._fields.get("eResponse.04"))
+        return resolve_test_case_id_for_response_number(
+            self._fields.get("eResponse.04") or getattr(self._chart, "response_number", None)
+        )
 
     def _template_field_overrides(self) -> dict[str, str]:
         overrides: dict[str, str] = {}

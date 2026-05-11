@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 from epcr_app.models import Base
 from epcr_app.services import ChartService
+from tests.agency_helpers import seed_active_agency
 
 
 @pytest_asyncio.fixture
@@ -17,6 +18,10 @@ async def test_db():
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+
+    async with async_session() as s:
+        await seed_active_agency(s, tenant_id="tenant-clinical")
+        await s.commit()
 
     yield async_session
 
