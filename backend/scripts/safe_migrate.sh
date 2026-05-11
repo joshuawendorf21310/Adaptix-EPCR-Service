@@ -14,6 +14,15 @@ set -euo pipefail
 
 echo "=== Adaptix EPCR safe migration ==="
 
+# Guard: if no database URL is configured, skip migration entirely so that
+# the container can still start (healthz returns 200 from the in-memory app).
+# This handles staging environments where DATABASE_URL is not yet provisioned.
+if [ -z "${DATABASE_URL:-}" ] && [ -z "${EPCR_DATABASE_URL:-}" ] && [ -z "${CARE_DATABASE_URL:-}" ]; then
+    echo "WARNING: No database URL env var found (DATABASE_URL / EPCR_DATABASE_URL / CARE_DATABASE_URL)."
+    echo "Skipping Alembic migrations. The service will start but DB operations will be unavailable."
+    exit 0
+fi
+
 CURRENT=$(alembic current 2>&1 || true)
 echo "alembic current output:"
 echo "${CURRENT}"
