@@ -49,7 +49,7 @@ def upgrade() -> None:
 
     def create_if_missing(table_name: str, *cols: sa.Column, **kw) -> None:
         if table_name not in existing:
-            create_if_missing(table_name, *cols, **kw)
+            op.create_table(table_name, *cols, **kw)
 
     # -- qa_trigger_configurations ------------------------------------------
     create_if_missing(
