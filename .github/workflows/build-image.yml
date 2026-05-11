@@ -14,7 +14,7 @@ env:
   ECR_REGISTRY: 793439286972.dkr.ecr.us-east-1.amazonaws.com
   ECR_REPOSITORY: adaptix-staging-epcr-service
   AWS_ROLE_ARN: arn:aws:iam::793439286972:role/adaptix-staging-github-actions-deploy
-  ECS_CLUSTER: adaptix-staging
+  ECS_CLUSTER: adaptix-staging-cluster
   ECS_SERVICE: adaptix-staging-epcr
   CONTAINER_NAME: epcr
   PROD_ECR_REPOSITORY: adaptix-epcr
