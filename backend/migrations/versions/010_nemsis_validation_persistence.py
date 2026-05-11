@@ -1,4 +1,4 @@
-﻿"""005_nemsis_validation_persistence
+"""005_nemsis_validation_persistence
 
 Revision ID: 010_nemsis_validation_persistence
 Revises: 009_add_nemsis_export_validation_evidence
@@ -43,7 +43,7 @@ def upgrade() -> None:
         sa.Column('version', sa.Integer, nullable=False, server_default='1'),
         sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True, index=True),
         sa.ForeignKeyConstraint(['incident_id'], ['epcr_charts.id'], name='fk_validation_results_incident'),
-    )
+        if_not_exists=True)
     
     # Create indexes for validation results
     op.create_index('ix_nemsis_validation_tenant_incident', 'nemsis_validation_results', ['tenant_id', 'incident_id'])
@@ -66,7 +66,7 @@ def upgrade() -> None:
         sa.Column('version', sa.Integer, nullable=False, server_default='1'),
         sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True, index=True),
         sa.ForeignKeyConstraint(['result_id'], ['nemsis_validation_results.id'], name='fk_validation_errors_result', ondelete='CASCADE'),
-    )
+        if_not_exists=True)
     
     # Create indexes for validation errors
     op.create_index('ix_nemsis_validation_errors_tenant_element', 'nemsis_validation_errors', ['tenant_id', 'element_id'])
@@ -95,7 +95,7 @@ def upgrade() -> None:
         sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True, index=True),
         sa.ForeignKeyConstraint(['incident_id'], ['epcr_charts.id'], name='fk_export_jobs_incident'),
         sa.ForeignKeyConstraint(['validation_result_id'], ['nemsis_validation_results.id'], name='fk_export_jobs_validation'),
-    )
+        if_not_exists=True)
     
     # Create indexes for export jobs
     op.create_index('ix_nemsis_export_jobs_tenant_incident', 'nemsis_export_jobs', ['tenant_id', 'incident_id'])

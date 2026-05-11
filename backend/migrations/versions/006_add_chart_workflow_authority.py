@@ -39,7 +39,7 @@ def upgrade() -> None:
 		sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
 		sa.PrimaryKeyConstraint("id"),
 		sa.UniqueConstraint("chart_id"),
-	)
+        if_not_exists=True)
 	op.create_index("ix_epcr_chart_addresses_chart_id", "epcr_chart_addresses", ["chart_id"])
 	op.create_index("ix_epcr_chart_addresses_tenant_id", "epcr_chart_addresses", ["tenant_id"])
 
@@ -64,7 +64,7 @@ def upgrade() -> None:
 		sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
 		sa.Column("provider_id", sa.String(length=255), nullable=False),
 		sa.PrimaryKeyConstraint("id"),
-	)
+        if_not_exists=True)
 	op.create_index("ix_epcr_interventions_chart_id", "epcr_interventions", ["chart_id"])
 	op.create_index("ix_epcr_interventions_tenant_id", "epcr_interventions", ["tenant_id"])
 
@@ -82,7 +82,7 @@ def upgrade() -> None:
 		sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
 		sa.Column("provider_id", sa.String(length=255), nullable=False),
 		sa.PrimaryKeyConstraint("id"),
-	)
+        if_not_exists=True)
 	op.create_index("ix_epcr_clinical_notes_chart_id", "epcr_clinical_notes", ["chart_id"])
 	op.create_index("ix_epcr_clinical_notes_tenant_id", "epcr_clinical_notes", ["tenant_id"])
 
@@ -100,7 +100,7 @@ def upgrade() -> None:
 		sa.Column("generated_at", sa.DateTime(timezone=True), nullable=False),
 		sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
 		sa.PrimaryKeyConstraint("id"),
-	)
+        if_not_exists=True)
 	op.create_index("ix_epcr_protocol_recommendations_chart_id", "epcr_protocol_recommendations", ["chart_id"])
 	op.create_index("ix_epcr_protocol_recommendations_tenant_id", "epcr_protocol_recommendations", ["tenant_id"])
 
@@ -115,7 +115,7 @@ def upgrade() -> None:
 		sa.Column("generated_at", sa.DateTime(timezone=True), nullable=False),
 		sa.Column("generated_by_user_id", sa.String(length=255), nullable=False),
 		sa.PrimaryKeyConstraint("id"),
-	)
+        if_not_exists=True)
 	op.create_index("ix_epcr_derived_outputs_chart_id", "epcr_derived_outputs", ["chart_id"])
 	op.create_index("ix_epcr_derived_outputs_tenant_id", "epcr_derived_outputs", ["tenant_id"])
 

@@ -26,7 +26,7 @@ def upgrade() -> None:
         sa.Column("deleted_by_user_id", sa.String(length=255), nullable=True),
         sa.Column("delete_reason", sa.Text(), nullable=True),
         sa.Column("version", sa.Integer(), nullable=False, server_default=sa.text("1")),
-    )
+        if_not_exists=True)
     op.create_index("ix_tac_schematron_packages_tenant_id", "tac_schematron_packages", ["tenant_id"])
     op.create_index("ix_tac_schematron_packages_status", "tac_schematron_packages", ["status"])
     op.create_index("ix_tac_schematron_packages_deleted_at", "tac_schematron_packages", ["deleted_at"])
@@ -52,7 +52,7 @@ def upgrade() -> None:
         sa.Column("deleted_by_user_id", sa.String(length=255), nullable=True),
         sa.Column("delete_reason", sa.Text(), nullable=True),
         sa.Column("version", sa.Integer(), nullable=False, server_default=sa.text("1")),
-    )
+        if_not_exists=True)
     op.create_index("ix_tac_schematron_assets_package_id", "tac_schematron_assets", ["package_id"])
     op.create_index("ix_tac_schematron_assets_tenant_id", "tac_schematron_assets", ["tenant_id"])
     op.create_index("ix_tac_schematron_assets_dataset_type", "tac_schematron_assets", ["dataset_type"])
@@ -70,7 +70,7 @@ def upgrade() -> None:
         sa.Column("detail_json", sa.Text(), nullable=True),
         sa.Column("performed_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("version", sa.Integer(), nullable=False, server_default=sa.text("1")),
-    )
+        if_not_exists=True)
     op.create_index("ix_tac_schematron_audit_log_tenant_id", "tac_schematron_audit_log", ["tenant_id"])
     op.create_index("ix_tac_schematron_audit_log_package_id", "tac_schematron_audit_log", ["package_id"])
     op.create_index("ix_tac_schematron_audit_log_asset_id", "tac_schematron_audit_log", ["asset_id"])

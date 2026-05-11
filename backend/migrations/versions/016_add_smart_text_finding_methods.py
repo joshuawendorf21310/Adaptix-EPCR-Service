@@ -36,7 +36,7 @@ def upgrade() -> None:
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("version", sa.Integer, nullable=False, server_default="1"),
         sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
-    )
+        if_not_exists=True)
     op.create_index("ix_epcr_smart_text_sessions_chart_id", "epcr_smart_text_sessions", ["chart_id"])
 
     op.create_table(
@@ -66,7 +66,7 @@ def upgrade() -> None:
         sa.Column("contradiction_detail", sa.Text, nullable=True),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("version", sa.Integer, nullable=False, server_default="1"),
-    )
+        if_not_exists=True)
     op.create_index("ix_epcr_smart_text_proposals_session_id", "epcr_smart_text_proposals", ["session_id"])
     op.create_index("ix_epcr_smart_text_proposals_chart_id", "epcr_smart_text_proposals", ["chart_id"])
 
@@ -82,7 +82,7 @@ def upgrade() -> None:
         sa.Column("after_state", sa.String(64), nullable=False),
         sa.Column("notes", sa.Text, nullable=True),
         sa.Column("performed_at", sa.DateTime(timezone=True), nullable=False),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "epcr_finding_methods",
@@ -93,7 +93,7 @@ def upgrade() -> None:
         sa.Column("description", sa.Text, nullable=True),
         sa.Column("is_active", sa.Boolean, nullable=False, server_default="1"),
         sa.Column("sort_order", sa.Integer, nullable=False, server_default="0"),
-    )
+        if_not_exists=True)
 
     # Seed canonical finding methods
     op.bulk_insert(

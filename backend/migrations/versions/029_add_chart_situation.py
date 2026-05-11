@@ -106,7 +106,7 @@ def upgrade() -> None:
                 "chart_id",
                 name="uq_epcr_chart_situation_tenant_chart",
             ),
-        )
+        if_not_exists=True)
 
     if not _has_index(insp, TABLE_MAIN, "ix_epcr_chart_situation_tenant_id"):
         op.create_index(
@@ -157,7 +157,7 @@ def upgrade() -> None:
                 "symptom_code",
                 name="uq_epcr_chart_situation_other_symptoms_tenant_chart_code",
             ),
-        )
+        if_not_exists=True)
 
     if not _has_index(insp, TABLE_SYMPTOMS, "ix_epcr_chart_situation_other_symptoms_tenant_id"):
         op.create_index(
@@ -208,7 +208,7 @@ def upgrade() -> None:
                 "impression_code",
                 name="uq_epcr_chart_situation_secondary_impressions_tenant_chart_code",
             ),
-        )
+        if_not_exists=True)
 
     if not _has_index(insp, TABLE_IMPRESSIONS, "ix_epcr_chart_situation_secondary_impressions_tenant_id"):
         op.create_index(

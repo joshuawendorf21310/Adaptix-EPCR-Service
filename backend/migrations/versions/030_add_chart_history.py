@@ -102,7 +102,7 @@ def upgrade() -> None:
                 "chart_id",
                 name="uq_epcr_chart_history_meta_tenant_chart",
             ),
-        )
+        if_not_exists=True)
 
     if not _has_index(insp, META_TABLE, "ix_epcr_chart_history_meta_tenant_id"):
         op.create_index(
@@ -145,7 +145,7 @@ def upgrade() -> None:
                 "allergy_code",
                 name="uq_epcr_chart_history_allergies_tenant_chart_kind_code",
             ),
-        )
+        if_not_exists=True)
 
     if not _has_index(insp, ALLERGIES_TABLE, "ix_epcr_chart_history_allergies_tenant_id"):
         op.create_index(
@@ -186,7 +186,7 @@ def upgrade() -> None:
                 "condition_code",
                 name="uq_epcr_chart_history_surgical_tenant_chart_code",
             ),
-        )
+        if_not_exists=True)
 
     if not _has_index(insp, SURGICAL_TABLE, "ix_epcr_chart_history_surgical_tenant_id"):
         op.create_index(
@@ -230,7 +230,7 @@ def upgrade() -> None:
                 "drug_code",
                 name="uq_epcr_chart_history_current_medications_tenant_chart_drug",
             ),
-        )
+        if_not_exists=True)
 
     if not _has_index(insp, MEDS_TABLE, "ix_epcr_chart_history_current_medications_tenant_id"):
         op.create_index(
@@ -265,7 +265,7 @@ def upgrade() -> None:
                 server_default=sa.text("0"),
             ),
             *_audit_columns(),
-        )
+        if_not_exists=True)
 
     if not _has_index(insp, IMMUN_TABLE, "ix_epcr_chart_history_immunizations_tenant_id"):
         op.create_index(

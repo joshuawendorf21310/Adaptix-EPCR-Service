@@ -92,7 +92,7 @@ def upgrade() -> None:
                 "intervention_id",
                 name="uq_epcr_intervention_nemsis_ext_tenant_intervention",
             ),
-        )
+        if_not_exists=True)
 
     if not _has_index(insp, EXT_TABLE, "ix_epcr_intervention_nemsis_ext_tenant_id"):
         op.create_index(
@@ -154,7 +154,7 @@ def upgrade() -> None:
                 "complication_code",
                 name="uq_epcr_intervention_complications_tenant_intervention_code",
             ),
-        )
+        if_not_exists=True)
 
     if not _has_index(insp, COMP_TABLE, "ix_epcr_intervention_complications_tenant_id"):
         op.create_index(

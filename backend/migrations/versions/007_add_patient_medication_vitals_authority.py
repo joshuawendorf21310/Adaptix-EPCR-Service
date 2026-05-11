@@ -36,7 +36,7 @@ def upgrade() -> None:
 		sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
 		sa.PrimaryKeyConstraint("id"),
 		sa.UniqueConstraint("chart_id"),
-	)
+        if_not_exists=True)
 	op.create_index("ix_epcr_patient_profiles_chart_id", "epcr_patient_profiles", ["chart_id"])
 	op.create_index("ix_epcr_patient_profiles_tenant_id", "epcr_patient_profiles", ["tenant_id"])
 
@@ -64,7 +64,7 @@ def upgrade() -> None:
 		sa.Column("administered_by_user_id", sa.String(length=255), nullable=False),
 		sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
 		sa.PrimaryKeyConstraint("id"),
-	)
+        if_not_exists=True)
 	op.create_index("ix_epcr_medication_administrations_chart_id", "epcr_medication_administrations", ["chart_id"])
 	op.create_index("ix_epcr_medication_administrations_tenant_id", "epcr_medication_administrations", ["tenant_id"])
 

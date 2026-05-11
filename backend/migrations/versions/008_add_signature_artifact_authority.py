@@ -64,7 +64,7 @@ def upgrade() -> None:
 		sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
 		sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
 		sa.PrimaryKeyConstraint("id"),
-	)
+        if_not_exists=True)
 	op.create_index("ix_epcr_signature_artifacts_chart_id", "epcr_signature_artifacts", ["chart_id"])
 	op.create_index("ix_epcr_signature_artifacts_tenant_id", "epcr_signature_artifacts", ["tenant_id"])
 	op.create_index("ix_epcr_signature_artifacts_source_capture_id", "epcr_signature_artifacts", ["source_capture_id"])

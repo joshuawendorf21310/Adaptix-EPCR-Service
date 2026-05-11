@@ -70,7 +70,7 @@ def upgrade() -> None:
             "created_at",
         ),
         sa.Index("idx_epcr_nemsis_export_status", "status"),
-    )
+        if_not_exists=True)
 
     # NEMSIS export events: audit trail for lifecycle transitions
     op.create_table(
@@ -96,7 +96,7 @@ def upgrade() -> None:
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         # Index for audit trail queries
         sa.Index("idx_epcr_nemsis_event_export_created", "export_id", "created_at"),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "epcr_nemsis_export_history",
@@ -108,7 +108,7 @@ def upgrade() -> None:
         sa.Column("export_payload_json", sa.Text(), nullable=True),
         sa.Column("error_message", sa.Text(), nullable=True),
         sa.Column("exported_at", sa.DateTime(timezone=True), nullable=False),
-    )
+        if_not_exists=True)
     op.create_table(
         "epcr_audit_log",
         sa.Column("id", sa.String(36), primary_key=True),
@@ -118,7 +118,7 @@ def upgrade() -> None:
         sa.Column("action", sa.String(50), nullable=False),
         sa.Column("detail_json", sa.Text(), nullable=True),
         sa.Column("performed_at", sa.DateTime(timezone=True), nullable=False),
-    )
+        if_not_exists=True)
 
 
 def downgrade() -> None:

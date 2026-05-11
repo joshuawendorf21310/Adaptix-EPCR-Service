@@ -223,7 +223,7 @@ def upgrade() -> None:
                 "chart_id",
                 name="uq_epcr_chart_payment_tenant_chart",
             ),
-        )
+        if_not_exists=True)
 
     if not _has_index(insp, PAYMENT_TABLE, "ix_epcr_chart_payment_tenant_id"):
         op.create_index(
@@ -279,7 +279,7 @@ def upgrade() -> None:
                 "supply_item_name",
                 name="uq_epcr_chart_payment_supply_items_tenant_chart_name",
             ),
-        )
+        if_not_exists=True)
 
     if not _has_index(
         insp, SUPPLY_TABLE, "ix_epcr_chart_payment_supply_items_tenant_id"

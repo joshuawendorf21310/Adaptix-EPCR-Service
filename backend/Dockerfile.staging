@@ -25,6 +25,7 @@ COPY migrations/ ./migrations/
 COPY alembic.ini ./
 COPY nemsis/ ./nemsis/
 COPY scripts/ ./scripts/
+RUN chmod +x /app/scripts/safe_migrate.sh
 
 RUN pip install .
 

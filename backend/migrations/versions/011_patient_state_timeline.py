@@ -39,7 +39,7 @@ def upgrade() -> None:
         sa.Column('changed_at', sa.DateTime(timezone=True), nullable=False, index=True),
         sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
         sa.ForeignKeyConstraint(['incident_id'], ['epcr_charts.id'], name='fk_timeline_incident'),
-    )
+        if_not_exists=True)
     
     # Create indexes for timeline queries
     op.create_index('ix_timeline_tenant_incident', 'patient_state_timeline', ['tenant_id', 'incident_id'])

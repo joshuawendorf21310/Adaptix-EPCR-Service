@@ -67,7 +67,7 @@ def upgrade() -> None:
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("version", sa.Integer, nullable=False, server_default="1"),
         sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
-    )
+        if_not_exists=True)
     op.create_index("ix_epcr_caregraph_nodes_chart_id", "epcr_caregraph_nodes", ["chart_id"])
     op.create_index("ix_epcr_caregraph_nodes_tenant_id", "epcr_caregraph_nodes", ["tenant_id"])
     op.create_index("ix_epcr_caregraph_nodes_node_type", "epcr_caregraph_nodes", ["node_type"])
@@ -86,7 +86,7 @@ def upgrade() -> None:
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("version", sa.Integer, nullable=False, server_default="1"),
         sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
-    )
+        if_not_exists=True)
     op.create_index("ix_epcr_caregraph_edges_chart_id", "epcr_caregraph_edges", ["chart_id"])
     op.create_index("ix_epcr_caregraph_edges_source_node_id", "epcr_caregraph_edges", ["source_node_id"])
     op.create_index("ix_epcr_caregraph_edges_target_node_id", "epcr_caregraph_edges", ["target_node_id"])
@@ -124,7 +124,7 @@ def upgrade() -> None:
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("version", sa.Integer, nullable=False, server_default="1"),
         sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
-    )
+        if_not_exists=True)
     op.create_index("ix_epcr_opqrst_symptoms_chart_id", "epcr_opqrst_symptoms", ["chart_id"])
 
     op.create_table(
@@ -142,7 +142,7 @@ def upgrade() -> None:
         sa.Column("provider_id", sa.String(255), nullable=False),
         sa.Column("version", sa.Integer, nullable=False, server_default="1"),
         sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "epcr_caregraph_audit_events",
@@ -159,7 +159,7 @@ def upgrade() -> None:
         sa.Column("after_state_json", sa.Text, nullable=True),
         sa.Column("performed_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("sync_sequence", sa.Integer, nullable=True),
-    )
+        if_not_exists=True)
     op.create_index("ix_epcr_caregraph_audit_events_chart_id", "epcr_caregraph_audit_events", ["chart_id"])
     op.create_index("ix_epcr_caregraph_audit_events_entity_id", "epcr_caregraph_audit_events", ["entity_id"])
 
@@ -178,7 +178,7 @@ def upgrade() -> None:
         sa.Column("snomed_code", sa.String(32), nullable=True),
         sa.Column("sort_order", sa.Integer, nullable=False, server_default="0"),
         sa.Column("is_active", sa.Boolean, nullable=False, server_default="1"),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "epcr_physiologic_systems",
@@ -189,7 +189,7 @@ def upgrade() -> None:
         sa.Column("snomed_code", sa.String(32), nullable=True),
         sa.Column("sort_order", sa.Integer, nullable=False, server_default="0"),
         sa.Column("is_active", sa.Boolean, nullable=False, server_default="1"),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "epcr_physical_findings",
@@ -219,7 +219,7 @@ def upgrade() -> None:
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("version", sa.Integer, nullable=False, server_default="1"),
         sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
-    )
+        if_not_exists=True)
     op.create_index("ix_epcr_physical_findings_chart_id", "epcr_physical_findings", ["chart_id"])
     op.create_index("ix_epcr_physical_findings_anatomy", "epcr_physical_findings", ["anatomy"])
     op.create_index("ix_epcr_physical_findings_physiologic_system", "epcr_physical_findings", ["physiologic_system"])
@@ -233,7 +233,7 @@ def upgrade() -> None:
         sa.Column("characteristic_value", sa.String(255), nullable=False),
         sa.Column("characteristic_unit", sa.String(32), nullable=True),
         sa.Column("snomed_code", sa.String(32), nullable=True),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "epcr_finding_reassessments",
@@ -251,7 +251,7 @@ def upgrade() -> None:
         sa.Column("reassessed_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("version", sa.Integer, nullable=False, server_default="1"),
         sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "epcr_finding_evidence_links",
@@ -262,7 +262,7 @@ def upgrade() -> None:
         sa.Column("evidence_id", sa.String(36), nullable=False),
         sa.Column("evidence_description", sa.Text, nullable=True),
         sa.Column("confidence", sa.Float, nullable=True),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "epcr_finding_intervention_links",
@@ -271,7 +271,7 @@ def upgrade() -> None:
         sa.Column("intervention_id", sa.String(36), nullable=False),
         sa.Column("tenant_id", sa.String(36), nullable=False),
         sa.Column("link_rationale", sa.Text, nullable=True),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "epcr_finding_response_links",
@@ -280,7 +280,7 @@ def upgrade() -> None:
         sa.Column("response_node_id", sa.String(36), nullable=False),
         sa.Column("tenant_id", sa.String(36), nullable=False),
         sa.Column("response_description", sa.Text, nullable=True),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "epcr_finding_nemsis_links",
@@ -293,7 +293,7 @@ def upgrade() -> None:
         sa.Column("xml_path", sa.String(255), nullable=True),
         sa.Column("export_ready", sa.Boolean, nullable=False, server_default="0"),
         sa.Column("export_blocker_reason", sa.Text, nullable=True),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "epcr_finding_audit_events",
@@ -306,7 +306,7 @@ def upgrade() -> None:
         sa.Column("before_state_json", sa.Text, nullable=True),
         sa.Column("after_state_json", sa.Text, nullable=True),
         sa.Column("performed_at", sa.DateTime(timezone=True), nullable=False),
-    )
+        if_not_exists=True)
 
     # =========================================================================
     # VAS
@@ -320,7 +320,7 @@ def upgrade() -> None:
         sa.Column("available_views_json", sa.Text, nullable=False),
         sa.Column("supported_overlays_json", sa.Text, nullable=False),
         sa.Column("is_active", sa.Boolean, nullable=False, server_default="1"),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "epcr_visual_regions",
@@ -332,7 +332,7 @@ def upgrade() -> None:
         sa.Column("cpae_anatomy_code", sa.String(64), nullable=True),
         sa.Column("default_geometry_json", sa.Text, nullable=True),
         sa.Column("is_active", sa.Boolean, nullable=False, server_default="1"),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "epcr_visual_overlays_v2",
@@ -355,7 +355,7 @@ def upgrade() -> None:
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("version", sa.Integer, nullable=False, server_default="1"),
         sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
-    )
+        if_not_exists=True)
     op.create_index("ix_epcr_visual_overlays_v2_chart_id", "epcr_visual_overlays_v2", ["chart_id"])
 
     op.create_table(
@@ -371,7 +371,7 @@ def upgrade() -> None:
         sa.Column("snapshot_reason", sa.String(64), nullable=False),
         sa.Column("provider_id", sa.String(255), nullable=False),
         sa.Column("captured_at", sa.DateTime(timezone=True), nullable=False),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "epcr_visual_finding_links",
@@ -382,7 +382,7 @@ def upgrade() -> None:
         sa.Column("tenant_id", sa.String(36), nullable=False),
         sa.Column("link_type", sa.String(64), nullable=False, server_default="primary"),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "epcr_visual_reassessment_snapshots",
@@ -396,7 +396,7 @@ def upgrade() -> None:
         sa.Column("provider_id", sa.String(255), nullable=False),
         sa.Column("captured_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("version", sa.Integer, nullable=False, server_default="1"),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "epcr_visual_intervention_response_links",
@@ -409,7 +409,7 @@ def upgrade() -> None:
         sa.Column("visual_change_json", sa.Text, nullable=True),
         sa.Column("provider_id", sa.String(255), nullable=False),
         sa.Column("linked_at", sa.DateTime(timezone=True), nullable=False),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "epcr_visual_projection_reviews",
@@ -427,7 +427,7 @@ def upgrade() -> None:
         sa.Column("proposed_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("reviewed_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("version", sa.Integer, nullable=False, server_default="1"),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "epcr_visual_audit_events",
@@ -440,7 +440,7 @@ def upgrade() -> None:
         sa.Column("before_state_json", sa.Text, nullable=True),
         sa.Column("after_state_json", sa.Text, nullable=True),
         sa.Column("performed_at", sa.DateTime(timezone=True), nullable=False),
-    )
+        if_not_exists=True)
 
     # =========================================================================
     # VISION
@@ -466,7 +466,7 @@ def upgrade() -> None:
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("version", sa.Integer, nullable=False, server_default="1"),
         sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
-    )
+        if_not_exists=True)
     op.create_index("ix_vision_artifacts_chart_id", "vision_artifacts", ["chart_id"])
     op.create_index("ix_vision_artifacts_source_hash", "vision_artifacts", ["source_hash_sha256"])
 
@@ -481,7 +481,7 @@ def upgrade() -> None:
         sa.Column("reason", sa.String(255), nullable=True),
         sa.Column("created_by_user_id", sa.String(255), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "vision_ingestion_jobs",
@@ -497,7 +497,7 @@ def upgrade() -> None:
         sa.Column("retry_count", sa.Integer, nullable=False, server_default="0"),
         sa.Column("max_retries", sa.Integer, nullable=False, server_default="3"),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "vision_extraction_runs",
@@ -511,7 +511,7 @@ def upgrade() -> None:
         sa.Column("error_detail", sa.Text, nullable=True),
         sa.Column("started_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("completed_at", sa.DateTime(timezone=True), nullable=True),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "vision_extractions",
@@ -534,7 +534,7 @@ def upgrade() -> None:
         sa.Column("extracted_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("version", sa.Integer, nullable=False, server_default="1"),
         sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "vision_classifications",
@@ -546,7 +546,7 @@ def upgrade() -> None:
         sa.Column("model_version", sa.String(64), nullable=True),
         sa.Column("review_state", sa.String(64), nullable=False, server_default="pending_review"),
         sa.Column("classified_at", sa.DateTime(timezone=True), nullable=False),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "vision_bounding_regions",
@@ -559,7 +559,7 @@ def upgrade() -> None:
         sa.Column("width", sa.Float, nullable=False),
         sa.Column("height", sa.Float, nullable=False),
         sa.Column("confidence", sa.Float, nullable=True),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "vision_annotations",
@@ -569,7 +569,7 @@ def upgrade() -> None:
         sa.Column("annotation_type", sa.String(64), nullable=False),
         sa.Column("annotation_value", sa.Text, nullable=False),
         sa.Column("confidence", sa.Float, nullable=True),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "vision_review_queue",
@@ -584,7 +584,7 @@ def upgrade() -> None:
         sa.Column("queued_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("completed_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("version", sa.Integer, nullable=False, server_default="1"),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "vision_review_actions",
@@ -597,7 +597,7 @@ def upgrade() -> None:
         sa.Column("notes", sa.Text, nullable=True),
         sa.Column("edited_value_json", sa.Text, nullable=True),
         sa.Column("performed_at", sa.DateTime(timezone=True), nullable=False),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "vision_provenance_records",
@@ -607,7 +607,7 @@ def upgrade() -> None:
         sa.Column("provenance_type", sa.String(64), nullable=False),
         sa.Column("provenance_detail_json", sa.Text, nullable=False),
         sa.Column("recorded_at", sa.DateTime(timezone=True), nullable=False),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "vision_model_versions",
@@ -618,7 +618,7 @@ def upgrade() -> None:
         sa.Column("is_active", sa.Boolean, nullable=False, server_default="1"),
         sa.Column("deployed_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("deprecated_at", sa.DateTime(timezone=True), nullable=True),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "vision_chart_links",
@@ -628,7 +628,7 @@ def upgrade() -> None:
         sa.Column("tenant_id", sa.String(36), nullable=False),
         sa.Column("link_reason", sa.String(128), nullable=True),
         sa.Column("linked_at", sa.DateTime(timezone=True), nullable=False),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "vision_quality_flags",
@@ -641,7 +641,7 @@ def upgrade() -> None:
         sa.Column("flagged_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("resolved_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("resolved_by_user_id", sa.String(255), nullable=True),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "vision_duplicate_clusters",
@@ -654,7 +654,7 @@ def upgrade() -> None:
         sa.Column("resolved_by_user_id", sa.String(255), nullable=True),
         sa.Column("detected_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("resolved_at", sa.DateTime(timezone=True), nullable=True),
-    )
+        if_not_exists=True)
 
     # =========================================================================
     # CRITICAL CARE
@@ -683,7 +683,7 @@ def upgrade() -> None:
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("version", sa.Integer, nullable=False, server_default="1"),
         sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "epcr_infusion_runs",
@@ -709,7 +709,7 @@ def upgrade() -> None:
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("version", sa.Integer, nullable=False, server_default="1"),
         sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "epcr_ventilator_sessions",
@@ -743,7 +743,7 @@ def upgrade() -> None:
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("version", sa.Integer, nullable=False, server_default="1"),
         sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "epcr_blood_product_administrations",
@@ -768,7 +768,7 @@ def upgrade() -> None:
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("version", sa.Integer, nullable=False, server_default="1"),
         sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "epcr_response_windows",
@@ -789,7 +789,7 @@ def upgrade() -> None:
         sa.Column("provider_id", sa.String(255), nullable=False),
         sa.Column("version", sa.Integer, nullable=False, server_default="1"),
         sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
-    )
+        if_not_exists=True)
 
     for tbl, cols in [
         ("epcr_intervention_intents", [
@@ -866,7 +866,8 @@ def upgrade() -> None:
             sa.Column("export_blocker_reason", sa.Text, nullable=True),
         ]),
     ]:
-        op.create_table(tbl, *cols)
+        op.create_table(tbl, *cols,
+        if_not_exists=True)
 
     # =========================================================================
     # TERMINOLOGY
@@ -986,7 +987,8 @@ def upgrade() -> None:
             sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
         ]),
     ]:
-        op.create_table(tbl, *cols)
+        op.create_table(tbl, *cols,
+        if_not_exists=True)
 
     # =========================================================================
     # SYNC ENGINE
@@ -1013,7 +1015,7 @@ def upgrade() -> None:
         sa.Column("error_detail", sa.Text, nullable=True),
         sa.Column("idempotency_key", sa.String(64), unique=True, nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
-    )
+        if_not_exists=True)
     op.create_index("ix_epcr_sync_event_log_device_id", "epcr_sync_event_log", ["device_id"])
     op.create_index("ix_epcr_sync_event_log_status", "epcr_sync_event_log", ["status"])
 
@@ -1037,7 +1039,7 @@ def upgrade() -> None:
         sa.Column("detected_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("resolved_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("version", sa.Integer, nullable=False, server_default="1"),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "epcr_upload_queue",
@@ -1062,7 +1064,7 @@ def upgrade() -> None:
         sa.Column("idempotency_key", sa.String(64), unique=True, nullable=False),
         sa.Column("queued_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("version", sa.Integer, nullable=False, server_default="1"),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "epcr_sync_health",
@@ -1083,7 +1085,7 @@ def upgrade() -> None:
         sa.Column("degraded_reason", sa.String(255), nullable=True),
         sa.Column("degraded_since", sa.DateTime(timezone=True), nullable=True),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "epcr_audit_envelopes",
@@ -1101,7 +1103,7 @@ def upgrade() -> None:
         sa.Column("idempotency_key", sa.String(64), unique=True, nullable=False),
         sa.Column("captured_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
-    )
+        if_not_exists=True)
 
     # =========================================================================
     # DASHBOARD / CUSTOMIZATION
@@ -1123,7 +1125,7 @@ def upgrade() -> None:
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("version", sa.Integer, nullable=False, server_default="1"),
-    )
+        if_not_exists=True)
 
     op.create_table(
         "epcr_dashboard_card_preferences",
@@ -1134,7 +1136,7 @@ def upgrade() -> None:
         sa.Column("is_visible", sa.Boolean, nullable=False, server_default="1"),
         sa.Column("sort_order", sa.Integer, nullable=False, server_default="0"),
         sa.Column("config_json", sa.Text, nullable=True),
-    )
+        if_not_exists=True)
 
     for tbl, cols in [
         ("epcr_user_favorites", [
@@ -1210,7 +1212,8 @@ def upgrade() -> None:
             sa.Column("version", sa.Integer, nullable=False, server_default="1"),
         ]),
     ]:
-        op.create_table(tbl, *cols)
+        op.create_table(tbl, *cols,
+        if_not_exists=True)
 
 
 def downgrade() -> None:

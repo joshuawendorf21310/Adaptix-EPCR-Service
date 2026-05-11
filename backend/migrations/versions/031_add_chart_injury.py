@@ -85,7 +85,7 @@ def upgrade() -> None:
                 "chart_id",
                 name="uq_epcr_chart_injury_tenant_chart",
             ),
-        )
+        if_not_exists=True)
 
     if not _has_index(insp, INJURY_TABLE, "ix_epcr_chart_injury_tenant_id"):
         op.create_index(
@@ -164,7 +164,7 @@ def upgrade() -> None:
                 "injury_id",
                 name="uq_epcr_chart_injury_acn_injury",
             ),
-        )
+        if_not_exists=True)
 
     if not _has_index(insp, ACN_TABLE, "ix_epcr_chart_injury_acn_tenant_id"):
         op.create_index(

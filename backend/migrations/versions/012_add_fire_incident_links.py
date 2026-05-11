@@ -23,7 +23,7 @@ def upgrade() -> None:
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
         sa.ForeignKeyConstraint(["chart_id"], ["epcr_charts.id"]),
-    )
+        if_not_exists=True)
     op.create_index("ix_epcr_fire_incident_links_tenant_id", "epcr_fire_incident_links", ["tenant_id"])
     op.create_index("ix_epcr_fire_incident_links_fire_incident_id", "epcr_fire_incident_links", ["fire_incident_id"])
 

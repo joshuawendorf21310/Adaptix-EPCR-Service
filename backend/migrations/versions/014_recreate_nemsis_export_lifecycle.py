@@ -112,7 +112,7 @@ def upgrade() -> None:
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()),
         sa.Column("version", sa.Integer(), nullable=False, server_default="1"),
         sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
-    )
+        if_not_exists=True)
     op.create_index("idx_nemsis_export_attempts_chart_id", "epcr_nemsis_export_attempts", ["chart_id"])
     op.create_index(
         "idx_nemsis_export_attempts_tenant_chart",
@@ -156,7 +156,7 @@ def upgrade() -> None:
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()),
         sa.Column("version", sa.Integer(), nullable=False, server_default="1"),
         sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
-    )
+        if_not_exists=True)
     op.create_index(
         "ix_events_export_attempt_id",
         "epcr_nemsis_export_events",

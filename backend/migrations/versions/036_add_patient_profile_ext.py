@@ -95,7 +95,7 @@ def upgrade() -> None:
                 "chart_id",
                 name="uq_epcr_patient_profile_nemsis_ext_tenant_chart",
             ),
-        )
+        if_not_exists=True)
 
     if not _has_index(insp, TABLE_EXT, "ix_epcr_patient_profile_nemsis_ext_tenant_id"):
         op.create_index(
@@ -148,7 +148,7 @@ def upgrade() -> None:
                 "chart_id",
                 name="uq_epcr_patient_home_address_tenant_chart",
             ),
-        )
+        if_not_exists=True)
 
     if not _has_index(insp, TABLE_ADDR, "ix_epcr_patient_home_address_tenant_id"):
         op.create_index(
@@ -199,7 +199,7 @@ def upgrade() -> None:
                 "race_code",
                 name="uq_epcr_patient_races_tenant_chart_race",
             ),
-        )
+        if_not_exists=True)
 
     if not _has_index(insp, TABLE_RACE, "ix_epcr_patient_races_tenant_id"):
         op.create_index("ix_epcr_patient_races_tenant_id", TABLE_RACE, ["tenant_id"])
@@ -242,7 +242,7 @@ def upgrade() -> None:
                 "language_code",
                 name="uq_epcr_patient_languages_tenant_chart_lang",
             ),
-        )
+        if_not_exists=True)
 
     if not _has_index(insp, TABLE_LANG, "ix_epcr_patient_languages_tenant_id"):
         op.create_index("ix_epcr_patient_languages_tenant_id", TABLE_LANG, ["tenant_id"])
@@ -286,7 +286,7 @@ def upgrade() -> None:
                 "phone_number",
                 name="uq_epcr_patient_phone_numbers_tenant_chart_phone",
             ),
-        )
+        if_not_exists=True)
 
     if not _has_index(insp, TABLE_PHONE, "ix_epcr_patient_phone_numbers_tenant_id"):
         op.create_index(

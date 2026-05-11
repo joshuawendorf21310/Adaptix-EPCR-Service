@@ -49,7 +49,7 @@ def upgrade() -> None:
             sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
             sa.Column("version", sa.Integer(), nullable=False, server_default=sa.text("1")),
             sa.UniqueConstraint("tenant_id", "canonical_patient_key", name="uq_patient_registry_profiles_tenant_canonical_key"),
-        )
+        if_not_exists=True)
         op.create_index("idx_patient_registry_profiles_tenant_id", "patient_registry_profiles", ["tenant_id"])
         op.create_index("idx_patient_registry_profiles_canonical_patient_key", "patient_registry_profiles", ["canonical_patient_key"])
 
@@ -74,7 +74,7 @@ def upgrade() -> None:
                 "identifier_hash",
                 name="uq_patient_registry_identifiers_profile_identifier",
             ),
-        )
+        if_not_exists=True)
         op.create_index("idx_patient_registry_identifiers_tenant_id", "patient_registry_identifiers", ["tenant_id"])
         op.create_index("idx_patient_registry_identifiers_identifier_hash", "patient_registry_identifiers", ["identifier_hash"])
 
@@ -94,7 +94,7 @@ def upgrade() -> None:
             sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
             sa.Column("version", sa.Integer(), nullable=False, server_default=sa.text("1")),
             sa.UniqueConstraint("chart_id", name="uq_patient_registry_chart_links_chart_id"),
-        )
+        if_not_exists=True)
         op.create_index("idx_patient_registry_chart_links_tenant_id", "patient_registry_chart_links", ["tenant_id"])
 
     if not _has_table(insp, "epcr_charting_accelerator_imports"):
@@ -121,7 +121,7 @@ def upgrade() -> None:
                 "dedupe_key",
                 name="uq_epcr_charting_accelerator_imports_scope",
             ),
-        )
+        if_not_exists=True)
         op.create_index("idx_epcr_charting_accelerator_imports_tenant_id", "epcr_charting_accelerator_imports", ["tenant_id"])
 
     if not _has_table(insp, "patient_registry_merge_candidates"):
@@ -149,7 +149,7 @@ def upgrade() -> None:
                 "right_patient_id",
                 name="uq_patient_registry_merge_candidates_pair",
             ),
-        )
+        if_not_exists=True)
         op.create_index("idx_patient_registry_merge_candidates_tenant_id", "patient_registry_merge_candidates", ["tenant_id"])
 
     if not _has_table(insp, "patient_registry_merge_audit"):
@@ -169,7 +169,7 @@ def upgrade() -> None:
             sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.text("CURRENT_TIMESTAMP")),
             sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
             sa.Column("version", sa.Integer(), nullable=False, server_default=sa.text("1")),
-        )
+        if_not_exists=True)
         op.create_index("idx_patient_registry_merge_audit_tenant_id", "patient_registry_merge_audit", ["tenant_id"])
 
     if not _has_table(insp, "patient_registry_aliases"):
@@ -185,7 +185,7 @@ def upgrade() -> None:
             sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
             sa.Column("version", sa.Integer(), nullable=False, server_default=sa.text("1")),
             sa.UniqueConstraint("tenant_id", "alias_patient_id", name="uq_patient_registry_aliases_tenant_alias"),
-        )
+        if_not_exists=True)
         op.create_index("idx_patient_registry_aliases_tenant_id", "patient_registry_aliases", ["tenant_id"])
 
 

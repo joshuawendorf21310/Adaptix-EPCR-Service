@@ -37,7 +37,7 @@ def upgrade() -> None:
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("created_by_user_id", sa.String(length=255), nullable=False),
         sa.PrimaryKeyConstraint("id"),
-    )
+        if_not_exists=True)
     op.create_index("ix_nemsis_resource_packs_tenant_id", "nemsis_resource_packs", ["tenant_id"])
     op.create_index("ix_nemsis_resource_packs_status", "nemsis_resource_packs", ["status"])
     op.create_index(
@@ -62,7 +62,7 @@ def upgrade() -> None:
         sa.Column("sha256", sa.String(length=64), nullable=True),
         sa.Column("uploaded_at", sa.DateTime(timezone=True), nullable=False),
         sa.PrimaryKeyConstraint("id"),
-    )
+        if_not_exists=True)
     op.create_index("ix_nemsis_pack_files_pack_id", "nemsis_pack_files", ["pack_id"])
 
     op.create_table(
@@ -96,7 +96,7 @@ def upgrade() -> None:
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("created_by_user_id", sa.String(length=255), nullable=False),
         sa.PrimaryKeyConstraint("id"),
-    )
+        if_not_exists=True)
     op.create_index("ix_nemsis_submission_results_tenant_id", "nemsis_submission_results", ["tenant_id"])
     op.create_index("ix_nemsis_submission_results_chart_id", "nemsis_submission_results", ["chart_id"])
     op.create_index(
@@ -127,7 +127,7 @@ def upgrade() -> None:
         sa.Column("payload_snapshot_json", sa.Text(), nullable=True),
         sa.Column("transitioned_at", sa.DateTime(timezone=True), nullable=False),
         sa.PrimaryKeyConstraint("id"),
-    )
+        if_not_exists=True)
     op.create_index(
         "ix_nemsis_submission_status_history_submission_id",
         "nemsis_submission_status_history",
@@ -156,7 +156,7 @@ def upgrade() -> None:
         sa.Column("last_submission_id", sa.String(length=36), nullable=True),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.PrimaryKeyConstraint("id"),
-    )
+        if_not_exists=True)
     op.create_index("ix_nemsis_cs_scenarios_scenario_code", "nemsis_cs_scenarios", ["scenario_code"], unique=True)
     op.create_index(
         "ix_nemsis_cs_scenarios_year_category",

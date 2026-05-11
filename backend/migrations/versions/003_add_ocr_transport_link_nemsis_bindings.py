@@ -40,7 +40,7 @@ def upgrade() -> None:
         sa.Column("reviewer_user_id", sa.String(length=255), nullable=True),
         sa.Column("failure_reason", sa.Text(), nullable=True),
         sa.PrimaryKeyConstraint("id"),
-    )
+        if_not_exists=True)
     op.create_index("ix_ocr_jobs_tenant_id", "ocr_jobs", ["tenant_id"])
     op.create_index("ix_ocr_jobs_status", "ocr_jobs", ["status"])
     op.create_index("ix_ocr_jobs_transport_request_id", "ocr_jobs", ["transport_request_id"])
@@ -54,7 +54,7 @@ def upgrade() -> None:
         sa.Column("s3_key", sa.String(length=500), nullable=False),
         sa.Column("submitted_at", sa.DateTime(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
-    )
+        if_not_exists=True)
     op.create_index("ix_ocr_sources_job_id", "ocr_sources", ["job_id"])
 
     op.create_table(
@@ -66,7 +66,7 @@ def upgrade() -> None:
         sa.Column("field_count", sa.Integer(), nullable=False, server_default="0"),
         sa.Column("received_at", sa.DateTime(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
-    )
+        if_not_exists=True)
     op.create_index("ix_ocr_results_job_id", "ocr_results", ["job_id"], unique=True)
 
     op.create_table(
@@ -86,7 +86,7 @@ def upgrade() -> None:
         sa.Column("reviewer_note", sa.Text(), nullable=True),
         sa.Column("reviewed_at", sa.DateTime(), nullable=True),
         sa.PrimaryKeyConstraint("id"),
-    )
+        if_not_exists=True)
     op.create_index("ix_ocr_field_candidates_job_id", "ocr_field_candidates", ["job_id"])
     op.create_index("ix_ocr_field_candidates_review_status", "ocr_field_candidates", ["review_status"])
 
@@ -101,7 +101,7 @@ def upgrade() -> None:
         sa.Column("reviewer_note", sa.Text(), nullable=True),
         sa.Column("reviewed_at", sa.DateTime(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
-    )
+        if_not_exists=True)
     op.create_index("ix_ocr_field_reviews_candidate_id", "ocr_field_reviews", ["candidate_id"])
 
     op.create_table(
@@ -117,7 +117,7 @@ def upgrade() -> None:
         sa.Column("encounter_fields_mapped", sa.Boolean(), nullable=False, server_default=sa.false()),
         sa.Column("mapped_at", sa.DateTime(), nullable=True),
         sa.PrimaryKeyConstraint("id"),
-    )
+        if_not_exists=True)
     op.create_index("ix_epcr_transport_links_tenant_id", "epcr_transport_links", ["tenant_id"])
     op.create_index("ix_epcr_transport_links_chart_id", "epcr_transport_links", ["chart_id"])
     op.create_index("ix_epcr_transport_links_transport_request_id", "epcr_transport_links", ["transport_request_id"], unique=True)
@@ -133,7 +133,7 @@ def upgrade() -> None:
         sa.Column("s3_key", sa.String(length=500), nullable=False),
         sa.Column("linked_at", sa.DateTime(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
-    )
+        if_not_exists=True)
     op.create_index("ix_epcr_encounter_artifact_links_tenant_id", "epcr_encounter_artifact_links", ["tenant_id"])
     op.create_index("ix_epcr_encounter_artifact_links_chart_id", "epcr_encounter_artifact_links", ["chart_id"])
 
@@ -151,7 +151,7 @@ def upgrade() -> None:
         sa.Column("review_completed_at", sa.DateTime(), nullable=True),
         sa.Column("removed", sa.Boolean(), nullable=False, server_default=sa.false()),
         sa.PrimaryKeyConstraint("id"),
-    )
+        if_not_exists=True)
     op.create_index("ix_epcr_ocr_review_queue_tenant_id", "epcr_ocr_review_queue", ["tenant_id"])
     op.create_index("ix_epcr_ocr_review_queue_removed", "epcr_ocr_review_queue", ["removed"])
 
@@ -172,7 +172,7 @@ def upgrade() -> None:
         sa.Column("reviewed_at", sa.DateTime(), nullable=True),
         sa.Column("override_reason", sa.Text(), nullable=True),
         sa.PrimaryKeyConstraint("id"),
-    )
+        if_not_exists=True)
     op.create_index("ix_nemsis_field_bindings_tenant_id", "nemsis_field_bindings", ["tenant_id"])
     op.create_index("ix_nemsis_field_bindings_chart_id", "nemsis_field_bindings", ["chart_id"])
     op.create_index("ix_nemsis_field_bindings_status", "nemsis_field_bindings", ["status"])
@@ -187,7 +187,7 @@ def upgrade() -> None:
         sa.Column("reason", sa.Text(), nullable=True),
         sa.Column("reviewed_at", sa.DateTime(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
-    )
+        if_not_exists=True)
     op.create_index("ix_nemsis_binding_reviews_binding_id", "nemsis_binding_reviews", ["binding_id"])
 
     op.create_table(
@@ -202,7 +202,7 @@ def upgrade() -> None:
         sa.Column("blocking_count", sa.Integer(), nullable=False, server_default="0"),
         sa.Column("evaluated_at", sa.DateTime(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
-    )
+        if_not_exists=True)
     op.create_index("ix_nemsis_export_readiness_snapshots_tenant_id", "nemsis_export_readiness_snapshots", ["tenant_id"])
     op.create_index("ix_nemsis_export_readiness_snapshots_chart_id", "nemsis_export_readiness_snapshots", ["chart_id"])
 
@@ -215,7 +215,7 @@ def upgrade() -> None:
         sa.Column("extraction_id", sa.String(length=36), nullable=True),
         sa.Column("linked_at", sa.DateTime(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
-    )
+        if_not_exists=True)
     op.create_index("ix_epcr_nemsis_transport_binding_links_binding_id", "epcr_nemsis_transport_binding_links", ["binding_id"])
     op.create_index("ix_epcr_nemsis_transport_binding_links_chart_id", "epcr_nemsis_transport_binding_links", ["chart_id"])
 
@@ -240,7 +240,7 @@ def upgrade() -> None:
         sa.Column("promoted_at", sa.DateTime(), nullable=False),
         sa.Column("promoted_by_user_id", sa.String(length=255), nullable=False),
         sa.PrimaryKeyConstraint("id"),
-    )
+        if_not_exists=True)
     op.create_index("ix_transport_structured_extractions_tenant_id", "transport_structured_extractions", ["tenant_id"])
     op.create_index("ix_transport_structured_extractions_transport_request_id", "transport_structured_extractions", ["transport_request_id"])
 

@@ -112,7 +112,7 @@ def upgrade() -> None:
                 "occurrence_id",
                 name="uq_epcr_nemsis_field_values_occurrence",
             ),
-        )
+        if_not_exists=True)
 
     # Indexes (idempotent)
     if not _has_index(insp, TABLE, "idx_epcr_nemsis_field_values_tenant_chart"):

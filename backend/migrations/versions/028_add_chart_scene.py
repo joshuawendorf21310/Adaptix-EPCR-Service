@@ -111,7 +111,7 @@ def upgrade() -> None:
                 "chart_id",
                 name="uq_epcr_chart_scene_tenant_chart",
             ),
-        )
+        if_not_exists=True)
 
     if not _has_index(insp, SCENE_TABLE, "ix_epcr_chart_scene_tenant_id"):
         op.create_index(
@@ -171,7 +171,7 @@ def upgrade() -> None:
                 "agency_id",
                 name="uq_epcr_chart_scene_other_agencies_tenant_chart_agency",
             ),
-        )
+        if_not_exists=True)
 
     if not _has_index(
         insp, AGENCIES_TABLE, "ix_epcr_chart_scene_other_agencies_tenant_id"

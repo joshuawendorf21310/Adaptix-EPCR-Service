@@ -118,7 +118,7 @@ def _create_ext(insp) -> None:
             "vitals_id",
             name="uq_epcr_vitals_nemsis_ext_vitals_id",
         ),
-    )
+        if_not_exists=True)
 
 
 def _create_gcs(insp) -> None:
@@ -171,7 +171,7 @@ def _create_gcs(insp) -> None:
             "qualifier_code",
             name="uq_epcr_vitals_gcs_qualifiers_tenant_vitals_code",
         ),
-    )
+        if_not_exists=True)
 
 
 def _create_rc(insp) -> None:
@@ -224,7 +224,7 @@ def _create_rc(insp) -> None:
             "item_code",
             name="uq_epcr_vitals_reperfusion_checklist_tenant_vitals_code",
         ),
-    )
+        if_not_exists=True)
 
 
 def _create_indexes(insp) -> None:

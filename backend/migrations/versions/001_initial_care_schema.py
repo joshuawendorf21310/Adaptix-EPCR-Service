@@ -28,7 +28,7 @@ def upgrade() -> None:
         sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
         sa.Column('finalized_at', sa.DateTime(timezone=True), nullable=True),
         sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True, index=True),
-    )
+        if_not_exists=True)
     
     op.create_table(
         'epcr_vitals',
@@ -44,7 +44,7 @@ def upgrade() -> None:
         sa.Column('glucose', sa.Integer(), nullable=True),
         sa.Column('recorded_at', sa.DateTime(timezone=True), nullable=False),
         sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True),
-    )
+        if_not_exists=True)
     
     op.create_table(
         'epcr_assessments',
@@ -55,7 +55,7 @@ def upgrade() -> None:
         sa.Column('field_diagnosis', sa.String(500), nullable=True),
         sa.Column('documented_at', sa.DateTime(timezone=True), nullable=False),
         sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True),
-    )
+        if_not_exists=True)
     
     op.create_table(
         'epcr_nemsis_mappings',
@@ -67,7 +67,7 @@ def upgrade() -> None:
         sa.Column('source', sa.String(50), nullable=False),
         sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
         sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
-    )
+        if_not_exists=True)
     
     op.create_table(
         'epcr_nemsis_compliance',
@@ -81,7 +81,7 @@ def upgrade() -> None:
         sa.Column('compliance_checked_at', sa.DateTime(timezone=True), nullable=True),
         sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
         sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
-    )
+        if_not_exists=True)
 
 def downgrade() -> None:
     op.drop_table('epcr_nemsis_compliance')

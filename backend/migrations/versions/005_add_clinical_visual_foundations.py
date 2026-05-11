@@ -38,7 +38,7 @@ def upgrade() -> None:
         sa.Column("observed_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
         sa.PrimaryKeyConstraint("id"),
-    )
+        if_not_exists=True)
     op.create_index("ix_epcr_assessment_findings_chart_id", "epcr_assessment_findings", ["chart_id"])
     op.create_index("ix_epcr_assessment_findings_tenant_id", "epcr_assessment_findings", ["tenant_id"])
 
@@ -61,7 +61,7 @@ def upgrade() -> None:
         sa.Column("rendered_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
         sa.PrimaryKeyConstraint("id"),
-    )
+        if_not_exists=True)
     op.create_index("ix_epcr_visual_overlays_chart_id", "epcr_visual_overlays", ["chart_id"])
     op.create_index("ix_epcr_visual_overlays_finding_id", "epcr_visual_overlays", ["finding_id"])
     op.create_index("ix_epcr_visual_overlays_tenant_id", "epcr_visual_overlays", ["tenant_id"])
@@ -79,7 +79,7 @@ def upgrade() -> None:
         sa.Column("ended_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
         sa.PrimaryKeyConstraint("id"),
-    )
+        if_not_exists=True)
     op.create_index("ix_epcr_ar_sessions_chart_id", "epcr_ar_sessions", ["chart_id"])
     op.create_index("ix_epcr_ar_sessions_tenant_id", "epcr_ar_sessions", ["tenant_id"])
 
@@ -94,7 +94,7 @@ def upgrade() -> None:
         sa.Column("anchored_by_user_id", sa.String(length=255), nullable=False),
         sa.Column("anchored_at", sa.DateTime(timezone=True), nullable=False),
         sa.PrimaryKeyConstraint("id"),
-    )
+        if_not_exists=True)
     op.create_index("ix_epcr_ar_anchors_session_id", "epcr_ar_anchors", ["session_id"])
     op.create_index("ix_epcr_ar_anchors_tenant_id", "epcr_ar_anchors", ["tenant_id"])
 

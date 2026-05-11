@@ -68,7 +68,7 @@ def upgrade() -> None:
             sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.text("CURRENT_TIMESTAMP")),
             sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
             sa.UniqueConstraint("tenant_id", "agency_code", name="uq_agency_profiles_tenant_agency_code"),
-        )
+        if_not_exists=True)
         op.create_index("idx_agency_profiles_tenant_id", AGENCY_TABLE, ["tenant_id"])
         op.create_index("idx_agency_profiles_agency_code", AGENCY_TABLE, ["agency_code"])
 
@@ -88,7 +88,7 @@ def upgrade() -> None:
                 "sequence_year",
                 name="uq_epcr_numbering_sequences_scope",
             ),
-        )
+        if_not_exists=True)
         op.create_index("idx_epcr_numbering_sequences_tenant", SEQUENCE_TABLE, ["tenant_id", "agency_code", "sequence_year"])
 
     chart_columns = [

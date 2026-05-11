@@ -86,7 +86,7 @@ def upgrade() -> None:
                 "chart_id",
                 name="uq_epcr_chart_dispatch_tenant_chart",
             ),
-        )
+        if_not_exists=True)
 
     if not _has_index(insp, TABLE, "ix_epcr_chart_dispatch_tenant_id"):
         op.create_index(
