@@ -171,6 +171,20 @@ jobs:
           echo "new_td_arn=${NEW_TD_ARN}" >> "$GITHUB_OUTPUT"
           echo "Registered production task definition: ${NEW_TD_ARN}"
 
+      - name: Print production task definition log configuration
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition "${{ env.PROD_ECS_SERVICE }}" \
+            --query 'taskDefinition.containerDefinitions[*].{name:name,logConfig:logConfiguration}' \
+            --output json 2>&1 || echo "Could not fetch task definition"
+
+      - name: Ensure CloudWatch log group exists for migration task logs
+        run: |
+          aws logs create-log-group \
+            --log-group-name "/ecs/adaptix-production-epcr" \
+            --region "${{ env.AWS_REGION }}" 2>&1 || true
+          echo "Log group ready."
+
       - name: Run production database migrations (alembic upgrade head)
         env:
           PROD_PRIVATE_SUBNET_IDS: ${{ secrets.PROD_PRIVATE_SUBNET_IDS }}
@@ -258,16 +272,21 @@ jobs:
 
           if [ "${EXIT_CODE}" != "0" ]; then
             echo "::error::alembic upgrade head failed (exit ${EXIT_CODE}). Aborting deploy."
-            echo "--- Fetching CloudWatch logs for task ${TASK_ARN} ---"
+            echo "--- Fetching CloudWatch logs ---"
             TASK_ID="${TASK_ARN##*/}"
-            LOG_STREAM="ecs/epcr/${TASK_ID}"
             LOG_GROUP="/ecs/adaptix-production-epcr"
-            aws logs get-log-events \
-              --log-group-name "${LOG_GROUP}" \
-              --log-stream-name "${LOG_STREAM}" \
-              --region "${{ env.AWS_REGION }}" \
-              --query 'events[*].message' \
-              --output text 2>&1 || echo "Could not fetch CloudWatch logs (stream may not exist yet)"
+            sleep 5
+            # ECS awslogs stream name format: prefix/container/taskId
+            # Try both common formats
+            for STREAM in "ecs/epcr/${TASK_ID}" "adaptix-production-epcr/epcr/${TASK_ID}"; do
+              echo "Trying log stream: ${STREAM}"
+              aws logs get-log-events \
+                --log-group-name "${LOG_GROUP}" \
+                --log-stream-name "${STREAM}" \
+                --region "${{ env.AWS_REGION }}" \
+                --query 'events[*].message' \
+                --output text 2>&1 && break || true
+            done
             exit 1
           fi
 
