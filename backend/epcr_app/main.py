@@ -154,6 +154,25 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+
+from fastapi import Request
+from typing import Callable
+
+
+@app.middleware("http")
+async def rewrite_legacy_path(request: Request, call_next: Callable):
+    path = request.scope.get("path", "")
+    if path.startswith("/api/epcr") and not path.startswith("/api/v1/"):
+        request.scope["path"] = "/api/v1/epcr" + path[len("/api/epcr"):]
+    return await call_next(request)
+
+
+@app.get("/api/epcr/health", include_in_schema=False)
+@app.get("/api/epcr/healthz", include_in_schema=False)
+async def legacy_epcr_health():
+    return {"status": "ok", "service": "epcr"}
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_cors_allow_origins(),
