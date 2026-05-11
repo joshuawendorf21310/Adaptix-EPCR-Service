@@ -205,7 +205,10 @@ jobs:
           print(json.dumps({
             'containerOverrides': [{
               'name': '${{ env.CONTAINER_NAME }}',
-              'command': ['alembic', 'upgrade', 'head']
+              'command': [
+                'sh', '-c',
+                'cd /app && python3 migrations/pre_stamp_if_untracked.py && alembic upgrade head'
+              ]
             }]
           }))
           ")
