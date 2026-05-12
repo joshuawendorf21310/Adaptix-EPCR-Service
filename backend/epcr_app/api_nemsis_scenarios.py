@@ -1050,61 +1050,10 @@ async def get_scenario_fixture(
     }
 
 
-def _anthropic_configured() -> bool:
-    return bool(os.environ.get("ANTHROPIC_API_KEY", "").strip())
-
-
-def _bedrock_configured() -> bool:
-    return bool(
-        os.environ.get("BEDROCK_REGION", "").strip()
-        and os.environ.get("BEDROCK_MODEL_ID", "").strip()
-    )
-
-
-def _select_ai_provider() -> str | None:
-    """Choose the advisory AI backend.
-
-    Order:
-      1. Explicit override via ``AI_PROVIDER`` env (``bedrock`` | ``anthropic``).
-      2. Bedrock when ``BEDROCK_REGION`` + ``BEDROCK_MODEL_ID`` are set
-         (preferred for AWS-deployed environments; uses AWS toolkit /
-         instance credentials).
-      3. Direct Anthropic when ``ANTHROPIC_API_KEY`` is set.
-      4. ``None`` when no provider is configured.
-    """
-
-    override = os.environ.get("AI_PROVIDER", "").strip().lower()
-    if override == "bedrock" and _bedrock_configured():
-        return "bedrock"
-    if override == "anthropic" and _anthropic_configured():
-        return "anthropic"
-    if _bedrock_configured():
-        return "bedrock"
-    if _anthropic_configured():
-        return "anthropic"
-    return None
-
-
-def _build_ai_client_and_model() -> tuple[Any, str, str]:
-    """Return ``(client, model_id, provider_name)`` for the active backend.
-
-    Caller must check :func:`_select_ai_provider` first; this raises
-    :class:`RuntimeError` when no provider is configured.
-    """
-
-    import anthropic  # type: ignore  # noqa: PLC0415
-
-    provider = _select_ai_provider()
-    if provider == "bedrock":
-        region = os.environ.get("BEDROCK_REGION", "").strip()
-        model = os.environ.get("BEDROCK_MODEL_ID", "").strip()
-        client = anthropic.AnthropicBedrock(aws_region=region)
-        return client, model, "bedrock"
-    if provider == "anthropic":
-        client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
-        model = os.environ.get("ANTHROPIC_TAC_MODEL", "claude-sonnet-4-6")
-        return client, model, "anthropic"
-    raise RuntimeError("No AI provider is configured.")
+from epcr_app._ai_bedrock import (  # noqa: E402
+    invoke_ai as _invoke_ai,
+    select_ai_provider as _select_ai_provider,
+)
 
 
 _AI_EDIT_PREAMBLE = (
@@ -1200,7 +1149,6 @@ async def ai_edit_scenario(
         }
 
     try:
-        client, model, provider_name = _build_ai_client_and_model()
         current_xml_text = current_xml_bytes.decode("utf-8", errors="replace")
         user_content = (
             f"Examiner instruction:\n{instruction}\n\n"
@@ -1208,21 +1156,14 @@ async def ai_edit_scenario(
             f"```xml\n{current_xml_text}\n```\n\n"
             "Apply the examiner instruction and return the JSON described above."
         )
-        message = client.messages.create(
-            model=model,
-            max_tokens=8192,
+        provider_name, model, response_text = _invoke_ai(
             system=_AI_EDIT_PREAMBLE,
-            messages=[{"role": "user", "content": user_content}],
+            user=user_content,
+            max_tokens=8192,
+            tier="escalate",
         )
-        # Anthropic SDK returns a list of content blocks; concatenate text blocks.
-        text_parts: list[str] = []
-        for block in getattr(message, "content", []) or []:
-            block_text = getattr(block, "text", None)
-            if isinstance(block_text, str):
-                text_parts.append(block_text)
-        response_text = "".join(text_parts).strip()
         if not response_text:
-            raise RuntimeError("Anthropic returned empty response.")
+            raise RuntimeError("AI returned empty response.")
 
         # The model is instructed to return raw JSON; tolerate accidental
         # ```json fences just in case.

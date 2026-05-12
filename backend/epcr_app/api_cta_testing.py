@@ -363,6 +363,9 @@ def _bedrock_configured() -> bool:
     return bool(region and model)
 
 
+from epcr_app._ai_bedrock import invoke_ai as _invoke_ai  # noqa: E402
+
+
 # --------------------------------------------------------------------------- #
 # Routes
 # --------------------------------------------------------------------------- #
@@ -640,14 +643,10 @@ async def create_ai_review(
     # sent to the model — never the raw chart XML — so no PHI leaves the
     # service. The AI cannot mutate xsd_valid / schematron_valid; only the
     # human-readable advisory fields are taken from the model response.
-    region = os.environ.get("BEDROCK_REGION", "").strip()
-    model_id = os.environ.get("BEDROCK_MODEL_ID", "").strip()
     try:
-        import anthropic  # type: ignore  # noqa: PLC0415
         import json as _json  # noqa: PLC0415
         import re as _re  # noqa: PLC0415
 
-        client = anthropic.AnthropicBedrock(aws_region=region)
         system_prompt = (
             "You are an advisory NEMSIS 3.5.1 CTA reviewer. You will be "
             "given the validator output (XSD + Schematron errors and "
@@ -688,20 +687,11 @@ async def create_ai_review(
             f"```json\n{_json.dumps(validator_payload, default=str, indent=2)}\n```\n\n"
             "Return ONLY the JSON object described above, no surrounding text."
         )
-        message = client.messages.create(
-            model=model_id,
-            max_tokens=4096,
-            system=system_prompt,
-            messages=[{"role": "user", "content": user_msg}],
+        _provider_name, _model_id, raw = _invoke_ai(
+            system=system_prompt, user=user_msg, max_tokens=4096, tier="default"
         )
-        text_parts: list[str] = []
-        for block in getattr(message, "content", []) or []:
-            block_text = getattr(block, "text", None)
-            if isinstance(block_text, str):
-                text_parts.append(block_text)
-        raw = "".join(text_parts).strip()
         if not raw:
-            raise RuntimeError("Bedrock returned empty response.")
+            raise RuntimeError("AI returned empty response.")
         cleaned = raw
         if cleaned.startswith("```"):
             cleaned = _re.sub(r"^```(?:json)?\s*", "", cleaned)
