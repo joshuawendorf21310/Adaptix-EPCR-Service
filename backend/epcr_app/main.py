@@ -50,6 +50,7 @@ from epcr_app.api_nemsis_scenarios import router as nemsis_scenarios_router
 from epcr_app.api_nemsis_field_values import router as nemsis_field_values_router
 from epcr_app.api_nemsis_datasets import router as nemsis_datasets_router
 from epcr_app.api_cta_testing import router as cta_testing_router
+from epcr_app.api_tac_schematron_packages import router as tac_schematron_packages_router
 from epcr_app.api_version import router as version_router
 # NEMSIS v3.5.1 vertical slices (migrations 024..039)
 from epcr_app.api_chart_times import router as chart_times_router
@@ -237,6 +238,7 @@ app.include_router(nemsis_scenarios_router)
 app.include_router(nemsis_field_values_router)
 app.include_router(nemsis_datasets_router)
 app.include_router(cta_testing_router)
+app.include_router(tac_schematron_packages_router)
 app.include_router(version_router)
 # NEMSIS v3.5.1 vertical slice routers
 app.include_router(chart_times_router)
