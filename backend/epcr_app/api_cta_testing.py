@@ -196,6 +196,7 @@ class CtaValidationRunRequest(BaseModel):
     use_deployed_assets: bool = True
     xsd_asset_upload_id: str | None = None
     schematron_asset_upload_id: str | None = None
+    validation_mode: Literal["development", "certification"] = "development"
 
 
 class CtaValidationRunResponse(BaseModel):
@@ -209,6 +210,7 @@ class CtaValidationRunResponse(BaseModel):
     chart_id: str | None
     xsd_asset_upload_id: str | None
     schematron_asset_upload_id: str | None
+    validation_mode: Literal["development", "certification"] = "development"
     xsd_valid: bool
     schematron_valid: bool
     schematron_skipped: bool = False
@@ -532,9 +534,15 @@ async def create_validation_run(
                 f.write(bytes(sch_bytes))
 
     validator = NemsisXSDValidator()
+    _prior_mode = os.environ.get("NEMSIS_VALIDATION_MODE")
     try:
+        os.environ["NEMSIS_VALIDATION_MODE"] = body.validation_mode
         result = validator.validate_xml(xml_bytes, custom_sch_path=custom_sch_path)
     finally:
+        if _prior_mode is None:
+            os.environ.pop("NEMSIS_VALIDATION_MODE", None)
+        else:
+            os.environ["NEMSIS_VALIDATION_MODE"] = _prior_mode
         validator.close()
         if _sch_tempdir is not None:
             _sch_tempdir.cleanup()
@@ -551,6 +559,7 @@ async def create_validation_run(
         "chart_id": chart_id,
         "xsd_asset_upload_id": body.xsd_asset_upload_id,
         "schematron_asset_upload_id": body.schematron_asset_upload_id,
+        "validation_mode": body.validation_mode,
         "xsd_valid": bool(result.get("xsd_valid")),
         "schematron_valid": bool(result.get("schematron_valid")),
         "schematron_skipped": bool(result.get("schematron_skipped", False)),
