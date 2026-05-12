@@ -7,17 +7,19 @@ and custom/state elements remain intact.
 """
 from __future__ import annotations
 
+import base64
 import json
 import logging
 import os
 import re
+import tempfile
 import uuid
 from datetime import UTC, datetime, timezone
 from pathlib import Path
 from typing import Any
 
 import httpx
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Body, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -274,6 +276,49 @@ class _SubmitResponse(BaseModel):
     validation_result: dict[str, Any]
     xml_size_bytes: int
     submitted_at: str
+
+
+class _ConferenceSubmitRequest(BaseModel):
+    """Optional payload for the TAC conference workbench.
+
+    - ``xml_override_base64``: base64-encoded NEMSIS XML to submit
+      verbatim instead of regenerating from the baked CTA fixture.
+      Used during the TAC web conference when the examiner asks the
+      operator to edit specific custom/key elements before submitting.
+    - ``schematron_upload_id``: optional upload id (from the CTA testing
+      workbench upload endpoint) of a schematron the examiner provided
+      during the web conference. When set, validation is gated against
+      this schematron in addition to the deployed XSD.
+    - ``skip_validation``: allow forced submission when the examiner
+      explicitly requests a negative/edge-case test. Default ``False``.
+    """
+
+    xml_override_base64: str | None = None
+    schematron_upload_id: str | None = None
+    skip_validation: bool = False
+
+
+class _FixtureResponse(BaseModel):
+    scenario_code: str
+    filename: str
+    xml: str
+    xml_size_bytes: int
+    sha256: str
+
+
+class _AiEditRequest(BaseModel):
+    current_xml_base64: str
+    examiner_instruction: str
+
+
+class _AiEditResponse(BaseModel):
+    status: str  # "ok" | "provider_not_configured" | "failed"
+    provider: str
+    model: str | None
+    proposed_xml_base64: str | None
+    change_summary: str
+    operator_disclaimer: str
+    generated_at: str
 
 
 def _find_scenario(scenario_code: str) -> dict[str, Any] | None:
@@ -669,6 +714,7 @@ async def submit_scenario(
     scenario_id: str,
     current_user: CurrentUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
+    body: _ConferenceSubmitRequest | None = Body(default=None),
 ) -> dict[str, Any]:
     tenant_id = str(current_user.tenant_id)
     user_id = str(current_user.user_id)
@@ -676,14 +722,125 @@ async def submit_scenario(
     if scenario is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Scenario '{scenario_id}' not found in the TAC scenario suite.")
 
+    body = body or _ConferenceSubmitRequest()
+
+    # ------------------------------------------------------------------
+    # Resolve XML payload
+    #   - default path: regenerate from baked CTA fixture (existing
+    #     behavior, used by the scenario harness)
+    #   - conference path: caller supplied edited XML via
+    #     ``xml_override_base64`` (TAC web conference change requests)
+    # ------------------------------------------------------------------
+    override_used = False
+    if body.xml_override_base64:
+        try:
+            xml_bytes = base64.b64decode(body.xml_override_base64, validate=True)
+        except Exception as exc:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"xml_override_base64 is not valid base64: {exc}",
+            ) from exc
+        if not xml_bytes:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="xml_override_base64 decoded to empty payload.",
+            )
+        override_used = True
+    else:
+        try:
+            xml_bytes = _generate_pretesting_xml_or_500(scenario_id, scenario)
+        except HTTPException:
+            raise
+        except Exception as exc:
+            logger.exception("submit_scenario: XML generation failed for scenario %s tenant %s", scenario_id, tenant_id)
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Scenario submission preparation failed for '{scenario_id}': {exc}") from exc
+
+    # ------------------------------------------------------------------
+    # Validation (optionally gated by examiner-provided schematron)
+    # ------------------------------------------------------------------
+    custom_sch_path: str | None = None
+    _sch_tempdir: tempfile.TemporaryDirectory[str] | None = None
+    if body.schematron_upload_id:
+        try:
+            from epcr_app.api_cta_testing import _UPLOADS as _CTA_UPLOADS  # noqa: PLC0415
+
+            sch_record = _CTA_UPLOADS.get(body.schematron_upload_id)
+            if sch_record is None or sch_record.get("tenant_id") != tenant_id:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="schematron_upload_id not found for this tenant.",
+                )
+            sch_bytes = sch_record.get("_bytes")
+            if sch_bytes:
+                _sch_tempdir = tempfile.TemporaryDirectory()
+                sch_filename = sch_record.get("filename", "examiner.sch")
+                custom_sch_path = os.path.join(_sch_tempdir.name, sch_filename)
+                with open(custom_sch_path, "wb") as fh:
+                    fh.write(bytes(sch_bytes))
+        except HTTPException:
+            raise
+        except Exception as exc:
+            logger.exception("submit_scenario: examiner schematron load failed")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Failed to load examiner schematron: {exc}",
+            ) from exc
+
     try:
-        xml_bytes = _generate_pretesting_xml_or_500(scenario_id, scenario)
-        validation_result = _validate_or_422(xml_bytes)
+        if custom_sch_path is not None:
+            validator = NemsisXSDValidator()
+            try:
+                validation_result = validator.validate_xml(xml_bytes, custom_sch_path=custom_sch_path)
+            finally:
+                validator.close()
+            if validation_result.get("validation_skipped") and not body.skip_validation:
+                raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail={
+                        "error": "Validation did not run",
+                        "blocking_reason": validation_result.get("blocking_reason"),
+                    },
+                )
+            if not validation_result.get("valid") and not body.skip_validation:
+                raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail={
+                        "error": "Validation failed with examiner schematron",
+                        "xsd_errors": validation_result.get("xsd_errors", []),
+                        "schematron_errors": validation_result.get("schematron_errors", []),
+                        "schematron_warnings": validation_result.get("schematron_warnings", []),
+                    },
+                )
+        else:
+            if body.skip_validation:
+                # Caller explicitly bypassing validation — record minimal evidence.
+                validation_result = {
+                    "valid": None,
+                    "validation_skipped": True,
+                    "skip_reason": "operator_forced",
+                    "xsd_errors": [],
+                    "schematron_errors": [],
+                    "schematron_warnings": [],
+                    "cardinality_errors": [],
+                }
+            else:
+                validation_result = _validate_or_422(xml_bytes)
     except HTTPException:
+        if _sch_tempdir is not None:
+            _sch_tempdir.cleanup()
         raise
     except Exception as exc:
-        logger.exception("submit_scenario: XML generation or validation failed for scenario %s tenant %s", scenario_id, tenant_id)
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Scenario submission preparation failed for '{scenario_id}': {exc}") from exc
+        if _sch_tempdir is not None:
+            _sch_tempdir.cleanup()
+        logger.exception("submit_scenario: validation failed for scenario %s tenant %s", scenario_id, tenant_id)
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Scenario validation failed for '{scenario_id}': {exc}") from exc
+    finally:
+        if _sch_tempdir is not None and custom_sch_path is not None:
+            # Keep tempdir alive through validate above; cleanup after.
+            pass
+
+    if _sch_tempdir is not None:
+        _sch_tempdir.cleanup()
 
     submission_id = str(uuid.uuid4())
     submission_number = f"TAC-{scenario['scenario_code']}-{datetime.now(UTC).strftime('%Y%m%d%H%M%S')}"
@@ -736,6 +893,8 @@ async def submit_scenario(
                 "validation_valid": validation_result.get("valid"),
                 "validation_skipped": validation_result.get("validation_skipped"),
                 "soap_http_status": soap_result.get("http_status"),
+                "xml_override_used": override_used,
+                "examiner_schematron_used": bool(body.schematron_upload_id),
             }
         ),
         transitioned_at=now_utc,
@@ -835,3 +994,266 @@ async def get_scenario_evidence(
             }
 
     return evidence
+
+
+# --------------------------------------------------------------------------- #
+# TAC Conference Workbench endpoints
+#
+# These power the screen-share friendly /internal/cta-conference UI used
+# during live TAC web conference testing. Examiners ask operators to edit
+# specific custom/key elements mid-call; the workbench loads the baked
+# fixture, lets the operator edit, optionally requests an AI advisory
+# suggestion (Anthropic-backed; never authoritative), validates against
+# the examiner-provided schematron, and submits the edited XML verbatim
+# to the live TAC SOAP endpoint.
+# --------------------------------------------------------------------------- #
+
+
+@router.get(
+    "/{scenario_id}/fixture",
+    response_model=_FixtureResponse,
+    summary="Load the baked CTA fixture XML for the TAC conference workbench",
+)
+async def get_scenario_fixture(
+    scenario_id: str,
+    current_user: CurrentUser = Depends(get_current_user),
+) -> dict[str, Any]:
+    """Return the published CTA XML for a scenario with safe stamping
+    applied (fresh UUIDs, eRecord.01-04 software identity, DEM
+    DemographicReport timestamp). The operator edits this payload during
+    the TAC web conference and submits via ``/submit`` with
+    ``xml_override_base64``."""
+
+    _ = current_user
+    scenario = _find_scenario(scenario_id)
+    if scenario is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Scenario '{scenario_id}' not found in the TAC scenario suite.",
+        )
+
+    xml_bytes = _generate_pretesting_xml_or_500(scenario_id, scenario)
+    xml_str = xml_bytes.decode("utf-8", errors="strict")
+    filename = (
+        _2025_CTA_FILES.get(scenario["scenario_code"])
+        or _PRETESTING_FILES.get(scenario["scenario_code"])
+        or f"{scenario['scenario_code']}.xml"
+    )
+    import hashlib
+
+    return {
+        "scenario_code": scenario["scenario_code"],
+        "filename": filename,
+        "xml": xml_str,
+        "xml_size_bytes": len(xml_bytes),
+        "sha256": hashlib.sha256(xml_bytes).hexdigest(),
+    }
+
+
+def _anthropic_configured() -> bool:
+    return bool(os.environ.get("ANTHROPIC_API_KEY", "").strip())
+
+
+def _bedrock_configured() -> bool:
+    return bool(
+        os.environ.get("BEDROCK_REGION", "").strip()
+        and os.environ.get("BEDROCK_MODEL_ID", "").strip()
+    )
+
+
+def _select_ai_provider() -> str | None:
+    """Choose the advisory AI backend.
+
+    Order:
+      1. Explicit override via ``AI_PROVIDER`` env (``bedrock`` | ``anthropic``).
+      2. Bedrock when ``BEDROCK_REGION`` + ``BEDROCK_MODEL_ID`` are set
+         (preferred for AWS-deployed environments; uses AWS toolkit /
+         instance credentials).
+      3. Direct Anthropic when ``ANTHROPIC_API_KEY`` is set.
+      4. ``None`` when no provider is configured.
+    """
+
+    override = os.environ.get("AI_PROVIDER", "").strip().lower()
+    if override == "bedrock" and _bedrock_configured():
+        return "bedrock"
+    if override == "anthropic" and _anthropic_configured():
+        return "anthropic"
+    if _bedrock_configured():
+        return "bedrock"
+    if _anthropic_configured():
+        return "anthropic"
+    return None
+
+
+def _build_ai_client_and_model() -> tuple[Any, str, str]:
+    """Return ``(client, model_id, provider_name)`` for the active backend.
+
+    Caller must check :func:`_select_ai_provider` first; this raises
+    :class:`RuntimeError` when no provider is configured.
+    """
+
+    import anthropic  # type: ignore  # noqa: PLC0415
+
+    provider = _select_ai_provider()
+    if provider == "bedrock":
+        region = os.environ.get("BEDROCK_REGION", "").strip()
+        model = os.environ.get("BEDROCK_MODEL_ID", "").strip()
+        client = anthropic.AnthropicBedrock(aws_region=region)
+        return client, model, "bedrock"
+    if provider == "anthropic":
+        client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
+        model = os.environ.get("ANTHROPIC_TAC_MODEL", "claude-sonnet-4-6")
+        return client, model, "anthropic"
+    raise RuntimeError("No AI provider is configured.")
+
+
+_AI_EDIT_PREAMBLE = (
+    "You are an advisory NEMSIS 3.5.1 XML editing assistant supporting a "
+    "live TAC compliance web conference. You will be given the current "
+    "scenario XML and an examiner instruction (a natural-language change "
+    "the TAC examiner just asked the operator to apply). Your job is to "
+    "propose a minimal, well-formed XML edit that satisfies the examiner "
+    "request while preserving every other element, attribute, and value "
+    "unchanged. NEVER fabricate UUIDs that were already present, NEVER "
+    "remove unrelated elements, NEVER change schema namespace, NEVER mark "
+    "validation as passed. Your output is advisory only — a human operator "
+    "must visually review the diff before submitting. Respond with a JSON "
+    "object containing exactly two keys:\n"
+    '  - "proposed_xml": the full edited XML string\n'
+    '  - "change_summary": a one-paragraph plain-English summary describing '
+    "the edits applied.\n"
+    "Respond with ONLY the JSON object, no surrounding text."
+)
+
+
+@router.post(
+    "/{scenario_id}/ai-edit",
+    response_model=_AiEditResponse,
+    summary="Advisory AI suggestion for examiner-driven XML edits (conference workbench)",
+)
+async def ai_edit_scenario(
+    scenario_id: str,
+    body: _AiEditRequest,
+    current_user: CurrentUser = Depends(get_current_user),
+) -> dict[str, Any]:
+    """Anthropic-backed advisory AI helper for the TAC conference.
+
+    Returns ``status='provider_not_configured'`` when no AI provider is
+    available so the UI can render a truthful disabled state instead of a
+    fake suggestion. AI output is **advisory only**: it cannot pass
+    validation, cannot submit, and the operator must visually confirm the
+    diff before clicking Submit.
+    """
+
+    _ = current_user
+    scenario = _find_scenario(scenario_id)
+    if scenario is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Scenario '{scenario_id}' not found in the TAC scenario suite.",
+        )
+
+    try:
+        current_xml_bytes = base64.b64decode(body.current_xml_base64, validate=True)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"current_xml_base64 is not valid base64: {exc}",
+        ) from exc
+
+    if len(current_xml_bytes) == 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="current_xml_base64 decoded to empty payload.",
+        )
+
+    instruction = (body.examiner_instruction or "").strip()
+    if not instruction:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="examiner_instruction is required.",
+        )
+
+    now_iso = datetime.now(UTC).isoformat()
+    disclaimer = (
+        "Advisory only. Validator (XSD + Schematron) and the TAC SOAP "
+        "response remain authoritative. Operator must visually review "
+        "the diff before submitting."
+    )
+
+    provider_name = _select_ai_provider()
+    if provider_name is None:
+        return {
+            "status": "provider_not_configured",
+            "provider": "none",
+            "model": None,
+            "proposed_xml_base64": None,
+            "change_summary": (
+                "AI advisory provider not configured (set BEDROCK_REGION + "
+                "BEDROCK_MODEL_ID for AWS Bedrock, or ANTHROPIC_API_KEY for "
+                "direct Anthropic). The validator and TAC SOAP response "
+                "remain authoritative; the operator may still edit the XML "
+                "manually."
+            ),
+            "operator_disclaimer": disclaimer,
+            "generated_at": now_iso,
+        }
+
+    try:
+        client, model, provider_name = _build_ai_client_and_model()
+        current_xml_text = current_xml_bytes.decode("utf-8", errors="replace")
+        user_content = (
+            f"Examiner instruction:\n{instruction}\n\n"
+            f"Current NEMSIS XML (scenario {scenario['scenario_code']}):\n"
+            f"```xml\n{current_xml_text}\n```\n\n"
+            "Apply the examiner instruction and return the JSON described above."
+        )
+        message = client.messages.create(
+            model=model,
+            max_tokens=8192,
+            system=_AI_EDIT_PREAMBLE,
+            messages=[{"role": "user", "content": user_content}],
+        )
+        # Anthropic SDK returns a list of content blocks; concatenate text blocks.
+        text_parts: list[str] = []
+        for block in getattr(message, "content", []) or []:
+            block_text = getattr(block, "text", None)
+            if isinstance(block_text, str):
+                text_parts.append(block_text)
+        response_text = "".join(text_parts).strip()
+        if not response_text:
+            raise RuntimeError("Anthropic returned empty response.")
+
+        # The model is instructed to return raw JSON; tolerate accidental
+        # ```json fences just in case.
+        cleaned = response_text
+        if cleaned.startswith("```"):
+            cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned)
+            cleaned = re.sub(r"\s*```$", "", cleaned)
+        parsed = json.loads(cleaned)
+        proposed_xml = parsed.get("proposed_xml")
+        change_summary = parsed.get("change_summary") or "AI did not provide a change summary."
+        if not isinstance(proposed_xml, str) or not proposed_xml.strip():
+            raise RuntimeError("AI response missing 'proposed_xml'.")
+
+        proposed_bytes = proposed_xml.encode("utf-8")
+        return {
+            "status": "ok",
+            "provider": provider_name,
+            "model": model,
+            "proposed_xml_base64": base64.b64encode(proposed_bytes).decode("ascii"),
+            "change_summary": change_summary,
+            "operator_disclaimer": disclaimer,
+            "generated_at": now_iso,
+        }
+    except Exception as exc:
+        logger.exception("ai_edit_scenario: advisory AI call failed for scenario %s", scenario_id)
+        return {
+            "status": "failed",
+            "provider": provider_name or "none",
+            "model": None,
+            "proposed_xml_base64": None,
+            "change_summary": f"AI advisory call failed: {exc}",
+            "operator_disclaimer": disclaimer,
+            "generated_at": now_iso,
+        }
