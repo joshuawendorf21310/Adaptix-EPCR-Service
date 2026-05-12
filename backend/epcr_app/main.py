@@ -263,6 +263,9 @@ app.include_router(transfer_packet_router)
 app.include_router(audit_router)
 # Medical Director, QA, and QI quality governance module
 app.include_router(quality_router)
+# Clinical protocols catalog
+from epcr_app.protocols.router import router as protocols_router  # noqa: E402
+app.include_router(protocols_router)
 
 logger.info("Care service configured with all routers: CareGraph, CPAE, VAS, Vision, CriticalCare, Sync, Dashboard, SmartText, Address, Desktop, NEMSIS v3.5.1 slices (eTimes, eDispatch, eCrew, eResponse, eScene, eSituation, eHistory, eInjury, eArrest, eDisposition, ePayment, eOutcome, eExam, ePatient-ext, eVitals-ext, eMedications-ext, eProcedures-ext), AI, TransferPacket, Audit")
 
