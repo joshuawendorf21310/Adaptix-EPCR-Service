@@ -636,34 +636,132 @@ async def create_ai_review(
         _AI_REVIEWS[run_id] = review
         return CtaAiReviewResponse(**review)
 
-    # Live Bedrock invocation belongs in a dedicated PHI-safe service that
-    # is not yet enabled in this environment. Surface that honestly rather
-    # than fabricating a Bedrock response.
-    review = {
-        "status": "failed",
-        "provider": "aws_bedrock",
-        "summary": (
-            "Bedrock advisory review pipeline is not yet enabled in this "
-            "environment. Validator results above remain authoritative."
-        ),
-        "blocking_findings_summary": [
-            f"{len(run['xsd_errors'])} XSD error(s)",
-            f"{len(run['schematron_errors'])} Schematron error(s)",
-        ],
-        "warning_findings_summary": [
-            f"{len(run['schematron_warnings'])} Schematron warning(s)",
-        ],
-        "missing_information": [],
-        "resubmission_notes": [],
-        "operator_next_steps": [
-            "Enable PHI-safe Bedrock pipeline before relying on advisory review.",
-        ],
-        "validation_run_id": run_id,
-        "tenant_id": tenant_id,
-        "generated_at": now,
-    }
-    _AI_REVIEWS[run_id] = review
-    return CtaAiReviewResponse(**review)
+    # Live Bedrock advisory review. Validator output is the only payload
+    # sent to the model — never the raw chart XML — so no PHI leaves the
+    # service. The AI cannot mutate xsd_valid / schematron_valid; only the
+    # human-readable advisory fields are taken from the model response.
+    region = os.environ.get("BEDROCK_REGION", "").strip()
+    model_id = os.environ.get("BEDROCK_MODEL_ID", "").strip()
+    try:
+        import anthropic  # type: ignore  # noqa: PLC0415
+        import json as _json  # noqa: PLC0415
+        import re as _re  # noqa: PLC0415
+
+        client = anthropic.AnthropicBedrock(aws_region=region)
+        system_prompt = (
+            "You are an advisory NEMSIS 3.5.1 CTA reviewer. You will be "
+            "given the validator output (XSD + Schematron errors and "
+            "warnings) for a single CTA submission attempt. You MUST NOT "
+            "claim the submission passes — the validator output above is "
+            "authoritative. Your job is to summarize the findings in plain "
+            "English and suggest concrete operator next steps to resolve "
+            "blocking errors before resubmission. Respond with ONLY a JSON "
+            "object containing exactly these keys (each a string or a list "
+            "of strings):\n"
+            '  "summary": one-paragraph plain-English overview.\n'
+            '  "blocking_findings_summary": list of short bullets summarizing '
+            "blocking errors.\n"
+            '  "warning_findings_summary": list of short bullets summarizing '
+            "schematron warnings.\n"
+            '  "missing_information": list of fields/sections that look '
+            "absent or under-populated.\n"
+            '  "resubmission_notes": list of items the operator should '
+            "double-check before resubmitting.\n"
+            '  "operator_next_steps": ordered list of next operator actions.'
+        )
+        validator_payload = {
+            "test_case_id": run.get("test_case_id"),
+            "mode": run.get("mode"),
+            "validation_mode": run.get("validation_mode"),
+            "xsd_valid": run.get("xsd_valid"),
+            "schematron_valid": run.get("schematron_valid"),
+            "schematron_skipped": run.get("schematron_skipped"),
+            "validation_skipped": run.get("validation_skipped"),
+            "blocking_reason": run.get("blocking_reason"),
+            "xsd_errors": run.get("xsd_errors", [])[:200],
+            "schematron_errors": run.get("schematron_errors", [])[:200],
+            "schematron_warnings": run.get("schematron_warnings", [])[:200],
+            "validator_asset_version": run.get("validator_asset_version"),
+        }
+        user_msg = (
+            "Validator output for advisory review (JSON):\n"
+            f"```json\n{_json.dumps(validator_payload, default=str, indent=2)}\n```\n\n"
+            "Return ONLY the JSON object described above, no surrounding text."
+        )
+        message = client.messages.create(
+            model=model_id,
+            max_tokens=4096,
+            system=system_prompt,
+            messages=[{"role": "user", "content": user_msg}],
+        )
+        text_parts: list[str] = []
+        for block in getattr(message, "content", []) or []:
+            block_text = getattr(block, "text", None)
+            if isinstance(block_text, str):
+                text_parts.append(block_text)
+        raw = "".join(text_parts).strip()
+        if not raw:
+            raise RuntimeError("Bedrock returned empty response.")
+        cleaned = raw
+        if cleaned.startswith("```"):
+            cleaned = _re.sub(r"^```(?:json)?\s*", "", cleaned)
+            cleaned = _re.sub(r"\s*```$", "", cleaned)
+        parsed = _json.loads(cleaned)
+
+        def _as_str_list(value: Any) -> list[str]:
+            if isinstance(value, list):
+                return [str(v) for v in value if v is not None]
+            if isinstance(value, str) and value.strip():
+                return [value.strip()]
+            return []
+
+        review = {
+            "status": "completed",
+            "provider": "aws_bedrock",
+            "summary": str(parsed.get("summary") or "").strip()
+            or "Advisory review completed.",
+            "blocking_findings_summary": _as_str_list(
+                parsed.get("blocking_findings_summary")
+            ),
+            "warning_findings_summary": _as_str_list(
+                parsed.get("warning_findings_summary")
+            ),
+            "missing_information": _as_str_list(parsed.get("missing_information")),
+            "resubmission_notes": _as_str_list(parsed.get("resubmission_notes")),
+            "operator_next_steps": _as_str_list(parsed.get("operator_next_steps")),
+            "validation_run_id": run_id,
+            "tenant_id": tenant_id,
+            "generated_at": now,
+        }
+        _AI_REVIEWS[run_id] = review
+        return CtaAiReviewResponse(**review)
+    except Exception as exc:
+        logger.exception("create_ai_review: Bedrock advisory review failed for run %s", run_id)
+        review = {
+            "status": "failed",
+            "provider": "aws_bedrock",
+            "summary": (
+                f"Bedrock advisory review failed: {exc}. Validator "
+                "results above remain authoritative."
+            ),
+            "blocking_findings_summary": [
+                f"{len(run['xsd_errors'])} XSD error(s)",
+                f"{len(run['schematron_errors'])} Schematron error(s)",
+            ],
+            "warning_findings_summary": [
+                f"{len(run['schematron_warnings'])} Schematron warning(s)",
+            ],
+            "missing_information": [],
+            "resubmission_notes": [],
+            "operator_next_steps": [
+                "Verify AWS Bedrock credentials and BEDROCK_MODEL_ID access.",
+            ],
+            "validation_run_id": run_id,
+            "tenant_id": tenant_id,
+            "generated_at": now,
+        }
+        _AI_REVIEWS[run_id] = review
+        return CtaAiReviewResponse(**review)
 
 
 @router.post(
