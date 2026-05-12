@@ -16,27 +16,29 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.execute(sa.text("""
-        CREATE TABLE IF NOT EXISTS epcr_protocols (
-            id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-            tenant_id        UUID NOT NULL,
-            title            TEXT NOT NULL,
-            category         TEXT,
-            version          TEXT NOT NULL DEFAULT '1.0',
-            status           TEXT NOT NULL DEFAULT 'active',
-            effective_date   TIMESTAMPTZ,
-            retired_date     TIMESTAMPTZ,
-            content          TEXT,
-            source_reference TEXT,
-            created_by       UUID,
-            updated_by       UUID,
-            created_at       TIMESTAMPTZ DEFAULT NOW(),
-            updated_at       TIMESTAMPTZ
-        )
-    """))
-    op.execute(sa.text("CREATE INDEX IF NOT EXISTS ix_epcr_protocols_tenant_id ON epcr_protocols (tenant_id)"))
-    op.execute(sa.text("CREATE INDEX IF NOT EXISTS ix_epcr_protocols_status ON epcr_protocols (tenant_id, status)"))
+    op.create_table(
+        "epcr_protocols",
+        sa.Column("id", sa.String(36), primary_key=True),
+        sa.Column("tenant_id", sa.String(36), nullable=False),
+        sa.Column("title", sa.Text(), nullable=False),
+        sa.Column("category", sa.String(128), nullable=True),
+        sa.Column("version", sa.String(32), nullable=False, server_default="1.0"),
+        sa.Column("status", sa.String(32), nullable=False, server_default="active"),
+        sa.Column("effective_date", sa.DateTime(timezone=True), nullable=True),
+        sa.Column("retired_date", sa.DateTime(timezone=True), nullable=True),
+        sa.Column("content", sa.Text(), nullable=True),
+        sa.Column("source_reference", sa.String(512), nullable=True),
+        sa.Column("created_by", sa.String(36), nullable=True),
+        sa.Column("updated_by", sa.String(36), nullable=True),
+        sa.Column("created_at", sa.DateTime(timezone=True), nullable=True),
+        sa.Column("updated_at", sa.DateTime(timezone=True), nullable=True),
+        if_not_exists=True,
+    )
+    op.create_index("ix_epcr_protocols_tenant_id", "epcr_protocols", ["tenant_id"], if_not_exists=True)
+    op.create_index("ix_epcr_protocols_tenant_status", "epcr_protocols", ["tenant_id", "status"], if_not_exists=True)
 
 
 def downgrade() -> None:
-    op.execute(sa.text("DROP TABLE IF EXISTS epcr_protocols"))
+    op.drop_index("ix_epcr_protocols_tenant_status", table_name="epcr_protocols")
+    op.drop_index("ix_epcr_protocols_tenant_id", table_name="epcr_protocols")
+    op.drop_table("epcr_protocols")
