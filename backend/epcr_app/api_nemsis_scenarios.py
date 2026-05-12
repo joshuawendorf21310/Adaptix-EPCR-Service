@@ -296,6 +296,13 @@ class _ConferenceSubmitRequest(BaseModel):
     xml_override_base64: str | None = None
     schematron_upload_id: str | None = None
     skip_validation: bool = False
+    # When True, runs the full prep pipeline (XML generation + XSD/schematron
+    # validation) but does NOT POST to the real cta.nemsis.org endpoint and
+    # does NOT persist a submission record. Returns a clearly-mocked SOAP
+    # response so the TAC Conference Workbench can be rehearsed end-to-end
+    # without burning a real compliance submission. Default False so the
+    # endpoint stays backward compatible.
+    dry_run: bool = False
 
 
 class _FixtureResponse(BaseModel):
@@ -845,6 +852,50 @@ async def submit_scenario(
     submission_id = str(uuid.uuid4())
     submission_number = f"TAC-{scenario['scenario_code']}-{datetime.now(UTC).strftime('%Y%m%d%H%M%S')}"
     now_utc = datetime.now(UTC)
+
+    # ------------------------------------------------------------------
+    # DRY RUN — short-circuit before the real SOAP POST and before any DB
+    # writes. Returns a synthetic soap_result that is clearly marked mock
+    # so the operator/examiner cannot mistake a rehearsal for a real
+    # accepted submission.
+    # ------------------------------------------------------------------
+    if body.dry_run:
+        mock_handle = f"DRY-RUN-{submission_id[:8].upper()}"
+        mock_soap_result = {
+            "success": True,
+            "mock": True,
+            "dry_run": True,
+            "http_status": 200,
+            "soap_status_code": "DRY-RUN-200",
+            "soap_response_code": "DRY-RUN-200",
+            "request_handle": mock_handle,
+            "error": None,
+            "note": (
+                "DRY RUN — XML generated and validated locally; NOT submitted "
+                "to cta.nemsis.org. No submission record persisted."
+            ),
+            "endpoint": "mock://dry-run.local/ComplianceTestingWs",
+            "submitted_at": now_utc.isoformat(),
+        }
+        logger.info(
+            "submit_scenario(DRY RUN): scenario=%s tenant=%s user=%s sch=%s skip_validation=%s override=%s",
+            scenario_id,
+            tenant_id,
+            user_id,
+            bool(body.schematron_upload_id),
+            body.skip_validation,
+            override_used,
+        )
+        return {
+            "scenario_code": scenario["scenario_code"],
+            "submission_id": submission_id,
+            "submission_number": submission_number,
+            "submission_status": "dry_run",
+            "soap_result": mock_soap_result,
+            "validation_result": validation_result,
+            "xml_size_bytes": len(xml_bytes),
+            "submitted_at": now_utc.isoformat(),
+        }
 
     soap_result = await _submit_via_soap_tac(
         xml_bytes,
