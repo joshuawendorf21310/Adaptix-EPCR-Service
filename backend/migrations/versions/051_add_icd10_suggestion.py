@@ -49,7 +49,7 @@ def upgrade() -> None:
             "provider_acknowledged",
             sa.Boolean(),
             nullable=False,
-            server_default=sa.text("0"),
+            server_default=sa.false(),
         ),
         sa.Column("provider_selected_code", sa.String(length=32), nullable=True),
         sa.Column("provider_selected_at", sa.DateTime(timezone=True), nullable=True),

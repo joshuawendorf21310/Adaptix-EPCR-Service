@@ -50,7 +50,7 @@ def upgrade() -> None:
             "reverse_geocoded",
             sa.Boolean(),
             nullable=False,
-            server_default=sa.text("0"),
+            server_default=sa.false(),
         ),
         sa.Column("facility_type", sa.String(length=32), nullable=True),
         sa.Column("distance_meters", sa.Numeric(12, 2), nullable=True),

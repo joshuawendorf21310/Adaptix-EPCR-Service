@@ -55,7 +55,7 @@ def upgrade() -> None:
             "provider_confirmed",
             sa.Boolean(),
             nullable=False,
-            server_default=sa.text("0"),
+            server_default=sa.false(),
         ),
         sa.Column("provider_id", sa.String(length=64), nullable=True),
         sa.Column("confirmed_at", sa.DateTime(timezone=True), nullable=True),
