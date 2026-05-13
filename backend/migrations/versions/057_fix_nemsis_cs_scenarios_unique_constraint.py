@@ -21,26 +21,24 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.drop_constraint(
-        "nemsis_cs_scenarios_scenario_code_key",
-        "nemsis_cs_scenarios",
-        type_="unique",
-    )
-    op.create_unique_constraint(
-        "nemsis_cs_scenarios_tenant_scenario_key",
-        "nemsis_cs_scenarios",
-        ["tenant_id", "scenario_code"],
-    )
+    with op.batch_alter_table("nemsis_cs_scenarios") as batch_op:
+        batch_op.drop_constraint(
+            "nemsis_cs_scenarios_scenario_code_key",
+            type_="unique",
+        )
+        batch_op.create_unique_constraint(
+            "nemsis_cs_scenarios_tenant_scenario_key",
+            ["tenant_id", "scenario_code"],
+        )
 
 
 def downgrade() -> None:
-    op.drop_constraint(
-        "nemsis_cs_scenarios_tenant_scenario_key",
-        "nemsis_cs_scenarios",
-        type_="unique",
-    )
-    op.create_unique_constraint(
-        "nemsis_cs_scenarios_scenario_code_key",
-        "nemsis_cs_scenarios",
-        ["scenario_code"],
-    )
+    with op.batch_alter_table("nemsis_cs_scenarios") as batch_op:
+        batch_op.drop_constraint(
+            "nemsis_cs_scenarios_tenant_scenario_key",
+            type_="unique",
+        )
+        batch_op.create_unique_constraint(
+            "nemsis_cs_scenarios_scenario_code_key",
+            ["scenario_code"],
+        )
