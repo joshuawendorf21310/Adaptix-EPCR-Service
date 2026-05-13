@@ -192,6 +192,8 @@ app.add_middleware(
         "X-User-Email",
         "X-User-Roles",
         "X-Correlation-ID",
+        "X-Trace-Id",
+        "X-Request-ID",
     ],
 )
 
