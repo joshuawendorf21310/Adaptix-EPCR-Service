@@ -22,6 +22,7 @@ import httpx
 from fastapi import APIRouter, Body, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from epcr_app.db import get_session
@@ -981,7 +982,15 @@ async def submit_scenario(
             )
         )
 
-    await session.commit()
+    try:
+        await session.commit()
+    except IntegrityError:
+        await session.rollback()
+        logger.warning(
+            "submit_scenario: scenario tracking upsert skipped due to unique constraint "
+            "(scenario_code=%s tenant=%s) — SOAP submission already completed",
+            scenario["scenario_code"], tenant_id,
+        )
 
     return {
         "scenario_code": scenario["scenario_code"],
