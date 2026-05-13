@@ -65,6 +65,23 @@ NemsisMappingRecord = _legacy_models.NemsisMappingRecord
 NemsisCompliance = _legacy_models.NemsisCompliance
 NemsisExportHistory = _legacy_models.NemsisExportHistory
 EpcrAuditLog = _legacy_models.EpcrAuditLog
+EpcrAnatomicalFinding = _legacy_models.EpcrAnatomicalFinding
+EpcrIcd10DocumentationSuggestion = _legacy_models.EpcrIcd10DocumentationSuggestion
+EpcrMapLocationContext = _legacy_models.EpcrMapLocationContext
+EpcrECustomFieldDefinition = _legacy_models.EpcrECustomFieldDefinition
+EpcrECustomFieldValue = _legacy_models.EpcrECustomFieldValue
+EpcrRepeatPatientMatch = _legacy_models.EpcrRepeatPatientMatch
+EpcrPriorChartReference = _legacy_models.EpcrPriorChartReference
+EpcrSentenceEvidence = _legacy_models.EpcrSentenceEvidence
+EpcrAiAuditEvent = _legacy_models.EpcrAiAuditEvent
+EpcrPriorEcgReference = _legacy_models.EpcrPriorEcgReference
+EpcrEcgComparisonResult = _legacy_models.EpcrEcgComparisonResult
+EpcrSmartTextSuggestion = _legacy_models.EpcrSmartTextSuggestion
+EpcrRxNormMedicationMatch = _legacy_models.EpcrRxNormMedicationMatch
+EpcrProviderOverride = _legacy_models.EpcrProviderOverride
+EpcrMultiPatientIncident = _legacy_models.EpcrMultiPatientIncident
+EpcrMultiPatientLink = _legacy_models.EpcrMultiPatientLink
+EpcrProtocolContext = _legacy_models.EpcrProtocolContext
 
 from epcr_app.models.ocr import (  # noqa: E402
     OcrSourceType,
@@ -135,6 +152,23 @@ __all__ = [
     "NemsisCompliance",
     "NemsisExportHistory",
     "EpcrAuditLog",
+    "EpcrAnatomicalFinding",
+    "EpcrIcd10DocumentationSuggestion",
+    "EpcrMapLocationContext",
+    "EpcrECustomFieldDefinition",
+    "EpcrECustomFieldValue",
+    "EpcrRepeatPatientMatch",
+    "EpcrPriorChartReference",
+    "EpcrSentenceEvidence",
+    "EpcrAiAuditEvent",
+    "EpcrPriorEcgReference",
+    "EpcrEcgComparisonResult",
+    "EpcrSmartTextSuggestion",
+    "EpcrProviderOverride",
+    "EpcrMultiPatientIncident",
+    "EpcrMultiPatientLink",
+    "EpcrRxNormMedicationMatch",
+    "EpcrProtocolContext",
     "OcrSourceType",
     "OcrJobStatus",
     "OcrFieldConfidence",

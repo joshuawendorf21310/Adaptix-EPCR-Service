@@ -1,0 +1,55 @@
+# =============================================================================
+# Five-Artifact Production Readiness Gate (server-side, EPCR backend).
+#
+# RULE (approved plan: "Five-Artifact Production Readiness Rule")
+# A capability declared `"capability": "live"` inside
+# backend/epcr_app/chart_workspace_service.py is only permitted to merge when
+# the SAME PR introduces all five backing artifacts for that capability:
+#
+#   1. service           — backend/epcr_app/services/*.py
+#   2. model + migration — backend/migrations/versions/*.py
+#   3. endpoint          — chart_workspace_service.py or api_*.py
+#   4. contract test     — backend/tests/test_*_contract.py
+#   5. audit-write       — touched service references EpcrAuditLog(,
+#                          epcr_ai_audit_event, or epcr_provider_override
+#
+# If any artifact is missing for a newly-flipped capability, this job fails
+# the PR with `PRODUCTION_READINESS_GATE: <capability> missing <artifact>`.
+#
+# The web-side complement lives in:
+#   Adaptix-Web-App/.github/workflows/five-artifact-gate.yml
+# =============================================================================
+name: five-artifact-gate
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  gate:
+    name: Five-Artifact Production Readiness Gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Ensure origin/main is fetched
+        run: |
+          git fetch --no-tags --depth=0 origin +refs/heads/main:refs/remotes/origin/main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run Five-Artifact gate
+        env:
+          GATE_BASE_REF: origin/main
+        run: |
+          python scripts/check_five_artifact_gate.py

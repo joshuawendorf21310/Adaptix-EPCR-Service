@@ -74,6 +74,7 @@ from epcr_app.api_ai import router as ai_router
 from epcr_app.api_transfer_packet import router as transfer_packet_router
 from epcr_app.api_audit import router as audit_router
 from epcr_app.api_quality import router as quality_router
+from epcr_app.api_pillars import router as pillars_router
 import epcr_app.models_audit  # noqa: F401 — ensures audit tables are registered with Base
 import epcr_app.models_quality  # noqa: F401 — ensures quality module tables are registered with Base
 from epcr_app.db import init_db
@@ -265,6 +266,8 @@ app.include_router(transfer_packet_router)
 app.include_router(audit_router)
 # Medical Director, QA, and QI quality governance module
 app.include_router(quality_router)
+# Pillar supplemental endpoints (multi-patient, prior-ecg attach, protocol satisfaction, override supervisor)
+app.include_router(pillars_router)
 # Clinical protocols catalog
 from epcr_app.protocols.router import router as protocols_router  # noqa: E402
 app.include_router(protocols_router)

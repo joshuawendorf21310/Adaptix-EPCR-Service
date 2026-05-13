@@ -7,10 +7,14 @@ compliance tracking for emergency patient care records.
 from datetime import datetime, UTC
 from enum import Enum
 from sqlalchemy import (
+    CheckConstraint,
     Column,
     String,
     DateTime,
+    Index,
     Integer,
+    Numeric,
+    SmallInteger,
     Text,
     ForeignKey,
     Boolean,
@@ -1010,3 +1014,917 @@ class EpcrAuditLog(Base):
     performed_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False)
     version = Column(Integer, nullable=False, server_default=text("1"))
     deleted_at = Column(DateTime(timezone=True), nullable=True)
+
+
+class EpcrAnatomicalFinding(Base):
+    """3D Physical Assessment finding bound to a chart and anatomical region.
+
+    Captures region-level clinical findings emitted by the Adaptix 3D
+    Physical Assessment module. Each row is scoped to a chart and
+    tenant, and may carry severity, laterality, CMS distal assessment,
+    burn surface area, and/or a pain score. ``pertinent_negative`` is
+    True when the provider explicitly recorded the region as
+    unremarkable.
+
+    Enum-like columns are stored as portable string values; the canonical
+    value sets live in
+    :mod:`epcr_app.services.anatomical_finding_validation`.
+    """
+
+    __tablename__ = "epcr_anatomical_finding"
+    __table_args__ = (
+        CheckConstraint(
+            "pain_scale IS NULL OR (pain_scale >= 0 AND pain_scale <= 10)",
+            name="ck_epcr_anatomical_finding_pain_scale_range",
+        ),
+        CheckConstraint(
+            "burn_tbsa_percent IS NULL OR "
+            "(burn_tbsa_percent >= 0 AND burn_tbsa_percent <= 100)",
+            name="ck_epcr_anatomical_finding_burn_tbsa_range",
+        ),
+        Index(
+            "ix_epcr_anatomical_finding_tenant_chart_deleted",
+            "tenant_id",
+            "chart_id",
+            "deleted_at",
+        ),
+    )
+
+    id = Column(String(36), primary_key=True)
+    chart_id = Column(
+        String(36), ForeignKey("epcr_charts.id"), nullable=False, index=True
+    )
+    tenant_id = Column(String(36), index=True, nullable=False)
+
+    region_id = Column(String(64), nullable=False, index=True)
+    region_label = Column(String(128), nullable=False)
+    body_view = Column(String(16), nullable=False)
+    finding_type = Column(String(128), nullable=False)
+    severity = Column(String(32), nullable=True)
+    laterality = Column(String(32), nullable=True)
+    pain_scale = Column(SmallInteger, nullable=True)
+    burn_tbsa_percent = Column(Numeric(5, 2), nullable=True)
+    cms_pulse = Column(String(32), nullable=True)
+    cms_motor = Column(String(32), nullable=True)
+    cms_sensation = Column(String(32), nullable=True)
+    cms_capillary_refill = Column(String(32), nullable=True)
+    pertinent_negative = Column(
+        Boolean, nullable=False, default=False, server_default=text("0")
+    )
+    notes = Column(Text, nullable=True)
+    assessed_at = Column(DateTime(timezone=True), nullable=False)
+    assessed_by = Column(String(64), nullable=False)
+
+    created_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
+    )
+    updated_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
+    )
+    deleted_at = Column(DateTime(timezone=True), nullable=True, index=True)
+    version = Column(Integer, nullable=False, server_default=text("1"))
+
+
+class EpcrECustomFieldDefinition(Base):
+    """Tenant/agency-scoped definition of an eCustom NEMSIS field.
+
+    Captures the schema for an agency-defined custom data element used to
+    extend the standard ePCR / NEMSIS dataset. The ``nemsis_relationship``
+    column records the NEMSIS element this custom field anchors to (e.g.
+    ``eCustomConfiguration.01``); see
+    :mod:`epcr_app.services.ecustom_field_validation` for canonical
+    ``data_type`` values and conditional rule semantics.
+    """
+
+    __tablename__ = "epcr_ecustom_field_definition"
+    __table_args__ = (
+        UniqueConstraint(
+            "tenant_id",
+            "agency_id",
+            "field_key",
+            "version",
+            name="uq_epcr_ecustom_field_definition_key_version",
+        ),
+        Index(
+            "ix_epcr_ecustom_field_definition_tenant_agency_key",
+            "tenant_id",
+            "agency_id",
+            "field_key",
+        ),
+    )
+
+    id = Column(String(36), primary_key=True)
+    tenant_id = Column(String(36), index=True, nullable=False)
+    agency_id = Column(String(36), index=True, nullable=False)
+
+    field_key = Column(String(128), nullable=False)
+    label = Column(String(255), nullable=False)
+    data_type = Column(String(32), nullable=False)
+    allowed_values_json = Column(Text, nullable=True)
+    required = Column(
+        Boolean, nullable=False, default=False, server_default=text("0")
+    )
+    conditional_rule_json = Column(Text, nullable=True)
+    nemsis_relationship = Column(String(128), nullable=True)
+    state_profile = Column(String(64), nullable=True)
+    version = Column(Integer, nullable=False, server_default=text("1"))
+    retired = Column(
+        Boolean, nullable=False, default=False, server_default=text("0")
+    )
+
+    created_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
+    )
+    updated_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
+    )
+
+
+class EpcrECustomFieldValue(Base):
+    """Per-chart value for an :class:`EpcrECustomFieldDefinition`.
+
+    Stores the captured value as JSON in ``value_json`` so heterogeneous
+    data types (string / number / boolean / date / select / multi_select)
+    share a single storage column. ``validation_result_json`` captures the
+    most recent validator outcome for the value, enabling downstream
+    NEMSIS export gates without re-running validation.
+    """
+
+    __tablename__ = "epcr_ecustom_field_value"
+    __table_args__ = (
+        UniqueConstraint(
+            "tenant_id",
+            "chart_id",
+            "field_definition_id",
+            name="uq_epcr_ecustom_field_value_chart_definition",
+        ),
+        Index(
+            "ix_epcr_ecustom_field_value_tenant_chart",
+            "tenant_id",
+            "chart_id",
+        ),
+    )
+
+    id = Column(String(36), primary_key=True)
+    tenant_id = Column(String(36), index=True, nullable=False)
+    chart_id = Column(
+        String(36), ForeignKey("epcr_charts.id"), nullable=False, index=True
+    )
+    field_definition_id = Column(
+        String(36),
+        ForeignKey("epcr_ecustom_field_definition.id"),
+        nullable=False,
+        index=True,
+    )
+    value_json = Column(Text, nullable=True)
+    validation_result_json = Column(Text, nullable=True)
+    audit_user_id = Column(String(255), nullable=True)
+
+    created_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
+    )
+    updated_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
+    )
+
+
+
+class EpcrSentenceEvidence(Base):
+    """AI-narrative sentence -> structured-evidence linkage row.
+
+    Each row captures the deterministic mapping between a single sentence
+    of an AI-generated ePCR narrative and a referenced piece of
+    structured chart evidence (a field, vital, treatment, medication,
+    procedure, anatomical finding, prior chart, prior ECG, OCR snippet,
+    map waypoint, protocol, or provider note).
+
+    The provider can confirm or unlink a row at any time; both actions
+    write an :class:`EpcrAiAuditEvent`. Rows are produced by
+    :mod:`epcr_app.services.sentence_evidence_service`, which wraps (but
+    never modifies) the existing narrative AI service. The linker itself
+    is pure-Python and performs no LLM calls.
+
+    Canonical ``evidence_kind`` values:
+    ``field``, ``vital``, ``treatment``, ``medication``, ``procedure``,
+    ``anatomical_finding``, ``prior_chart``, ``prior_ecg``, ``ocr``,
+    ``map``, ``protocol``, ``provider_note``.
+    """
+
+    __tablename__ = "epcr_sentence_evidence"
+    __table_args__ = (
+        CheckConstraint(
+            "confidence >= 0 AND confidence <= 1",
+            name="ck_epcr_sentence_evidence_confidence_range",
+        ),
+        CheckConstraint(
+            "sentence_index >= 0",
+            name="ck_epcr_sentence_evidence_sentence_index_nonneg",
+        ),
+        Index(
+            "ix_epcr_sentence_evidence_tenant_chart",
+            "tenant_id",
+            "chart_id",
+        ),
+    )
+
+    id = Column(String(36), primary_key=True)
+    tenant_id = Column(String(36), index=True, nullable=False)
+    chart_id = Column(
+        String(36), ForeignKey("epcr_charts.id"), nullable=False, index=True
+    )
+    # Soft FK: narratives may live in a non-DB-backed store today.
+    narrative_id = Column(String(64), nullable=True, index=True)
+    sentence_index = Column(Integer, nullable=False)
+    sentence_text = Column(Text, nullable=False)
+    evidence_kind = Column(String(32), nullable=False)
+    evidence_ref_id = Column(String(64), nullable=True)
+    confidence = Column(Numeric(3, 2), nullable=False)
+    provider_confirmed = Column(
+        Boolean, nullable=False, default=False, server_default=text("0")
+    )
+    created_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
+    )
+    updated_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
+    )
+
+
+class EpcrAiAuditEvent(Base):
+    """Audit event for AI-narrative and sentence-evidence lifecycle.
+
+    Captures every state change in the AI-evidence pillar so the
+    provider, compliance, and downstream consumers can replay exactly
+    what happened to a narrative and its evidence links.
+
+    Canonical ``event_kind`` values:
+    ``narrative.draft``, ``narrative.accepted``, ``narrative.rejected``,
+    ``sentence.evidence_added``, ``sentence.evidence_unlinked``,
+    ``phrase.inserted``, ``phrase.edited``, ``phrase.removed``.
+    """
+
+    __tablename__ = "epcr_ai_audit_event"
+    __table_args__ = (
+        Index(
+            "ix_epcr_ai_audit_event_tenant_chart",
+            "tenant_id",
+            "chart_id",
+        ),
+    )
+
+    id = Column(String(36), primary_key=True)
+    tenant_id = Column(String(36), index=True, nullable=False)
+    chart_id = Column(
+        String(36), ForeignKey("epcr_charts.id"), nullable=False, index=True
+    )
+    event_kind = Column(String(64), nullable=False, index=True)
+    user_id = Column(String(255), nullable=True)
+    payload_json = Column(Text, nullable=True)
+    performed_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
+    )
+
+
+class EpcrRxNormMedicationMatch(Base):
+    """RxNorm normalization match for a documented medication administration.
+
+    Each row links a free-text medication administration captured on a
+    chart to a normalized RxNorm concept (RxCUI + TTY + dose form +
+    strength) along with a provenance ``source`` indicating whether the
+    match came from the live RxNav API, a local cached prior match, or
+    explicit provider confirmation. The table also serves as the local
+    cache: repeated normalization requests prefer existing rows for the
+    same ``(tenant_id, medication_admin_id)`` over re-calling RxNav.
+
+    The service layer NEVER fabricates an ``rxcui``. When RxNav is
+    unavailable and no cached match exists, the row is simply not
+    persisted (``raw_text`` is always preserved on
+    :class:`MedicationAdministration`).
+    """
+
+    __tablename__ = "epcr_rxnorm_medication_match"
+    __table_args__ = (
+        CheckConstraint(
+            "confidence IS NULL OR (confidence >= 0 AND confidence <= 1)",
+            name="ck_epcr_rxnorm_match_confidence_range",
+        ),
+        Index(
+            "ix_epcr_rxnorm_match_tenant_chart",
+            "tenant_id",
+            "chart_id",
+        ),
+        Index(
+            "ix_epcr_rxnorm_match_medication_admin",
+            "medication_admin_id",
+        ),
+    )
+
+    id = Column(String(36), primary_key=True)
+    tenant_id = Column(String(36), index=True, nullable=False)
+    chart_id = Column(
+        String(36), ForeignKey("epcr_charts.id"), nullable=False, index=True
+    )
+    # Soft FK: stored as String(36) without a DB-level FOREIGN KEY so that
+    # archival/soft-delete of a medication administration does not cascade
+    # into the normalization match log.
+    medication_admin_id = Column(String(36), nullable=False, index=True)
+
+    raw_text = Column(Text, nullable=False)
+    normalized_name = Column(String(256), nullable=True)
+    rxcui = Column(String(32), nullable=True, index=True)
+    tty = Column(String(16), nullable=True)  # 'IN' | 'BN' | 'SCD' | 'SBD'
+    dose_form = Column(String(64), nullable=True)
+    strength = Column(String(64), nullable=True)
+    confidence = Column(Numeric(3, 2), nullable=True)
+    source = Column(String(32), nullable=False)  # 'rxnav_api' | 'local_cache' | 'provider_confirmed'
+    provider_confirmed = Column(
+        Boolean, nullable=False, default=False, server_default=text("0")
+    )
+    provider_id = Column(String(64), nullable=True)
+    confirmed_at = Column(DateTime(timezone=True), nullable=True)
+
+    created_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
+    )
+    updated_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
+    )
+
+
+class EpcrIcd10DocumentationSuggestion(Base):
+    """ICD-10 documentation specificity *prompt* bound to a chart.
+
+    This row represents a **prompt** to the clinician for documentation
+    specificity (laterality, body region, mechanism, encounter context,
+    symptom vs. diagnosis, general specificity). It is NEVER a diagnosis.
+
+    The service that produces these rows MUST NEVER auto-assign,
+    auto-select, or otherwise bind an ICD-10 code on behalf of the
+    provider. ``candidate_codes_json`` is informational only -- a
+    serialized JSON list of ``{"code", "description"}`` objects shown to
+    the clinician as candidates they may *choose* to adopt. Adoption is
+    captured exclusively via the explicit acknowledgement flow
+    (:meth:`Icd10DocumentationService.acknowledge`), which sets
+    ``provider_selected_code`` based on the clinician's choice. A
+    clinician may also reject the suggestion entirely, in which case
+    ``provider_selected_code`` remains ``NULL`` and
+    ``provider_acknowledged`` is set to ``True``.
+    """
+
+    __tablename__ = "epcr_icd10_documentation_suggestion"
+    __table_args__ = (
+        Index(
+            "ix_epcr_icd10_doc_suggestion_tenant_chart",
+            "tenant_id",
+            "chart_id",
+        ),
+    )
+
+    id = Column(String(36), primary_key=True)
+    tenant_id = Column(String(36), index=True, nullable=False)
+    chart_id = Column(
+        String(36), ForeignKey("epcr_charts.id"), nullable=False, index=True
+    )
+    complaint_text = Column(Text, nullable=True)
+    prompt_kind = Column(String(48), nullable=False, index=True)
+    prompt_text = Column(Text, nullable=False)
+    candidate_codes_json = Column(Text, nullable=True)
+    provider_acknowledged = Column(
+        Boolean, nullable=False, default=False, server_default=text("0")
+    )
+    provider_selected_code = Column(String(32), nullable=True)
+    provider_selected_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
+    )
+    updated_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
+    )
+
+
+class EpcrMapLocationContext(Base):
+    """Geospatial location context for a chart (Mapbox-backed).
+
+    One row per discrete location capture (scene address, destination
+    facility, staging area, breadcrumb). The row carries the raw
+    coordinates plus optional reverse-geocoded address, accuracy, and a
+    classified ``facility_type`` for destinations.
+
+    Honesty contract: ``reverse_geocoded`` is True only when an actual
+    Mapbox reverse-geocode call populated ``address_text``. If the
+    Mapbox token is not configured at write time, the service records
+    the row with ``reverse_geocoded=False`` and ``address_text=None``
+    rather than fabricating address data. ``facility_type`` is
+    populated only from a real classifier and is never inferred from
+    free text. Enum-like columns are stored as portable strings; the
+    canonical value sets are enforced in
+    :mod:`epcr_app.services.map_location_service`.
+    """
+
+    __tablename__ = "epcr_map_location_context"
+    __table_args__ = (
+        Index(
+            "ix_epcr_map_location_context_tenant_chart",
+            "tenant_id",
+            "chart_id",
+        ),
+        Index(
+            "ix_epcr_map_location_context_chart_kind",
+            "chart_id",
+            "kind",
+        ),
+    )
+
+    id = Column(String(36), primary_key=True)
+    tenant_id = Column(String(36), index=True, nullable=False)
+    chart_id = Column(
+        String(36), ForeignKey("epcr_charts.id"), nullable=False, index=True
+    )
+    kind = Column(String(32), nullable=False)
+    address_text = Column(Text, nullable=True)
+    latitude = Column(Numeric(9, 6), nullable=False)
+    longitude = Column(Numeric(9, 6), nullable=False)
+    accuracy_meters = Column(Numeric(10, 2), nullable=True)
+    reverse_geocoded = Column(
+        Boolean, nullable=False, default=False, server_default=text("0")
+    )
+    facility_type = Column(String(32), nullable=True)
+    distance_meters = Column(Numeric(12, 2), nullable=True)
+    captured_at = Column(DateTime(timezone=True), nullable=False)
+
+    created_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
+    )
+    updated_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
+    )
+
+
+class EpcrRepeatPatientMatch(Base):
+    """Candidate repeat-patient match discovered for a chart.
+
+    Rows are produced by :class:`RepeatPatientService.find_matches` and
+    represent a tenant-scoped link between the current chart's patient
+    context and a previously-known patient profile. Carry-forward of
+    values from the matched profile is gated on a provider review:
+    ``reviewed`` must be ``True`` and ``carry_forward_allowed`` must be
+    ``True``.
+
+    ``matched_profile_id`` is a soft FK to ``epcr_patient_profiles.id``
+    (no enforced FK clause) so registry merges and historical replays
+    remain free of cascade churn.
+    """
+
+    __tablename__ = "epcr_repeat_patient_match"
+    __table_args__ = (
+        CheckConstraint(
+            "confidence >= 0 AND confidence <= 1",
+            name="ck_epcr_repeat_patient_match_confidence_range",
+        ),
+        Index(
+            "ix_epcr_repeat_patient_match_tenant_chart",
+            "tenant_id",
+            "chart_id",
+        ),
+    )
+
+    id = Column(String(36), primary_key=True)
+    tenant_id = Column(String(36), index=True, nullable=False)
+    chart_id = Column(String(36), index=True, nullable=False)
+    matched_profile_id = Column(String(36), index=True, nullable=False)
+    confidence = Column(Numeric(3, 2), nullable=False)
+    match_reason_json = Column(Text, nullable=False)
+    reviewed = Column(
+        Boolean, nullable=False, default=False, server_default=text("0")
+    )
+    reviewed_by = Column(String(64), nullable=True)
+    reviewed_at = Column(DateTime(timezone=True), nullable=True)
+    carry_forward_allowed = Column(
+        Boolean, nullable=False, default=False, server_default=text("0")
+    )
+    created_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
+    )
+    updated_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
+    )
+
+
+class EpcrPriorChartReference(Base):
+    """Snapshot reference linking a chart to a prior chart for the same identity.
+
+    Lightweight read-side row produced alongside repeat-patient match
+    discovery. ``prior_chart_id`` is a soft FK to ``epcr_charts.id``.
+    """
+
+    __tablename__ = "epcr_prior_chart_reference"
+    __table_args__ = (
+        Index(
+            "ix_epcr_prior_chart_reference_tenant_chart",
+            "tenant_id",
+            "chart_id",
+        ),
+    )
+
+    id = Column(String(36), primary_key=True)
+    tenant_id = Column(String(36), index=True, nullable=False)
+    chart_id = Column(String(36), index=True, nullable=False)
+    prior_chart_id = Column(String(36), index=True, nullable=False)
+    encounter_at = Column(DateTime(timezone=True), nullable=True)
+    chief_complaint = Column(String(255), nullable=True)
+    disposition = Column(String(128), nullable=True)
+    created_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
+    )
+
+
+class EpcrPriorEcgReference(Base):
+    """Reference to a prior 12-lead ECG available for clinician comparison.
+
+    Captures the existence and provenance of a prior ECG bound to the
+    current chart. This row is metadata-only; it never carries an
+    interpretation. The presence of the row means a provider can
+    compare the current ECG against the prior, but the comparison
+    itself lives in :class:`EpcrEcgComparisonResult` and is strictly
+    provider-attested.
+
+    Note: ``prior_chart_id`` is a soft foreign key (no DB-level FK
+    constraint) so prior ECGs sourced from imports or archived charts
+    do not block insertion.
+    """
+
+    __tablename__ = "epcr_prior_ecg_reference"
+
+    id = Column(String(36), primary_key=True)
+    tenant_id = Column(String(36), index=True, nullable=False)
+    chart_id = Column(
+        String(36), ForeignKey("epcr_charts.id"), nullable=False, index=True
+    )
+    prior_chart_id = Column(String(36), nullable=True, index=True)
+    captured_at = Column(DateTime(timezone=True), nullable=False)
+    encounter_context = Column(String(128), nullable=False)
+    image_storage_uri = Column(String(512), nullable=True)
+    monitor_imported = Column(
+        Boolean, nullable=False, default=False, server_default=text("0")
+    )
+    quality = Column(String(32), nullable=False)
+    notes = Column(Text, nullable=True)
+    created_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
+    )
+
+
+class EpcrEcgComparisonResult(Base):
+    """Provider-attested comparison of the current ECG against a prior ECG.
+
+    The service layer NEVER produces an interpretation. Acceptable
+    comparison_state values are pre-enumerated and chosen by the
+    provider: 'similar', 'different', 'unable_to_compare',
+    'not_relevant'. NEMSIS export and downstream consumers must check
+    provider_confirmed=True before using this row.
+    """
+
+    __tablename__ = "epcr_ecg_comparison_result"
+
+    id = Column(String(36), primary_key=True)
+    tenant_id = Column(String(36), index=True, nullable=False)
+    chart_id = Column(
+        String(36), ForeignKey("epcr_charts.id"), nullable=False, index=True
+    )
+    prior_ecg_id = Column(
+        String(36),
+        ForeignKey("epcr_prior_ecg_reference.id"),
+        nullable=False,
+        index=True,
+    )
+    comparison_state = Column(String(32), nullable=False)
+    provider_confirmed = Column(
+        Boolean, nullable=False, default=False, server_default=text("0")
+    )
+    provider_id = Column(String(64), nullable=True)
+    confirmed_at = Column(DateTime(timezone=True), nullable=True)
+    confidence = Column(Numeric(3, 2), nullable=True)
+    notes = Column(Text, nullable=True)
+    created_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
+    )
+    updated_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
+    )
+
+
+class EpcrSmartTextSuggestion(Base):
+    """Smart-text suggestion offered for a chart field.
+
+    Each row is one renderable suggestion produced by the
+    :mod:`epcr_app.services.smart_text_service` resolver for a given
+    ``(tenant_id, chart_id, section, field_key)`` slot. Suggestions
+    carry an explicit provenance ``source`` (agency library, provider
+    favorite, protocol, AI), a numeric ``confidence`` in [0, 1], and a
+    ``compliance_state`` so the workspace can render the correct review
+    affordance.
+
+    Acceptance state lives on the suggestion itself: ``accepted`` is
+    ``NULL`` while the suggestion is offered, ``True`` after the
+    provider accepts it, and ``False`` after rejection. The audit trail
+    is written to :class:`EpcrAuditLog` with action
+    ``smart_text.accepted`` or ``smart_text.rejected``.
+
+    ``evidence_link_id`` is a soft (non-enforced) reference to
+    :class:`EpcrSentenceEvidence` (``epcr_sentence_evidence.id``); the
+    hard FK will be wired in a later slice.
+    """
+
+    __tablename__ = "epcr_smart_text_suggestion"
+    __table_args__ = (
+        CheckConstraint(
+            "confidence >= 0 AND confidence <= 1",
+            name="ck_epcr_smart_text_suggestion_confidence_range",
+        ),
+        CheckConstraint(
+            "source IN ('agency_library','provider_favorite','protocol','ai')",
+            name="ck_epcr_smart_text_suggestion_source",
+        ),
+        CheckConstraint(
+            "compliance_state IN ('approved','pending','risk')",
+            name="ck_epcr_smart_text_suggestion_compliance_state",
+        ),
+        Index(
+            "ix_epcr_smart_text_suggestion_tenant_chart_section_field",
+            "tenant_id",
+            "chart_id",
+            "section",
+            "field_key",
+        ),
+    )
+
+    id = Column(String(36), primary_key=True)
+    chart_id = Column(
+        String(36), ForeignKey("epcr_charts.id"), nullable=False, index=True
+    )
+    tenant_id = Column(String(36), nullable=False, index=True)
+
+    section = Column(String(64), nullable=False)
+    field_key = Column(String(128), nullable=False)
+    phrase = Column(Text, nullable=False)
+
+    source = Column(String(32), nullable=False)
+    confidence = Column(Numeric(3, 2), nullable=False)
+    compliance_state = Column(String(16), nullable=False)
+
+    evidence_link_id = Column(String(36), nullable=True)
+
+    accepted = Column(Boolean, nullable=True)
+    accepted_at = Column(DateTime(timezone=True), nullable=True)
+    performed_by = Column(String(255), nullable=True)
+
+    created_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
+    )
+    updated_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
+    )
+
+
+class EpcrMultiPatientIncident(Base):
+    """Multi-Patient Incident (MCI / multi-victim event) parent record.
+
+    Represents the umbrella event linking multiple ePCR charts that
+    share a single scene (e.g. mass-casualty incidents, multi-victim
+    MVAs, fire-rescues). Each row aggregates the scene-level context
+    that is identical across all attached patients: scene address,
+    mechanism of injury, on-scene hazards, MCI flag, and the
+    declared patient count. Individual patient chart rows are linked
+    via :class:`EpcrMultiPatientLink` with a per-patient label
+    ('A', 'B', 'C', ...).
+
+    ``parent_incident_number`` is the externally-visible incident
+    identifier (often a CAD or agency-assigned number) that providers
+    use to recognize the event across charts. ``scene_address_json``
+    is stored as a JSON blob so heterogeneous address formats
+    (structured, lat/long-only, geohash, mile-marker) share a single
+    column without schema drift.
+    """
+
+    __tablename__ = "epcr_multi_patient_incident"
+    __table_args__ = (
+        Index(
+            "ix_epcr_multi_patient_incident_tenant_parent",
+            "tenant_id",
+            "parent_incident_number",
+        ),
+        CheckConstraint(
+            "patient_count >= 0",
+            name="ck_epcr_multi_patient_incident_patient_count_nonneg",
+        ),
+    )
+
+    id = Column(String(36), primary_key=True)
+    tenant_id = Column(String(36), index=True, nullable=False)
+    parent_incident_number = Column(String(64), nullable=False, index=True)
+    scene_address_json = Column(Text, nullable=True)
+    mci_flag = Column(
+        Boolean, nullable=False, default=False, server_default=text("0")
+    )
+    patient_count = Column(
+        Integer, nullable=False, default=0, server_default=text("0")
+    )
+    mechanism = Column(String(128), nullable=True)
+    hazards_text = Column(Text, nullable=True)
+
+    created_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
+    )
+    updated_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
+    )
+
+
+class EpcrMultiPatientLink(Base):
+    """Per-patient link between an :class:`EpcrMultiPatientIncident`
+    parent and a specific ePCR chart.
+
+    ``patient_label`` is the human-readable provider-assigned label
+    ('A', 'B', 'C', ...) or an ``unknown_N`` placeholder when no
+    canonical label has been assigned. ``triage_category`` carries
+    the standard START / SALT colors ('green' | 'yellow' | 'red' |
+    'black'). ``acuity``, ``transport_priority``, and
+    ``destination_id`` are nullable for incidents documented before
+    triage / transport decisions are made.
+
+    The FK to ``epcr_charts.id`` is *soft* (no DB-level FOREIGN KEY)
+    so cross-tenant chart archival and incident-level merges/splits
+    do not need cascading. Soft delete via ``removed_at``.
+    """
+
+    __tablename__ = "epcr_multi_patient_link"
+    __table_args__ = (
+        Index(
+            "ix_epcr_multi_patient_link_tenant_chart",
+            "tenant_id",
+            "chart_id",
+        ),
+        Index(
+            "ix_epcr_multi_patient_link_tenant_incident",
+            "tenant_id",
+            "multi_incident_id",
+        ),
+    )
+
+    id = Column(String(36), primary_key=True)
+    tenant_id = Column(String(36), index=True, nullable=False)
+    multi_incident_id = Column(
+        String(36),
+        ForeignKey("epcr_multi_patient_incident.id"),
+        nullable=False,
+        index=True,
+    )
+    # Soft FK by string; see class docstring.
+    chart_id = Column(String(36), nullable=False, index=True)
+    patient_label = Column(String(32), nullable=False)
+    triage_category = Column(String(16), nullable=True)
+    acuity = Column(String(32), nullable=True)
+    transport_priority = Column(String(32), nullable=True)
+    destination_id = Column(String(64), nullable=True)
+
+    created_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
+    )
+    updated_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
+    )
+    removed_at = Column(DateTime(timezone=True), nullable=True, index=True)
+
+
+class EpcrProviderOverride(Base):
+    """Provider override / supervisor-confirmation audit row.
+
+    Captures the canonical record of a provider's documented override of
+    a validation warning, lock blocker, state-required field, agency-
+    required field, or rejected AI suggestion. ``reason_text`` is
+    REQUIRED with a minimum length of 8 characters (enforced both at the
+    application layer in
+    :class:`epcr_app.services.provider_override_service.ProviderOverrideService`
+    and via a portable CHECK constraint here).
+
+    A supervisor confirmation is optional: when the override workflow
+    requires a second signer, ``supervisor_id`` is populated and
+    ``supervisor_confirmed_at`` is set when the supervisor explicitly
+    confirms the override. Every state change additionally writes an
+    :class:`EpcrAuditLog` row so downstream consumers (audit-trail
+    query, compliance export) can replay the lifecycle.
+
+    Canonical ``kind`` values:
+    ``validation_warning``, ``lock_blocker``, ``state_required``,
+    ``agency_required``, ``ai_suggestion_rejected``.
+    """
+
+    __tablename__ = "epcr_provider_override"
+    __table_args__ = (
+        CheckConstraint(
+            "length(reason_text) >= 8",
+            name="ck_epcr_provider_override_reason_min_length",
+        ),
+        Index(
+            "ix_epcr_provider_override_tenant_chart",
+            "tenant_id",
+            "chart_id",
+        ),
+    )
+
+    id = Column(String(36), primary_key=True)
+    tenant_id = Column(String(36), index=True, nullable=False)
+    chart_id = Column(
+        String(36), ForeignKey("epcr_charts.id"), nullable=False, index=True
+    )
+    section = Column(String(64), nullable=False)
+    field_key = Column(String(128), nullable=False)
+    kind = Column(String(32), nullable=False, index=True)
+    reason_text = Column(Text, nullable=False)
+    overrode_at = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(UTC),
+        nullable=False,
+    )
+    overrode_by = Column(String(255), nullable=False)
+    supervisor_id = Column(String(64), nullable=True)
+    supervisor_confirmed_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(UTC),
+        nullable=False,
+    )
+
+
+class EpcrProtocolContext(Base):
+    """Live protocol engagement context for a chart.
+
+    Tracks which clinical protocol pack (ACLS, PALS, NRP, CCT, ...) is
+    currently engaged for a given ePCR chart, when it was engaged and by
+    whom, and a snapshot of the pack's required-field satisfaction at the
+    point of engagement.
+
+    A single chart MAY have at most one row with ``disengaged_at IS NULL``
+    at a time (the active context). Historical rows are preserved
+    (disengaged) for audit replay.
+
+    Attributes:
+        id: Unique context record identifier (UUID v4).
+        tenant_id: Tenant identifier (multi-tenant isolation).
+        chart_id: FK to ``epcr_charts.id`` the context applies to.
+        active_pack: Pack key — e.g. 'ACLS' | 'PALS' | 'NRP' | 'CCT' |
+            None (disengaged sentinel rows). The canonical set of packs
+            supported by the in-process AI engine lives in
+            :data:`epcr_app.ai_clinical_engine.PROTOCOL_PACKS`. Packs not
+            present in that registry are still permitted at the model
+            layer and surfaced as ``pack_unknown`` advisories by the
+            service layer.
+        engaged_at: UTC timestamp the pack was engaged.
+        engaged_by: User id who engaged the pack.
+        disengaged_at: UTC timestamp the pack was disengaged, NULL while
+            the context is still active.
+        required_field_satisfaction_json: JSON-serialized snapshot of the
+            satisfaction map at engagement time. Shape matches the
+            ``LockReadinessService`` payload contract.
+        pack_version: Free-form version string for the pack definition
+            (e.g. ``'engine:2026-05'``); allows replay of historical
+            engagements even if the engine pack content changes.
+        created_at, updated_at: Audit timestamps.
+    """
+
+    __tablename__ = "epcr_protocol_context"
+    __table_args__ = (
+        Index(
+            "ix_epcr_protocol_context_tenant_chart_active",
+            "tenant_id",
+            "chart_id",
+            "disengaged_at",
+        ),
+        Index(
+            "ix_epcr_protocol_context_tenant_chart",
+            "tenant_id",
+            "chart_id",
+        ),
+    )
+
+    id = Column(String(36), primary_key=True)
+    tenant_id = Column(String(36), index=True, nullable=False)
+    chart_id = Column(
+        String(36), ForeignKey("epcr_charts.id"), nullable=False, index=True
+    )
+    active_pack = Column(String(32), nullable=True)
+    engaged_at = Column(DateTime(timezone=True), nullable=False)
+    engaged_by = Column(String(255), nullable=False)
+    disengaged_at = Column(DateTime(timezone=True), nullable=True)
+    required_field_satisfaction_json = Column(Text, nullable=True)
+    pack_version = Column(String(64), nullable=False)
+    created_at = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(UTC),
+        nullable=False,
+    )
+    updated_at = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(UTC),
+        nullable=False,
+    )

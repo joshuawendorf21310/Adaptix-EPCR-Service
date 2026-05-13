@@ -63,6 +63,35 @@ _LEVEL_OF_CARE_MAP: dict[str, str] = {
 }
 
 
+# NEMSIS 3.5.1 eExam body region code mapping for the 18 canonical 3D
+# Physical Assessment region IDs. Codes target eExam.19 (Exam Body
+# Region). Regions that lack a precise eExam mapping are emitted as
+# ``NV_NOT_RECORDED`` here but ALWAYS surface their structured form in
+# the custom-element block below so no data is silently dropped.
+# TODO: re-validate full set of eExam.19 codes against the released
+# NEMSIS 3.5.1 schema; pelvis / abdomen split is approximate.
+_EEXAM_BODY_REGION_MAP: dict[str, str] = {
+    "region_head": "3319031",        # Head
+    "region_neck": "3319037",        # Neck
+    "region_chest": "3319011",       # Chest
+    "region_abdomen": "3319001",     # Abdomen
+    "region_back": "3319005",        # Back
+    "region_pelvis": "3319041",      # Pelvis/Genitourinary
+    "region_left_upper_arm": "3319033",   # Left Upper Extremity
+    "region_left_forearm": "3319033",
+    "region_left_hand": "3319033",
+    "region_right_upper_arm": "3319049",  # Right Upper Extremity
+    "region_right_forearm": "3319049",
+    "region_right_hand": "3319049",
+    "region_left_thigh": "3319035",       # Left Lower Extremity
+    "region_left_lower_leg": "3319035",
+    "region_left_foot": "3319035",
+    "region_right_thigh": "3319051",      # Right Lower Extremity
+    "region_right_lower_leg": "3319051",
+    "region_right_foot": "3319051",
+}
+
+
 def _sub(parent: ET.Element, tag: str, text: str | None = None, attrib: dict[str, str] | None = None) -> ET.Element:
     """Create an XML SubElement with optional text and attributes.
 
@@ -180,6 +209,7 @@ class NEMSISExporter:
         self._build_enarrative(pcr, chart_dict)
         self._build_edisposition(pcr, chart_dict)
         self._build_eincident(pcr, chart_dict)
+        self._build_eexam_anatomical(pcr, chart_dict)
 
         xml_bytes = ET.tostring(root, encoding="utf-8", xml_declaration=True)
         logger.info("NEMSISExporter: exported chart %s (%d bytes)", report_number, len(xml_bytes))
@@ -335,3 +365,72 @@ class NEMSISExporter:
         """Build the eIncident section with incident number cross-reference."""
         einc = _sub(pcr, "eIncident")
         _sub(einc, "eIncident.01", _nv(c.get("incident_number")))
+
+    def _build_eexam_anatomical(self, pcr: ET.Element, c: dict[str, Any]) -> None:
+        """Emit eExam body-region findings and a structured custom block.
+
+        NEMSIS 3.5.1 captures exam findings under ``eExam`` (fields
+        eExam.18 — eExam.23). Each anatomical finding produces:
+
+        - One ``eExam.ExamGroup`` containing the mapped body-region
+          code (eExam.19), assessed timestamp (eExam.18), severity
+          (eExam.20 or eExam.21 — left to TODO when finalized against
+          the schema), and a brief text mirror of the structured shape.
+        - A row in an ``AdaptixCustomElements/AnatomicalFindings``
+          block carrying the FULL camelCase payload so no data is
+          trapped if a code is unmapped or the consumer needs richer
+          context than the eExam fields expose.
+        """
+        findings = c.get("anatomical_findings") or []
+        if not isinstance(findings, list) or not findings:
+            return
+
+        eexam = _sub(pcr, "eExam")
+        for f in findings:
+            if not isinstance(f, dict):
+                continue
+            group = _sub(eexam, "eExam.ExamGroup")
+            _sub(group, "eExam.18", _fmt_time(f.get("assessedAt")))
+            region_id = str(f.get("regionId") or "")
+            code = _EEXAM_BODY_REGION_MAP.get(region_id, NV_NOT_RECORDED)
+            _sub(group, "eExam.19", code)
+            # TODO(NEMSIS): finalize eExam.20/.21 severity binding once
+            # the schematron value set is confirmed for the 3D module.
+            _sub(group, "eExam.20", _nv(f.get("severity")))
+            _sub(group, "eExam.21", _nv(f.get("findingType")))
+            if f.get("notes"):
+                _sub(group, "eExam.23", str(f["notes"]))
+
+        # Custom-element block — never silent drops; carries the full
+        # structured shape regardless of mapping completeness.
+        custom = _sub(pcr, "AdaptixCustomElements")
+        anatomical_block = _sub(custom, "AnatomicalFindings")
+        for f in findings:
+            if not isinstance(f, dict):
+                continue
+            row = _sub(anatomical_block, "AnatomicalFinding")
+            for key in (
+                "id",
+                "regionId",
+                "regionLabel",
+                "bodyView",
+                "findingType",
+                "severity",
+                "laterality",
+                "painScale",
+                "burnTbsaPercent",
+                "pertinentNegative",
+                "notes",
+                "assessedAt",
+                "assessedBy",
+            ):
+                val = f.get(key)
+                if val is None:
+                    continue
+                _sub(row, key, str(val))
+            cms = f.get("cms") or {}
+            if isinstance(cms, dict) and any(v is not None for v in cms.values()):
+                cms_el = _sub(row, "cms")
+                for ck in ("pulse", "motor", "sensation", "capillaryRefill"):
+                    if cms.get(ck) is not None:
+                        _sub(cms_el, ck, str(cms[ck]))

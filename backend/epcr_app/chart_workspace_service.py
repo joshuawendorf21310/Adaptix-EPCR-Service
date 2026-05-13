@@ -44,6 +44,30 @@ from epcr_app.models import (
     Vitals,
 )
 from epcr_app.services import ChartService
+from epcr_app.services.anatomical_finding_service import (
+    AnatomicalFindingService,
+)
+from epcr_app.services.anatomical_finding_validation import (
+    AnatomicalFindingValidationError,
+)
+from epcr_app.services.audit_trail_query_service import AuditTrailQueryService
+from epcr_app.services.ecustom_field_service import ECustomFieldService
+from epcr_app.services.icd10_service import (
+    list_for_chart as icd10_list_for_chart,
+    serialize as icd10_serialize,
+    specificity_score as icd10_specificity_score,
+)
+from epcr_app.services.lock_readiness_service import LockReadinessService
+from epcr_app.services.map_location_service import MapLocationService
+from epcr_app.services.multi_patient_service import MultiPatientService
+from epcr_app.services.prior_ecg_service import (
+    list_prior_for_chart as prior_ecg_list_for_chart,
+)
+from epcr_app.services.protocol_context_service import ProtocolContextService
+from epcr_app.services.repeat_patient_service import RepeatPatientService
+from epcr_app.services.rxnorm_service import RxNormService
+from epcr_app.services.sentence_evidence_service import SentenceEvidenceService
+import os as _os
 
 logger = logging.getLogger(__name__)
 
@@ -376,6 +400,11 @@ class ChartWorkspaceService:
             )
         ).scalars().all()
 
+        # 3D Physical Assessment anatomical findings (region-level)
+        anatomical_findings = await AnatomicalFindingService.list_for_chart(
+            session, tenant_id, chart_id
+        )
+
         # NEMSIS readiness via canonical compliance check
         try:
             readiness = await ChartService.check_nemsis_compliance(
@@ -464,6 +493,348 @@ class ChartWorkspaceService:
             {"section": s, "reason": "field_not_mapped"} for s in sorted(UNMAPPED_SECTIONS)
         ]
 
+        # ----------------------------------------------------------------- #
+        # Pillar payload injections. Each is wrapped in try/except so a     #
+        # transient pillar failure surfaces as an empty/null block rather   #
+        # than collapsing the entire workspace payload. Honest fallback —   #
+        # NEVER fabricate success.                                          #
+        # ----------------------------------------------------------------- #
+
+        # lock_readiness aggregator
+        try:
+            lock_readiness = await LockReadinessService.get_for_chart(
+                session,
+                tenant_id,
+                chart_id,
+                unmapped_sections=tuple(sorted(UNMAPPED_SECTIONS)),
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("lock_readiness load failed: %s", exc)
+            lock_readiness = None
+
+        # ecustom definitions + values
+        try:
+            agency_scope = chart.agency_code or ""
+            ecustom_defs = await ECustomFieldService.list_definitions(
+                session, tenant_id, agency_scope
+            )
+            ecustom_values = await ECustomFieldService.list_values_for_chart(
+                session, tenant_id, chart_id
+            )
+            ecustom_payload = {
+                "definitions": [
+                    ECustomFieldService.serialize_definition(d) for d in ecustom_defs
+                ],
+                "values": [
+                    ECustomFieldService.serialize_value(v) for v in ecustom_values
+                ],
+            }
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("ecustom load failed: %s", exc)
+            ecustom_payload = {"definitions": [], "values": []}
+
+        # sentence evidence
+        try:
+            sentence_evidence_rows = await SentenceEvidenceService.list_for_chart(
+                session, tenant_id, chart_id
+            )
+            sentence_evidence_payload = [
+                {
+                    "id": r.id,
+                    "tenantId": r.tenant_id,
+                    "chartId": r.chart_id,
+                    "narrativeId": r.narrative_id,
+                    "sentenceIndex": r.sentence_index,
+                    "sentenceText": r.sentence_text,
+                    "evidenceKind": r.evidence_kind,
+                    "evidenceRefId": r.evidence_ref_id,
+                    "confidence": float(r.confidence) if r.confidence is not None else 0.0,
+                    "providerConfirmed": bool(r.provider_confirmed),
+                    "createdAt": r.created_at.isoformat() if r.created_at else None,
+                    "updatedAt": r.updated_at.isoformat() if r.updated_at else None,
+                }
+                for r in sentence_evidence_rows
+            ]
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("sentence_evidence load failed: %s", exc)
+            sentence_evidence_payload = []
+
+        # repeat patient — read existing match rows only (no re-discovery
+        # at workspace-load time; discovery is an explicit endpoint).
+        try:
+            from sqlalchemy import select as _select
+            from epcr_app.models import (
+                EpcrRepeatPatientMatch,
+                EpcrPriorChartReference,
+            )
+            match_rows = (
+                await session.execute(
+                    _select(EpcrRepeatPatientMatch).where(
+                        and_(
+                            EpcrRepeatPatientMatch.chart_id == chart_id,
+                            EpcrRepeatPatientMatch.tenant_id == tenant_id,
+                        )
+                    ).order_by(EpcrRepeatPatientMatch.confidence.desc())
+                )
+            ).scalars().all()
+            prior_chart_rows: list = []
+            seen_profiles: set[str] = set()
+            for m in match_rows:
+                if m.matched_profile_id in seen_profiles:
+                    continue
+                seen_profiles.add(m.matched_profile_id)
+                prior_chart_rows.extend(
+                    await RepeatPatientService.list_prior_charts(
+                        session, tenant_id, m.matched_profile_id
+                    )
+                )
+            repeat_patient_payload = {
+                "matches": [
+                    {
+                        "id": m.id,
+                        "matchedProfileId": m.matched_profile_id,
+                        "confidence": float(m.confidence) if m.confidence is not None else 0.0,
+                        "matchReasons": json.loads(m.match_reason_json) if m.match_reason_json else [],
+                        "reviewed": bool(m.reviewed),
+                        "reviewedBy": m.reviewed_by,
+                        "reviewedAt": m.reviewed_at.isoformat() if m.reviewed_at else None,
+                        "carryForwardAllowed": bool(m.carry_forward_allowed),
+                        "createdAt": m.created_at.isoformat() if m.created_at else None,
+                        "updatedAt": m.updated_at.isoformat() if m.updated_at else None,
+                    }
+                    for m in match_rows
+                ],
+                "priorCharts": [
+                    {
+                        "id": r.id,
+                        "priorChartId": r.prior_chart_id,
+                        "encounterAt": r.encounter_at.isoformat() if r.encounter_at else None,
+                        "chiefComplaint": r.chief_complaint,
+                        "disposition": r.disposition,
+                    }
+                    for r in prior_chart_rows
+                ],
+            }
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("repeat_patient load failed: %s", exc)
+            repeat_patient_payload = {"matches": [], "priorCharts": []}
+
+        # prior ECG references (+ best-effort comparison list)
+        try:
+            from epcr_app.models import EpcrEcgComparisonResult as _EcgCmp
+            prior_ecg_rows = await prior_ecg_list_for_chart(
+                session, tenant_id, chart_id
+            )
+            prior_ecg_refs = [
+                {
+                    "id": r.id,
+                    "capturedAt": r.captured_at.isoformat() if r.captured_at else None,
+                    "encounterContext": r.encounter_context,
+                    "imageStorageUri": r.image_storage_uri,
+                    "monitorImported": bool(r.monitor_imported),
+                    "quality": r.quality,
+                    "notes": r.notes,
+                }
+                for r in prior_ecg_rows
+            ]
+            cmp_rows = (
+                await session.execute(
+                    select(_EcgCmp).where(
+                        and_(
+                            _EcgCmp.chart_id == chart_id,
+                            _EcgCmp.tenant_id == tenant_id,
+                        )
+                    )
+                )
+            ).scalars().all()
+            prior_ecg_payload = {
+                "references": prior_ecg_refs,
+                "comparisons": [
+                    {
+                        "id": c.id,
+                        "priorEcgId": c.prior_ecg_id,
+                        "comparisonState": c.comparison_state,
+                        "providerConfirmed": bool(c.provider_confirmed),
+                        "providerId": c.provider_id,
+                        "confirmedAt": c.confirmed_at.isoformat() if c.confirmed_at else None,
+                        "notes": c.notes,
+                    }
+                    for c in cmp_rows
+                ],
+            }
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("prior_ecg load failed: %s", exc)
+            prior_ecg_payload = {"references": [], "comparisons": []}
+
+        # rxnorm matches
+        try:
+            rxnorm_matches = await RxNormService.list_for_chart(
+                session, tenant_id=tenant_id, chart_id=chart_id
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("rxnorm load failed: %s", exc)
+            rxnorm_matches = []
+
+        # ICD-10 documentation prompts
+        try:
+            icd10_rows = await icd10_list_for_chart(session, tenant_id, chart_id)
+            icd10_suggestions_payload = [icd10_serialize(r) for r in icd10_rows]
+            icd10_score = icd10_specificity_score(icd10_rows)
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("icd10 load failed: %s", exc)
+            icd10_suggestions_payload = []
+            icd10_score = 0.0
+
+        # map locations
+        try:
+            map_locations = await MapLocationService.list_for_chart(
+                session, tenant_id=tenant_id, chart_id=chart_id
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("map_location load failed: %s", exc)
+            map_locations = []
+
+        # multi-patient context
+        try:
+            multi_patient_payload = await MultiPatientService.list_for_chart(
+                session, tenant_id, chart_id
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("multi_patient load failed: %s", exc)
+            multi_patient_payload = {"incident": None, "self": None, "siblings": []}
+
+        # protocol context (active row, if any)
+        try:
+            active_protocol = await ProtocolContextService.list_active(
+                session, tenant_id, chart_id
+            )
+            if active_protocol is not None:
+                try:
+                    sat = json.loads(active_protocol.required_field_satisfaction_json) \
+                        if active_protocol.required_field_satisfaction_json else None
+                except (TypeError, ValueError):
+                    sat = None
+                protocol_context_payload = {
+                    "id": active_protocol.id,
+                    "tenantId": active_protocol.tenant_id,
+                    "chartId": active_protocol.chart_id,
+                    "activePack": active_protocol.active_pack,
+                    "engagedAt": active_protocol.engaged_at.isoformat()
+                    if active_protocol.engaged_at else None,
+                    "engagedBy": active_protocol.engaged_by,
+                    "disengagedAt": active_protocol.disengaged_at.isoformat()
+                    if active_protocol.disengaged_at else None,
+                    "packVersion": active_protocol.pack_version,
+                    "requiredFieldSatisfaction": sat,
+                }
+            else:
+                protocol_context_payload = None
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("protocol_context load failed: %s", exc)
+            protocol_context_payload = None
+
+        # audit trail (additive — preserves existing `audit` key untouched).
+        try:
+            audit_trail = await AuditTrailQueryService.list_for_chart(
+                session, tenant_id=tenant_id, chart_id=chart_id
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("audit_trail load failed: %s", exc)
+            audit_trail = []
+
+        # ----------------------------------------------------------------- #
+        # Capability envelope (Five-Artifact Rule).                         #
+        # A capability may only declare ``live`` if the service, model,     #
+        # endpoint, contract test, and audit path all exist on this SHA.   #
+        # Anything missing → ``unavailable`` + explicit reason. No fake     #
+        # completion. Read by EpcrUnavailableState on web + android.        #
+        # ----------------------------------------------------------------- #
+        # Environment-gated capabilities (Mapbox + RxNav).
+        _mapbox_token = (_os.environ.get("MAPBOX_TOKEN") or "").strip()
+        _rxnav_url = (_os.environ.get("RXNAV_URL") or "").strip()
+
+        if _rxnav_url:
+            _rxnorm_cap: dict[str, Any] = {
+                "capability": "live",
+                "source": "rxnorm_service",
+            }
+        else:
+            _rxnorm_cap = {
+                "capability": "read_only_cache",
+                "reason": "RXNAV_URL not configured",
+            }
+        if _mapbox_token:
+            _map_location_cap: dict[str, Any] = {
+                "capability": "live",
+                "source": "map_location_service",
+            }
+        else:
+            _map_location_cap = {
+                "capability": "read_only",
+                "reason": "MAPBOX_TOKEN not configured",
+            }
+
+        capabilities: dict[str, dict[str, Any]] = {
+            "readiness": {
+                "capability": "live",
+                "source": "nemsis_finalization_gate",
+            },
+            # Additive aggregator for the lock-readiness pillar. Does NOT
+            # replace `readiness`; both are surfaced so existing consumers
+            # of `nemsis_readiness` keep their contract while new consumers
+            # can read the score/blockers/warnings/advisories envelope.
+            "lock_readiness": {
+                "capability": "live",
+                "source": "lock_readiness_service",
+            },
+            "timeline": {
+                "capability": "live",
+                "source": "chart_workspace_aggregate",
+            },
+            "protocol_context": {
+                "capability": "live",
+                "source": "protocol_context_service",
+            },
+            "smart_text": {
+                "capability": "live",
+                "source": "smart_text_service",
+            },
+            "sentence_evidence": {
+                "capability": "live",
+                "source": "sentence_evidence_service",
+            },
+            "repeat_patient": {
+                "capability": "live",
+                "source": "repeat_patient_service",
+            },
+            "prior_ecg": {
+                "capability": "live",
+                "source": "prior_ecg_service",
+            },
+            "rxnorm": _rxnorm_cap,
+            "icd10": {
+                "capability": "live",
+                "source": "icd10_service",
+            },
+            "map_location": _map_location_cap,
+            "multi_patient": {
+                "capability": "live",
+                "source": "multi_patient_service",
+            },
+            "audit_trail": {
+                "capability": "live",
+                "source": "audit_trail_query_service",
+            },
+            "ecustom": {
+                "capability": "live",
+                "source": "ecustom_field_service",
+            },
+            "assessment_anatomical": {
+                "capability": "live",
+                "source": "anatomical_finding_service",
+            },
+        }
+
         # Submission CTA truth: the submission router exists but live CTA
         # endpoints require credentials and integration enablement. Until a
         # submission row exists for this chart we honestly report
@@ -531,6 +902,7 @@ class ChartWorkspaceService:
                     ChartWorkspaceService._serialize_assessment_finding(f)
                     for f in finding_rows
                 ],
+                "anatomical_findings": anatomical_findings,
             },
             "vitals": [
                 ChartWorkspaceService._serialize_vitals(v) for v in vitals_rows
@@ -561,6 +933,19 @@ class ChartWorkspaceService:
             "defined_lists": {"source": "/api/v1/epcr/nemsis/defined-lists"},
             "custom_elements": {"source": "/api/v1/epcr/nemsis/custom-elements"},
             "audit": audit,
+            "audit_trail": audit_trail,
+            "lock_readiness": lock_readiness,
+            "ecustom": ecustom_payload,
+            "sentence_evidence": sentence_evidence_payload,
+            "repeat_patient": repeat_patient_payload,
+            "prior_ecg": prior_ecg_payload,
+            "rxnorm_matches": rxnorm_matches,
+            "icd10Suggestions": icd10_suggestions_payload,
+            "icd10SpecificityScore": icd10_score,
+            "map_locations": map_locations,
+            "multi_patient": multi_patient_payload,
+            "protocol_context": protocol_context_payload,
+            "capabilities": capabilities,
         }
 
     # ----------------------------------------------------------------- #
@@ -677,7 +1062,27 @@ class ChartWorkspaceService:
                     provider_id=user_id, address_data=payload,
                 )
             elif section in ("assessment", "complaint"):
-                if payload.get("finding"):
+                if section == "assessment" and "anatomical_findings" in payload:
+                    try:
+                        await AnatomicalFindingService.replace_for_chart(
+                            session=session,
+                            tenant_id=tenant_id,
+                            chart_id=chart_id,
+                            user_id=user_id,
+                            findings=payload.get("anatomical_findings") or [],
+                        )
+                        await session.commit()
+                    except AnatomicalFindingValidationError as vexc:
+                        await session.rollback()
+                        raise ChartWorkspaceError(
+                            "Invalid anatomical findings payload",
+                            status_code=400,
+                            detail={
+                                "message": "Invalid anatomical findings payload",
+                                "errors": vexc.errors,
+                            },
+                        ) from vexc
+                elif payload.get("finding"):
                     await ChartService.record_assessment_finding(
                         session=session, tenant_id=tenant_id, chart_id=chart_id,
                         provider_id=user_id, finding_data=payload["finding"],
@@ -721,6 +1126,25 @@ class ChartWorkspaceService:
                     nemsis_value=payload.get("nemsis_value"),
                     source=payload.get("source", "manual"),
                 )
+                if "ecustom_values" in payload:
+                    try:
+                        from epcr_app.services.ecustom_field_validation import (
+                            ValidationError as _ECustomValidationError,
+                        )
+                        await ECustomFieldService.replace_for_chart(
+                            session,
+                            tenant_id=tenant_id,
+                            chart_id=chart_id,
+                            user_id=user_id,
+                            agency_id=chart.agency_code or "",
+                            values=payload["ecustom_values"],
+                        )
+                    except Exception as _ecustom_exc:  # noqa: BLE001
+                        raise ChartWorkspaceError(
+                            "ecustom_values validation failed",
+                            status_code=400,
+                            detail={"message": str(_ecustom_exc)},
+                        ) from _ecustom_exc
         except ValueError as exc:
             raise ChartWorkspaceError(str(exc), status_code=400) from exc
 
