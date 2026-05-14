@@ -42,24 +42,23 @@ from uuid import UUID
 from fastapi import Header, HTTPException, status
 from jose import JWTError, jwt
 
+from epcr_app.auth.auth_context import (
+    AUTH_PATH_GATEWAY_V1,
+    AuthContextError,
+    EXPECTED_AUDIENCE,
+    HEADER_AUTH_CONTEXT,
+    HEADER_AUTH_PATH,
+    HEADER_AUTH_SIGNATURE,
+    verify_context,
+)
+
 logger = logging.getLogger(__name__)
 
 _ALGORITHM = "RS256"
 
-# Header contract — owned by adaptix-gateway. See
-# adaptix-gateway/backend/app/middleware/cognito_auth.py for the
-# producer-side spec. Lowercase aliases here are case-insensitive at the
-# Header() decorator level.
-_HDR_AUTH_PATH  = "X-Adaptix-Auth-Path"
-_HDR_CANARY     = "X-Adaptix-Canary"
-_HDR_USER_ID    = "X-Adaptix-User-Id"
-_HDR_TENANT_ID  = "X-Adaptix-Tenant-Id"
-_HDR_EMAIL      = "X-Adaptix-Email"
-_HDR_ROLES      = "X-Adaptix-Roles"
-
-AUTH_PATH_CANARY = "canary"
+# Header names match the gateway-side spec — case-insensitive at the
+# FastAPI Header() decorator level.
 AUTH_PATH_LEGACY = "legacy"
-GATEWAY_CANARY_VALUE = "cognito-gateway-validated"
 
 
 def _legacy_auth_enabled() -> bool:
@@ -108,75 +107,87 @@ class CurrentUser:
 
 async def get_current_user(
     authorization:        Annotated[str | None, Header(alias="Authorization")] = None,
-    x_adaptix_auth_path:  Annotated[str | None, Header(alias=_HDR_AUTH_PATH)]   = None,
-    x_adaptix_canary:     Annotated[str | None, Header(alias=_HDR_CANARY)]      = None,
-    x_adaptix_user_id:    Annotated[str | None, Header(alias=_HDR_USER_ID)]     = None,
-    x_adaptix_tenant_id:  Annotated[str | None, Header(alias=_HDR_TENANT_ID)]   = None,
-    x_adaptix_email:      Annotated[str | None, Header(alias=_HDR_EMAIL)]       = None,
-    x_adaptix_roles:      Annotated[str | None, Header(alias=_HDR_ROLES)]       = None,
+    x_adaptix_auth_path:  Annotated[str | None, Header(alias=HEADER_AUTH_PATH)]      = None,
+    x_adaptix_context:    Annotated[str | None, Header(alias=HEADER_AUTH_CONTEXT)]   = None,
+    x_adaptix_signature:  Annotated[str | None, Header(alias=HEADER_AUTH_SIGNATURE)] = None,
 ) -> CurrentUser:
     """Extract the authenticated user by branching on
     ``X-Adaptix-Auth-Path``. See module docstring for the contract.
 
+    For path ``gateway-v1`` (the canonical production path), this verifies
+    the HMAC-SHA256 signature over the base64url-encoded JSON payload and
+    pulls identity from the verified claims. The audience claim must
+    equal ``adaptix-epcr``; the iat/exp window must contain "now" within
+    a small clock-skew tolerance.
+
     Returns:
-        CurrentUser populated from the gateway-stamped identity (canary
+        CurrentUser populated from the verified signed context (gateway
         path) or the verified Bearer JWT claims (legacy path).
 
     Raises:
-        HTTPException 401 if neither path is satisfied.
-        HTTPException 502 if the canary auth-path is declared but the
-            identity headers are missing/malformed (gateway contract
-            breach).
+        HTTPException 401 if no recognised auth path is presented and
+            legacy is disabled.
+        HTTPException 502 if ``X-Adaptix-Auth-Path`` declares the gateway
+            path but the signature does not verify, the audience does not
+            match, the context is expired, or the shared secret is not
+            configured.
         HTTPException 503 if the legacy path is taken but
             ``ADAPTIX_JWT_PUBLIC_KEY`` is not configured.
     """
-    # ── Path: canary (gateway-validated identity) ────────────────────────
-    if x_adaptix_auth_path == AUTH_PATH_CANARY:
-        if x_adaptix_canary != GATEWAY_CANARY_VALUE:
+    # ── Path: gateway-v1 (signed auth context) ──────────────────────────
+    if x_adaptix_auth_path == AUTH_PATH_GATEWAY_V1:
+        try:
+            payload = verify_context(
+                context_b64=x_adaptix_context or "",
+                signature_hex=x_adaptix_signature or "",
+                expected_audience=EXPECTED_AUDIENCE,
+            )
+        except AuthContextError as exc:
             logger.error(
-                "epcr.auth: contract breach — X-Adaptix-Auth-Path=canary "
-                "but X-Adaptix-Canary missing or wrong (got %r)",
-                x_adaptix_canary,
+                "epcr.auth: gateway-v1 context verification failed: %s", exc
             )
             raise HTTPException(
                 status_code=status.HTTP_502_BAD_GATEWAY,
                 detail={
                     "error_code": "gateway_contract_breach",
                     "message": (
-                        "Auth-path declared canary but canary header is missing "
-                        "or does not match the gateway value. The gateway must "
-                        "stamp both atomically."
+                        "Gateway-v1 auth context verification failed. "
+                        "The gateway must produce a signed, in-window, "
+                        f"audience='{EXPECTED_AUDIENCE}' context."
                     ),
                 },
-            )
-        if not x_adaptix_user_id or not x_adaptix_tenant_id:
-            logger.error(
-                "epcr.auth: contract breach — canary present but "
-                "X-Adaptix-User-Id/X-Adaptix-Tenant-Id missing"
+            ) from exc
+        except RuntimeError as exc:
+            logger.critical(
+                "epcr.auth: shared secret not configured — cannot verify "
+                "gateway-v1 auth context: %s",
+                exc,
             )
             raise HTTPException(
-                status_code=status.HTTP_502_BAD_GATEWAY,
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail={
-                    "error_code": "gateway_contract_breach",
+                    "error_code": "auth_unavailable",
                     "message": (
-                        "Canary path requires X-Adaptix-User-Id and "
-                        "X-Adaptix-Tenant-Id — the gateway must inject both."
+                        "ADAPTIX_GATEWAY_SHARED_SECRET is not configured "
+                        "in this EPCR deployment. Inject it via Secrets "
+                        "Manager — the same value the gateway uses."
                     ),
                 },
-            )
+            ) from exc
+
         try:
             return CurrentUser(
-                user_id=UUID(str(x_adaptix_user_id)),
-                tenant_id=UUID(str(x_adaptix_tenant_id)),
-                email=x_adaptix_email or "unknown@example.com",
-                roles=_parse_roles_str(x_adaptix_roles),
+                user_id=UUID(str(payload["user_id"])),
+                tenant_id=UUID(str(payload["tenant_id"])),
+                email=str(payload.get("email") or "unknown@example.com"),
+                roles=[str(r) for r in payload.get("roles") or []],
             )
-        except ValueError as exc:
+        except (KeyError, ValueError) as exc:
             raise HTTPException(
                 status_code=status.HTTP_502_BAD_GATEWAY,
                 detail={
                     "error_code": "gateway_contract_breach",
-                    "message": "Gateway-injected user_id or tenant_id is not a valid UUID",
+                    "message": "Gateway-v1 payload missing or malformed user_id/tenant_id",
                 },
             ) from exc
 
@@ -199,7 +210,7 @@ async def get_current_user(
                 "error_code": "auth_required",
                 "message": (
                     "Authentication required. This endpoint accepts requests "
-                    "stamped by the adaptix-gateway (X-Adaptix-Auth-Path=canary) "
+                    f"stamped by the adaptix-gateway (X-Adaptix-Auth-Path={AUTH_PATH_GATEWAY_V1}) "
                     "or — when explicitly enabled by ADAPTIX_ALLOW_LEGACY_JWT_AUTH=true — "
                     "a direct Adaptix Bearer JWT."
                 ),

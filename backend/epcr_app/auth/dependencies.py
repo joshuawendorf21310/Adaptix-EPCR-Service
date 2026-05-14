@@ -26,23 +26,23 @@ from fastapi import Depends, Header, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
 
+from epcr_app.auth.auth_context import (
+    AUTH_PATH_GATEWAY_V1,
+    AuthContextError,
+    EXPECTED_AUDIENCE,
+    HEADER_AUTH_CONTEXT,
+    HEADER_AUTH_PATH,
+    HEADER_AUTH_SIGNATURE,
+    verify_context,
+)
+
 logger = logging.getLogger(__name__)
 
 security = HTTPBearer(auto_error=False)
 
 _ALGORITHM = "RS256"
 
-# X-Adaptix-* contract — owned by adaptix-gateway.
-_HDR_AUTH_PATH = "X-Adaptix-Auth-Path"
-_HDR_CANARY    = "X-Adaptix-Canary"
-_HDR_USER_ID   = "X-Adaptix-User-Id"
-_HDR_TENANT_ID = "X-Adaptix-Tenant-Id"
-_HDR_EMAIL     = "X-Adaptix-Email"
-_HDR_ROLES     = "X-Adaptix-Roles"
-
-AUTH_PATH_CANARY = "canary"
 AUTH_PATH_LEGACY = "legacy"
-GATEWAY_CANARY_VALUE = "cognito-gateway-validated"
 
 
 def _legacy_auth_enabled() -> bool:
@@ -130,45 +130,65 @@ def _auth_from_gateway_headers(
 
 async def get_auth_context(
     credentials:          Optional[HTTPAuthorizationCredentials] = Depends(security),
-    x_adaptix_auth_path:  str | None = Header(default=None, alias=_HDR_AUTH_PATH),
-    x_adaptix_canary:     str | None = Header(default=None, alias=_HDR_CANARY),
-    x_adaptix_user_id:    str | None = Header(default=None, alias=_HDR_USER_ID),
-    x_adaptix_tenant_id:  str | None = Header(default=None, alias=_HDR_TENANT_ID),
-    x_adaptix_email:      str | None = Header(default=None, alias=_HDR_EMAIL),
-    x_adaptix_roles:      str | None = Header(default=None, alias=_HDR_ROLES),
+    x_adaptix_auth_path:  str | None = Header(default=None, alias=HEADER_AUTH_PATH),
+    x_adaptix_context:    str | None = Header(default=None, alias=HEADER_AUTH_CONTEXT),
+    x_adaptix_signature:  str | None = Header(default=None, alias=HEADER_AUTH_SIGNATURE),
 ) -> AdaptixAuthContext:
     """Extract auth context by branching on X-Adaptix-Auth-Path. See module
     docstring for the contract.
 
+    For path ``gateway-v1`` (canonical production path), this verifies
+    the HMAC-SHA256 signature on the signed context and pulls identity
+    from the verified payload. Audience must equal ``adaptix-epcr``.
+
     Raises:
         HTTPException 401 if neither path is satisfied.
-        HTTPException 502 if canary path declared but identity headers are
-            missing or malformed (gateway contract breach).
-        HTTPException 503 if legacy path is taken but
-            ``ADAPTIX_JWT_PUBLIC_KEY`` is not configured.
+        HTTPException 502 if gateway-v1 path declared but signature does
+            not verify, audience mismatches, or context is expired.
+        HTTPException 503 if shared secret unavailable, or legacy path
+            taken but ADAPTIX_JWT_PUBLIC_KEY missing.
     """
-    # ── Path: canary (gateway-validated identity) ────────────────────────
-    if x_adaptix_auth_path == AUTH_PATH_CANARY:
-        if x_adaptix_canary != GATEWAY_CANARY_VALUE:
-            logger.error(
-                "epcr.auth: contract breach — X-Adaptix-Auth-Path=canary "
-                "but X-Adaptix-Canary missing or wrong"
+    # ── Path: gateway-v1 (signed auth context) ──────────────────────────
+    if x_adaptix_auth_path == AUTH_PATH_GATEWAY_V1:
+        try:
+            payload = verify_context(
+                context_b64=x_adaptix_context or "",
+                signature_hex=x_adaptix_signature or "",
+                expected_audience=EXPECTED_AUDIENCE,
             )
+        except AuthContextError as exc:
+            logger.error("epcr.auth: gateway-v1 verify failed: %s", exc)
             raise HTTPException(
                 status_code=status.HTTP_502_BAD_GATEWAY,
                 detail={
                     "error_code": "gateway_contract_breach",
                     "message": (
-                        "Auth-path declared canary but canary header is missing "
-                        "or does not match the gateway value."
+                        f"Gateway-v1 context verification failed. Expected a "
+                        f"signed, in-window context with aud='{EXPECTED_AUDIENCE}'."
                     ),
                 },
+            ) from exc
+        except RuntimeError as exc:
+            logger.critical(
+                "epcr.auth: shared secret missing, cannot verify gateway-v1: %s",
+                exc,
             )
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail={
+                    "error_code": "auth_unavailable",
+                    "message": (
+                        "ADAPTIX_GATEWAY_SHARED_SECRET is not configured in "
+                        "this EPCR deployment. Inject via Secrets Manager."
+                    ),
+                },
+            ) from exc
+
         return _auth_from_gateway_headers(
-            x_adaptix_user_id or "",
-            x_adaptix_tenant_id or "",
-            x_adaptix_email,
-            x_adaptix_roles,
+            str(payload.get("user_id") or ""),
+            str(payload.get("tenant_id") or ""),
+            str(payload.get("email") or ""),
+            ",".join(str(r) for r in payload.get("roles") or []),
         )
 
     # ── Path: legacy (direct Adaptix JWT) — opt-in only ──────────────────
