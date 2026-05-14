@@ -1,6 +1,7 @@
 """ePCR QA/QI Service. Manages quality assurance and quality improvement for ePCR charts."""
 from __future__ import annotations
-import logging, uuid
+import logging
+import uuid
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 logger = logging.getLogger(__name__)

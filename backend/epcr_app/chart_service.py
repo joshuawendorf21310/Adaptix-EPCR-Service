@@ -12,7 +12,6 @@ from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from epcr_app.models import (
-    AgencyProfile,
     Chart,
     ChartStatus,
     Vitals,
@@ -42,8 +41,6 @@ from epcr_app.models import (
     ClinicalNoteReviewState,
     ProtocolRecommendationState,
     DerivedOutputType,
-    PatientRegistryProfile,
-    PatientRegistryChartLink,
 )
 from epcr_app.incident_numbering_service import IncidentNumberingService
 from epcr_app.patient_registry_service import PatientRegistryService

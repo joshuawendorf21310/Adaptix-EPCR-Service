@@ -9,7 +9,7 @@ import uuid
 from datetime import datetime, UTC
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -18,27 +18,19 @@ from epcr_app.db import get_session
 from epcr_app.dependencies import get_current_user, get_tenant_id
 from epcr_app.models_caregraph import OPQRSTSymptom
 from epcr_app.models_critical_care import (
-    CriticalCareDevice,
     InfusionRun,
     VentilatorSession,
-    BloodProductAdministration,
     ResponseWindow,
-    InterventionIndication,
-    InterventionIntent,
 )
 from epcr_app.models_sync import (
     SyncEventLog,
     SyncConflict,
-    UploadQueueItem,
     SyncHealthRecord,
-    AuditEnvelope,
 )
 from epcr_app.models_dashboard import (
     UserDashboardProfile,
     UserFavorite,
-    UserThemeSettings,
     WorkspaceProfile,
-    AgencyWorkflowConfig,
 )
 
 router = APIRouter(prefix="/api/v1/epcr", tags=["clinical-extended"])

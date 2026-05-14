@@ -27,7 +27,6 @@ from sqlalchemy import (
     Integer,
     String,
     Text,
-    Enum as SQLEnum,
     text,
 )
 from sqlalchemy.orm import relationship

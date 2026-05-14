@@ -35,7 +35,6 @@ from sqlalchemy import (
     Text,
     text,
 )
-from sqlalchemy.orm import relationship
 
 from epcr_app.models import Base
 

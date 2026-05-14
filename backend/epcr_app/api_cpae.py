@@ -15,7 +15,7 @@ from datetime import datetime, UTC
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -25,9 +25,6 @@ from epcr_app.models_cpae import (
     PhysicalFinding,
     FindingCharacteristic,
     FindingReassessment,
-    FindingEvidenceLink,
-    FindingInterventionLink,
-    FindingNemsisLink,
     FindingAuditEvent,
     AssessmentRegion,
     PhysiologicSystemRef,

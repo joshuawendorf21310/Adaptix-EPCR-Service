@@ -18,10 +18,8 @@ Pattern: hermetic in-memory SQLite, FastAPI TestClient, dependency-overridden au
 """
 from __future__ import annotations
 
-from datetime import UTC, datetime
 from types import SimpleNamespace
 
-import pytest
 import pytest_asyncio
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
@@ -31,19 +29,6 @@ from epcr_app.api_quality import router as quality_router
 from epcr_app.db import get_session
 from epcr_app.dependencies import get_current_user
 from epcr_app.models import Base
-from epcr_app.models_quality import (
-    EducationFollowUp,
-    MedicalDirectorNote,
-    MedicalDirectorReview,
-    PeerReview,
-    ProviderFeedback,
-    QACaseRecord,
-    QAReviewFinding,
-    QAScore,
-    QATriggerConfiguration,
-    QIInitiative,
-    QualityAuditEvent,
-)
 
 
 # ---------------------------------------------------------------------------

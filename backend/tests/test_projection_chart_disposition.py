@@ -21,8 +21,6 @@ from epcr_app.models_nemsis_field_values import NemsisFieldValue
 from epcr_app.projection_chart_disposition import (
     SECTION,
     _ELEMENT_BINDING,
-    _LIST_BINDING,
-    _SCALAR_BINDING,
     project_chart_disposition,
 )
 from epcr_app.services_chart_disposition import (

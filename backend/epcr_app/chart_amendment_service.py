@@ -1,8 +1,9 @@
 """ePCR Chart Amendment Service. Manages chart amendments with audit trail."""
 from __future__ import annotations
-import logging, uuid
+import logging
+import uuid
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 logger = logging.getLogger(__name__)
 
 class ChartAmendmentService:

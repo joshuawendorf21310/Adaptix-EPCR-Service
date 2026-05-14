@@ -31,7 +31,7 @@ import os
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from decimal import Decimal
-from typing import Any, Iterable, Optional
+from typing import Any, Optional
 from uuid import uuid4
 
 import httpx

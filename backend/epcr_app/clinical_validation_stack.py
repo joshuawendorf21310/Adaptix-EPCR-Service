@@ -10,20 +10,18 @@ Every failure is explicit. No fake success. No downgraded errors.
 """
 from __future__ import annotations
 
-import json
 import re
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Optional
+from typing import Optional
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from epcr_app.models import Chart, Vitals, Assessment, NemsisMappingRecord, NemsisCompliance
-from epcr_app.models_cpae import PhysicalFinding, FindingReassessment
-from epcr_app.models_caregraph import CareGraphNode, OPQRSTSymptom
-from epcr_app.models_critical_care import ResponseWindow, InfusionRun, VentilatorSession
-from epcr_app.models_terminology import ImpressionBinding, NemsisRegexRule, NemsisValueSet
+from epcr_app.models import Chart, Vitals, NemsisMappingRecord
+from epcr_app.models_cpae import PhysicalFinding
+from epcr_app.models_critical_care import ResponseWindow
+from epcr_app.models_terminology import ImpressionBinding, NemsisRegexRule
 
 
 # ---------------------------------------------------------------------------

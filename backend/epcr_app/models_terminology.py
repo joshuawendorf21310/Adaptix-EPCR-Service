@@ -14,20 +14,17 @@ Terminology suggestion bypass review where clinical truth is affected is FORBIDD
 from __future__ import annotations
 
 from datetime import datetime, UTC
-from enum import Enum
 
 from sqlalchemy import (
     Boolean,
     Column,
     DateTime,
-    Float,
     ForeignKey,
     Integer,
     String,
     Text,
     text,
 )
-from sqlalchemy.orm import relationship
 
 from epcr_app.models import Base
 

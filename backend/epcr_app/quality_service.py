@@ -17,12 +17,11 @@ import logging
 import uuid
 from datetime import UTC, datetime
 
-from sqlalchemy import func, select, update
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from epcr_app.models_quality import (
     AccreditationEvidencePackage,
-    ClinicalVariance,
     EducationFollowUp,
     MedicalDirectorNote,
     MedicalDirectorReview,
@@ -31,19 +30,15 @@ from epcr_app.models_quality import (
     ProtocolAcknowledgment,
     ProtocolDocument,
     ProtocolVersion,
-    ProviderAcknowledgment,
     ProviderFeedback,
     QACaseRecord,
     QAReviewFinding,
     QAScore,
     QATrendAggregation,
     QATriggerConfiguration,
-    QIActionItem,
-    QICommitteeReview,
     QIInitiative,
     QIInitiativeMetric,
     QualityAuditEvent,
-    StandingOrder,
     StandingOrderVersion,
 )
 

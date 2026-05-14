@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import json
-from collections import Counter, defaultdict
+from collections import Counter
 from pathlib import Path
 
 PDF_JSON = Path("nemsis_test/ref/NEMSISDataDictionary_3.5.1.json")

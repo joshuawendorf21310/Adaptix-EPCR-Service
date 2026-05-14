@@ -245,7 +245,6 @@ from epcr_app.services.provider_override_service import (
 from epcr_app.services.repeat_patient_service import (
     RepeatPatientService,
     RepeatPatientMatchNotFoundError,
-    RepeatPatientReviewRequiredError,
 )
 from epcr_app.services.rxnorm_service import RxNormService
 from epcr_app.services.sentence_evidence_service import SentenceEvidenceService

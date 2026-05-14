@@ -46,3 +46,28 @@ include-package-data = true
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 filterwarnings = ["ignore::ResourceWarning"]
+
+[tool.ruff]
+# NEMSIS-protected files are pinned by ``test_protected_nemsis_files_have_zero_diff``
+# in tests/test_chart_workspace_api.py — any diff against HEAD fails that
+# regression. Exclude them from lint + format so ruff cannot reintroduce
+# the protected-file drift.
+extend-exclude = [
+    "epcr_app/nemsis_registry_importer.py",
+    "epcr_app/nemsis_registry_service.py",
+    "epcr_app/api_nemsis_registry.py",
+    "epcr_app/api_nemsis.py",
+    "epcr_app/api_nemsis_packs.py",
+    "epcr_app/api_nemsis_submissions.py",
+    "epcr_app/api_nemsis_validation.py",
+    "epcr_app/api_export.py",
+    "epcr_app/nemsis_finalization_gate.py",
+]
+
+[tool.ruff.lint]
+# E402 — module-level imports not at top of file. EPCR routes and several
+# service modules intentionally configure env / patch sys.modules / set
+# feature flags before importing the heavy ML / contract / AI modules they
+# wrap; reordering would break startup. Matches the same exemption used by
+# adaptix-core-service/core/backend.
+ignore = ["E402"]

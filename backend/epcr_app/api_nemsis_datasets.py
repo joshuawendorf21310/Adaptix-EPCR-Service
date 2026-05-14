@@ -212,7 +212,6 @@ def _build_submission_package(
     Returns (zip_bytes, filename). Filename includes tenant + chart so
     operators can correlate uploads without opening the archive.
     """
-    import hashlib
     import json
 
     buf = io.BytesIO()

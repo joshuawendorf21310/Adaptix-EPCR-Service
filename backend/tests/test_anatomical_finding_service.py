@@ -8,10 +8,8 @@ Validates the replace-for-chart diff semantics:
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
 from uuid import uuid4
 
-import pytest
 import pytest_asyncio
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import (

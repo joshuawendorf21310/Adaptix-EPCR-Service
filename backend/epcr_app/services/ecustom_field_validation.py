@@ -31,7 +31,7 @@ from __future__ import annotations
 import json
 from datetime import date, datetime
 from numbers import Real
-from typing import Any, Iterable
+from typing import Any
 
 
 DATA_TYPES: frozenset[str] = frozenset(

@@ -23,7 +23,7 @@ This file is additive and does not alter any other module's behavior.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field as dc_field
+from dataclasses import dataclass
 from typing import Iterable
 
 

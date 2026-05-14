@@ -1,8 +1,9 @@
 """ePCR Vitals Service. Manages vital signs in ePCR charts."""
 from __future__ import annotations
-import logging, uuid
+import logging
+import uuid
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 logger = logging.getLogger(__name__)
 
 class EpcrVitalsService:

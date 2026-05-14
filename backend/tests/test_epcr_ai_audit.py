@@ -1,4 +1,3 @@
-import pytest
 from epcr_app.narrative_review_service import NarrativeReviewService, NarrativeReviewAction
 
 

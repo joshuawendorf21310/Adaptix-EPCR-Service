@@ -1,8 +1,9 @@
 """ePCR Sync Conflict Service. Manages offline sync conflicts for Android ePCR charting."""
 from __future__ import annotations
-import logging, uuid
+import logging
+import uuid
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 logger = logging.getLogger(__name__)
 
 class EpcrSyncConflictService:

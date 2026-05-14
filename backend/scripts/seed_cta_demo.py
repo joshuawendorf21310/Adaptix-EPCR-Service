@@ -181,7 +181,7 @@ def _md5(path: Path) -> str:
 
 async def _seed_one(session, case: CtaCase, tenant_id: str) -> SeedResult:
     from epcr_app.chart_service import ChartService
-    from epcr_app.models import Chart, NemsisMappingRecord
+    from epcr_app.models import Chart
     from sqlalchemy import select
 
     chart_id = deterministic_chart_id(tenant_id, case.case_id)

@@ -17,7 +17,6 @@ from epcr_app.models_nemsis_validation import (
     NEMSISExportJob,
     NEMSISValidationError,
     NEMSISValidationResult,
-    ValidationStatus,
 )
 
 

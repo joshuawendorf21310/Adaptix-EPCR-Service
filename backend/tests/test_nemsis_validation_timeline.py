@@ -4,7 +4,6 @@ Verifies real database persistence, validation blocking logic, and
 immutable timeline recording.
 """
 import pytest
-from datetime import datetime, UTC
 from sqlalchemy import create_engine, Column, String
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -14,12 +13,9 @@ sys.path.insert(0, ".")
 
 from epcr_app.models_nemsis_validation import (
     Base as ValidationBase,
-    NEMSISValidationResult,
-    NEMSISValidationError,
-    NEMSISExportJob,
     ValidationStatus,
 )
-from epcr_app.models_timeline import Base as TimelineBase, PatientStateTimeline
+from epcr_app.models_timeline import Base as TimelineBase
 from epcr_app.repositories_nemsis_validation import NEMSISValidationRepository
 from epcr_app.repositories_timeline import PatientStateTimelineRepository
 from epcr_app.services_nemsis_validation import NEMSISValidationService

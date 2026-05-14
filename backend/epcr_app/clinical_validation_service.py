@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 import os
 import uuid
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
@@ -129,7 +129,7 @@ class EPCRClinicalValidationService:
 # Adaptix public API adapter
 import uuid as _uuid_cv
 from dataclasses import dataclass as _dc_cv
-from typing import List as _List_cv, Dict as _Dict_cv, Any as _Any_cv
+from typing import List as _List_cv
 
 
 @_dc_cv

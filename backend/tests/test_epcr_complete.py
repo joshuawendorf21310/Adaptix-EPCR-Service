@@ -11,7 +11,7 @@ import pytest
 import pytest_asyncio
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from epcr_app.models import Base, Chart, NemsisCompliance, ChartStatus, ComplianceStatus, EpcrAuditLog
+from epcr_app.models import Base, NemsisCompliance, ChartStatus, ComplianceStatus, EpcrAuditLog
 from epcr_app.services import ChartService
 from epcr_app.db import check_health
 from tests.agency_helpers import seed_active_agency

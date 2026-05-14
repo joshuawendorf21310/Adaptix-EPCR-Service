@@ -18,41 +18,31 @@ import uuid
 from datetime import datetime, UTC
 
 import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy import select
-from sqlalchemy import create_engine, text
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from sqlalchemy.orm import sessionmaker
 
 from epcr_app.models import Base, Chart, ChartStatus
 from epcr_app.models_caregraph import (
-    CareGraphNode, CareGraphEdge, OPQRSTSymptom, ReassessmentDelta,
-    CareGraphNodeType, CareGraphEdgeType, EvidenceStrength, SyncSafetyState,
+    CareGraphNode, OPQRSTSymptom, CareGraphNodeType, CareGraphEdgeType, EvidenceStrength, SyncSafetyState,
 )
 from epcr_app.models_cpae import (
-    PhysicalFinding, FindingCharacteristic, FindingReassessment,
-    AssessmentRegion, PhysiologicSystemRef,
+    PhysicalFinding,
 )
-from epcr_app.models_vas import VASOverlay, VASFindingLink, VASProjectionReview
+from epcr_app.models_vas import VASOverlay, VASProjectionReview
 from epcr_app.models_vision import (
-    VisionArtifact, VisionExtraction, VisionReviewQueue, VisionReviewActionRecord,
-    VisionIngestionJob, VisionProvenanceRecord,
+    VisionArtifact, VisionExtraction, VisionReviewActionRecord,
+    VisionProvenanceRecord,
 )
 from epcr_app.models_critical_care import (
-    CriticalCareDevice, InfusionRun, VentilatorSession, ResponseWindow,
-    InterventionIndication, InterventionIntent,
+    InfusionRun, VentilatorSession, ResponseWindow,
 )
 from epcr_app.models_terminology import (
-    SnomedConcept, ICD10Code, RxNormConcept, NemsisValueSet,
-    ImpressionBinding, DifferentialImpression, TerminologyVersionMetadata,
-    NemsisRegexRule,
+    SnomedConcept, ICD10Code, RxNormConcept, ImpressionBinding, NemsisRegexRule,
 )
 from epcr_app.models_sync import (
-    SyncEventLog, SyncConflict, UploadQueueItem, SyncHealthRecord, AuditEnvelope,
+    SyncEventLog, SyncConflict, SyncHealthRecord, AuditEnvelope,
 )
 from epcr_app.models_dashboard import (
-    UserDashboardProfile, UserFavorite, UserThemeSettings,
-    WorkspaceProfile, AgencyWorkflowConfig,
+    UserDashboardProfile, UserFavorite, WorkspaceProfile, AgencyWorkflowConfig,
 )
 
 
@@ -826,7 +816,7 @@ class TestValidationStack:
 
     def test_validation_result_structure(self):
         """ValidationResult has all required fields."""
-        from epcr_app.clinical_validation_stack import ValidationResult, ValidationIssue
+        from epcr_app.clinical_validation_stack import ValidationResult
 
         result = ValidationResult(
             chart_id=make_chart_id(),

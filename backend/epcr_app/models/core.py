@@ -19,7 +19,6 @@ import os
 import uuid
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
 from xml.etree import ElementTree as ET
 
 import httpx

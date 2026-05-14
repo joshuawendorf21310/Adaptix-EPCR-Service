@@ -8,8 +8,8 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from sqlalchemy import Column, DateTime, ForeignKey, String, Text, text
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy import Column, DateTime, ForeignKey, String, Text
+from sqlalchemy.orm import declarative_base
 
 # Create a separate Base for these models to avoid circular imports
 Base = declarative_base()
