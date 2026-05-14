@@ -1,13 +1,27 @@
 """Dependency injection for ePCR service authentication.
 
-Provides the ``get_current_user`` FastAPI dependency for RS256 JWT validation.
-Token must be issued by the Adaptix core auth service and carry ``sub`` (user UUID)
-and ``tid`` (tenant UUID) claims. Signature verification requires
-``ADAPTIX_JWT_PUBLIC_KEY`` to be set in the environment.
+Two authentication paths are supported, in priority order:
+
+1) **Gateway-validated identity (preferred for public clients).** When
+   ``X-Adaptix-Internal-Auth: cognito-gateway-validated`` is present, the
+   adaptix-gateway has already validated a Cognito JWT and stripped any
+   client-supplied identity headers, then injected verified ``X-User-ID``,
+   ``X-Tenant-ID``, ``X-User-Email``, ``X-Adaptix-Roles``. These headers are
+   trusted only when the canary is present, because the gateway's
+   ``FORBIDDEN_PUBLIC_HEADERS`` strip guarantees a client cannot forge them.
+
+2) **Direct Adaptix JWT verification (legacy / internal callers).** RS256
+   signature verification using ``ADAPTIX_JWT_PUBLIC_KEY``. Required for
+   service-to-service traffic, scheduled workers, and any direct call that
+   bypasses the gateway.
+
+A canary-present-but-headers-missing request is 401 — never silently fall
+back to the unsigned bearer.
 """
 
 from __future__ import annotations
 
+import json
 import logging
 import os
 from typing import Annotated, Optional
@@ -19,6 +33,26 @@ from jose import JWTError, jwt
 logger = logging.getLogger(__name__)
 
 _ALGORITHM = "RS256"
+
+# Canary stamped by adaptix-gateway after Cognito validation; stripped from
+# inbound public requests by the gateway, so present only when the gateway
+# itself produced it.
+_GATEWAY_AUTH_CANARY = "cognito-gateway-validated"
+
+
+def _parse_roles_str(raw_roles: str | None) -> list[str]:
+    """Parse a gateway-forwarded roles string (JSON array or comma-delimited)."""
+    if not raw_roles:
+        return []
+    s = raw_roles.strip()
+    if s.startswith("[") and s.endswith("]"):
+        try:
+            parsed = json.loads(s)
+            if isinstance(parsed, list):
+                return [str(r).strip() for r in parsed if str(r).strip()]
+        except json.JSONDecodeError:
+            pass
+    return [p.strip() for p in s.split(",") if p.strip()]
 
 
 class CurrentUser:
@@ -49,30 +83,62 @@ async def get_current_user(
     authorization: Annotated[str | None, Header(alias="Authorization")] = None,
     x_tenant_id: Annotated[str | None, Header(alias="X-Tenant-ID")] = None,
     x_user_id: Annotated[str | None, Header(alias="X-User-ID")] = None,
+    x_user_email: Annotated[str | None, Header(alias="X-User-Email")] = None,
+    x_adaptix_roles: Annotated[str | None, Header(alias="X-Adaptix-Roles")] = None,
+    x_adaptix_internal_auth: Annotated[
+        str | None, Header(alias="X-Adaptix-Internal-Auth")
+    ] = None,
 ) -> CurrentUser:
-    """Extract and validate the authenticated user from the Authorization header.
+    """Extract the authenticated user. Prefers gateway-validated identity
+    headers when the ``X-Adaptix-Internal-Auth: cognito-gateway-validated``
+    canary is present; otherwise verifies the Bearer JWT directly.
 
-    Decodes the Bearer JWT using RS256 and extracts ``sub`` (user_id) and
-    ``tid`` (tenant_id) claims. ``ADAPTIX_JWT_PUBLIC_KEY`` must be set in
-    the environment; the service raises HTTP 503 if it is absent.
+    See module docstring for the two-path design and security reasoning.
 
     Args:
-        authorization: Value of the HTTP ``Authorization`` header.
-        x_tenant_id: Optional gateway-propagated tenant header. If present,
-            it must match the JWT ``tid`` claim and is never trusted as
-            authority.
-        x_user_id: Optional gateway-propagated user header. If present, it
-            must match the JWT ``sub`` claim and is never trusted as authority.
+        authorization: ``Authorization`` header (used for path 2).
+        x_tenant_id: Gateway-injected tenant UUID (used for path 1).
+        x_user_id: Gateway-injected user UUID (used for path 1).
+        x_user_email: Gateway-injected email (used for path 1).
+        x_adaptix_roles: Gateway-injected roles (used for path 1).
+        x_adaptix_internal_auth: Canary header. When equal to
+            ``cognito-gateway-validated``, the gateway-trust path is taken.
 
     Returns:
         CurrentUser instance with validated identity and tenant context.
 
     Raises:
-        HTTPException: 401 if the header is missing, the token is malformed,
-            the signature is invalid, required claims are absent, or claim
-            values are not valid UUIDs.
-        HTTPException: 503 if ``ADAPTIX_JWT_PUBLIC_KEY`` is not configured.
+        HTTPException: 401 if neither path produces a valid identity.
+        HTTPException: 503 if the legacy path is taken but
+            ``ADAPTIX_JWT_PUBLIC_KEY`` is not configured.
     """
+    # Path 1: gateway-validated identity.
+    if x_adaptix_internal_auth == _GATEWAY_AUTH_CANARY:
+        if not x_user_id or not x_tenant_id:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=(
+                    "Gateway canary present but X-User-ID or X-Tenant-ID "
+                    f"is missing. The gateway must inject both when stamping "
+                    f"'{_GATEWAY_AUTH_CANARY}'."
+                ),
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        try:
+            return CurrentUser(
+                user_id=UUID(str(x_user_id)),
+                tenant_id=UUID(str(x_tenant_id)),
+                email=x_user_email or "unknown@example.com",
+                roles=_parse_roles_str(x_adaptix_roles),
+            )
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Gateway-injected user_id or tenant_id is not a valid UUID",
+                headers={"WWW-Authenticate": "Bearer"},
+            ) from exc
+
+    # Path 2: direct Adaptix JWT verification.
     if not authorization:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
