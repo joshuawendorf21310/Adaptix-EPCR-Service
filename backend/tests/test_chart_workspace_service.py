@@ -29,7 +29,7 @@ from epcr_app.chart_workspace_service import (
     ChartWorkspaceError,
     ChartWorkspaceService,
 )
-from epcr_app.models import AgencyProfile, Base, Chart, ChartStatus, PatientRegistryChartLink
+from epcr_app.models import AgencyProfile, Base, ChartStatus, PatientRegistryChartLink
 from epcr_app.services import ChartService
 
 

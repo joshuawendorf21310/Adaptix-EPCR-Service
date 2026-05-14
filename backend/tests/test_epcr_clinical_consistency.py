@@ -1,4 +1,3 @@
-import pytest
 from epcr_app.clinical_validation_service import ClinicalValidationService
 
 

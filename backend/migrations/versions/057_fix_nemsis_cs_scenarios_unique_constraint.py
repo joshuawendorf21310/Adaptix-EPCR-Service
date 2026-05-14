@@ -4,10 +4,14 @@ Revision ID: 057
 Revises: 056
 Create Date: 2026-05-13
 
-The nemsis_cs_scenarios_scenario_code_key constraint was on scenario_code
-alone, which caused UniqueViolationError when multiple tenants submitted
-the same scenario. Replace with a composite unique constraint on
-(tenant_id, scenario_code).
+The original uniqueness was declared as a unique INDEX
+(``ix_nemsis_cs_scenarios_scenario_code``) on ``scenario_code`` alone in
+migration 004; that caused UniqueViolationError when multiple tenants
+submitted the same scenario. Replace it with a composite unique index on
+(tenant_id, scenario_code). The earlier revision of this file tried to
+drop a UNIQUE constraint by name (``nemsis_cs_scenarios_scenario_code_key``)
+that never existed — uniqueness was always implemented via an index — so
+``upgrade head`` failed on both SQLite and Postgres.
 """
 
 from __future__ import annotations
@@ -21,24 +25,26 @@ depends_on = None
 
 
 def upgrade() -> None:
-    with op.batch_alter_table("nemsis_cs_scenarios") as batch_op:
-        batch_op.drop_constraint(
-            "nemsis_cs_scenarios_scenario_code_key",
-            type_="unique",
-        )
-        batch_op.create_unique_constraint(
-            "nemsis_cs_scenarios_tenant_scenario_key",
-            ["tenant_id", "scenario_code"],
-        )
+    op.drop_index(
+        "ix_nemsis_cs_scenarios_scenario_code",
+        table_name="nemsis_cs_scenarios",
+    )
+    op.create_index(
+        "ix_nemsis_cs_scenarios_tenant_scenario_code",
+        "nemsis_cs_scenarios",
+        ["tenant_id", "scenario_code"],
+        unique=True,
+    )
 
 
 def downgrade() -> None:
-    with op.batch_alter_table("nemsis_cs_scenarios") as batch_op:
-        batch_op.drop_constraint(
-            "nemsis_cs_scenarios_tenant_scenario_key",
-            type_="unique",
-        )
-        batch_op.create_unique_constraint(
-            "nemsis_cs_scenarios_scenario_code_key",
-            ["scenario_code"],
-        )
+    op.drop_index(
+        "ix_nemsis_cs_scenarios_tenant_scenario_code",
+        table_name="nemsis_cs_scenarios",
+    )
+    op.create_index(
+        "ix_nemsis_cs_scenarios_scenario_code",
+        "nemsis_cs_scenarios",
+        ["scenario_code"],
+        unique=True,
+    )

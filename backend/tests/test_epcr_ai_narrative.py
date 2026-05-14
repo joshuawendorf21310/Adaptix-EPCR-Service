@@ -1,5 +1,4 @@
 """Tests for Adaptix ePCR Narrative Intelligence AI service."""
-import pytest
 from epcr_app.ai_narrative_service import EPCRNarrativeIntelligenceService
 
 

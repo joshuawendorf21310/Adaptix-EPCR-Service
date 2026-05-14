@@ -11,7 +11,7 @@ import uuid
 from datetime import datetime, UTC
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -25,7 +25,6 @@ from epcr_app.models_vision import (
     VisionReviewActionRecord,
     VisionIngestionJob,
     VisionChartLink,
-    VisionQualityFlag,
     VisionProvenanceRecord,
 )
 

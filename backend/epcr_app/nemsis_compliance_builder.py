@@ -19,7 +19,6 @@ Rules:
 from __future__ import annotations
 
 import json
-import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -410,7 +409,7 @@ def run(output_dir: Path | None = None) -> dict[str, Any]:
 
     svc = NemsisRegistryService()
 
-    print(f"Building EMSDataSet field inventory from official registry...")
+    print("Building EMSDataSet field inventory from official registry...")
     inventory = build_full_inventory(svc)
     print(f"  [OK] {len(inventory)} fields across {len(set(e['section'] for e in inventory))} sections")
 

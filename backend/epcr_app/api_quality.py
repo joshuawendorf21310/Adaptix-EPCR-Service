@@ -959,7 +959,6 @@ async def create_standing_order(
 ):
     """Create a standing order."""
     _require_any_role(current_user, *_MD_ROLES, *_ADMIN_ROLES)
-    import json as _json
     now = _now()
     order = StandingOrder(
         id=_new_id(),

@@ -1,8 +1,8 @@
 """ePCR Response Timeline Service. Manages response timeline in ePCR charts (NEMSIS eTimes)."""
 from __future__ import annotations
-import logging, uuid
+import logging
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 logger = logging.getLogger(__name__)
 
 class EpcrResponseTimelineService:

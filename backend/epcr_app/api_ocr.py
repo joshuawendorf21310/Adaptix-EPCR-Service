@@ -36,7 +36,6 @@ from epcr_app.device_ocr_registry import (
     DEVICE_FIELD_REGISTRY,
     get_fields_for_device,
 )
-from epcr_app.models.ocr import OcrFieldReviewAction
 from epcr_app.services_ocr import HIGH_RISK_FIELD_KEYS, OcrJobService, OcrServiceError
 
 logger = logging.getLogger(__name__)

@@ -17,7 +17,6 @@ NEMSIS XML is generated only from ePCR-owned validated chart state.
 from __future__ import annotations
 
 import logging
-from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)

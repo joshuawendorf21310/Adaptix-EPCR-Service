@@ -8,7 +8,6 @@ from __future__ import annotations
 import asyncio
 import logging
 from datetime import datetime, UTC
-from typing import Dict, Any
 
 from epcr_app.services.event_publisher import EpcrEventPublisher
 

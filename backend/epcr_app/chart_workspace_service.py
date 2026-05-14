@@ -31,13 +31,11 @@ from epcr_app.models import (
     AssessmentFinding,
     Chart,
     ChartAddress,
-    ChartStatus,
     ClinicalIntervention,
     ClinicalNote,
     EpcrAuditLog,
     EpcrSignatureArtifact,
     MedicationAdministration,
-    NemsisCompliance,
     NemsisExportHistory,
     NemsisMappingRecord,
     PatientProfile,
@@ -565,7 +563,6 @@ class ChartWorkspaceService:
             from sqlalchemy import select as _select
             from epcr_app.models import (
                 EpcrRepeatPatientMatch,
-                EpcrPriorChartReference,
             )
             match_rows = (
                 await session.execute(
@@ -1128,9 +1125,6 @@ class ChartWorkspaceService:
                 )
                 if "ecustom_values" in payload:
                     try:
-                        from epcr_app.services.ecustom_field_validation import (
-                            ValidationError as _ECustomValidationError,
-                        )
                         await ECustomFieldService.replace_for_chart(
                             session,
                             tenant_id=tenant_id,

@@ -1,8 +1,9 @@
 """ePCR Medical Necessity Service. Validates medical necessity for ePCR billing readiness. Human review required."""
 from __future__ import annotations
-import logging, uuid
+import logging
+import uuid
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 logger = logging.getLogger(__name__)
 
 class EpcrMedicalNecessityService:

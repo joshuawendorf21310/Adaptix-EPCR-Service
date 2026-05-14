@@ -7,8 +7,6 @@ parsing) is exercised unchanged.
 """
 from __future__ import annotations
 
-import json
-import os
 from datetime import UTC, datetime
 from decimal import Decimal
 from uuid import uuid4

@@ -58,7 +58,7 @@ Rules:
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 from epcr_app.nemsis_field_validator import _STANDARD_NOT_VALUES, _STANDARD_PN_VALUES

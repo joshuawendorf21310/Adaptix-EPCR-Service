@@ -18,7 +18,6 @@ from __future__ import annotations
 
 from uuid import UUID
 
-import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 

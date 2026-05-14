@@ -19,7 +19,6 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
 )
-from sqlalchemy.orm import declarative_base
 
 from epcr_app.models import Base
 

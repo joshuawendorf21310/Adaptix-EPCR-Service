@@ -14,7 +14,6 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-import pytest
 
 from epcr_app.services import sentence_evidence_service as _svc_mod
 

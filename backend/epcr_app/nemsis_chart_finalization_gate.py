@@ -48,7 +48,6 @@ from epcr_app.nemsis_field_validator import (
     NemsisFieldValidator,
     get_validation_mode,
     is_strict_schematron_required,
-    ValidationIssue,
 )
 from epcr_app.nemsis_registry_service import NemsisRegistryService
 

@@ -25,8 +25,6 @@ from epcr_app.projection_chart_payment import (
     SECTION,
     SUPPLY_USED_GROUP,
     _ELEMENT_BINDING,
-    _LIST_BINDING,
-    _SCALAR_BINDING,
     project_chart_payment,
 )
 from epcr_app.services_chart_payment import (

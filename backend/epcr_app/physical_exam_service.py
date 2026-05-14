@@ -1,8 +1,8 @@
 """ePCR Physical Exam Service. Manages physical exam findings in ePCR charts."""
 from __future__ import annotations
-import logging, uuid
+import logging
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 logger = logging.getLogger(__name__)
 
 class EpcrPhysicalExamService:

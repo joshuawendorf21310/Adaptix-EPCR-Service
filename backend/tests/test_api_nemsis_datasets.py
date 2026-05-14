@@ -11,7 +11,6 @@ import io
 import zipfile
 from types import SimpleNamespace
 
-import pytest
 import pytest_asyncio
 from fastapi import FastAPI
 from fastapi.testclient import TestClient

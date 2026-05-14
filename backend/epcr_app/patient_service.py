@@ -1,8 +1,8 @@
 """ePCR Patient Service. Manages patient demographics in ePCR charts. ePCR owns clinical patient data."""
 from __future__ import annotations
-import logging, uuid
+import logging
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 logger = logging.getLogger(__name__)
 
 class EpcrPatientService:

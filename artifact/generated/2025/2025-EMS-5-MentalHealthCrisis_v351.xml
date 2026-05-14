@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<EMSDataSet xmlns="http://www.nemsis.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.nemsis.org https://nemsis.org/media/nemsis_v3/3.5.1.250403CP1/XSDs/NEMSIS_XSDs/EMSDataSet_v3.xsd">
+<EMSDataSet xmlns="http://www.nemsis.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.nemsis.org https://nemsis.org/media/nemsis_v3/3.5.1.251001CP2/XSDs/NEMSIS_XSDs/EMSDataSet_v3.xsd">
   <Header>
     <DemographicGroup>
       <dAgency.01>120495</dAgency.01>
@@ -564,28 +564,6 @@
         <eOutcome.16 NV="7701001" xsi:nil="true" />
         <eOutcome.18 NV="7701001" xsi:nil="true" />
       </eOutcome>
-      <eCustomResults>
-        <eCustomResults.ResultsGroup>
-          <eCustomResults.01>2</eCustomResults.01>
-          <eCustomResults.02>eVitals.901</eCustomResults.02>
-          <eCustomResults.03>c1</eCustomResults.03>
-        </eCustomResults.ResultsGroup>
-        <eCustomResults.ResultsGroup>
-          <eCustomResults.01>2</eCustomResults.01>
-          <eCustomResults.02>eVitals.901</eCustomResults.02>
-          <eCustomResults.03>c2</eCustomResults.03>
-        </eCustomResults.ResultsGroup>
-        <eCustomResults.ResultsGroup>
-          <eCustomResults.01>2</eCustomResults.01>
-          <eCustomResults.02>eVitals.901</eCustomResults.02>
-          <eCustomResults.03>c3</eCustomResults.03>
-        </eCustomResults.ResultsGroup>
-        <eCustomResults.ResultsGroup>
-          <eCustomResults.01>2</eCustomResults.01>
-          <eCustomResults.02>eVitals.901</eCustomResults.02>
-          <eCustomResults.03>c4</eCustomResults.03>
-        </eCustomResults.ResultsGroup>
-      </eCustomResults>
       <eOther>
         <eOther.EMSCrewMemberGroup>
           <eOther.04>PMD584736</eOther.04>

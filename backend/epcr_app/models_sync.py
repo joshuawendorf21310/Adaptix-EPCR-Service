@@ -31,14 +31,12 @@ from sqlalchemy import (
     Boolean,
     Column,
     DateTime,
-    Float,
     ForeignKey,
     Integer,
     String,
     Text,
     text,
 )
-from sqlalchemy.orm import relationship
 
 from epcr_app.models import Base
 

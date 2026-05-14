@@ -7,7 +7,6 @@ state change, and the sibling-listing contract returned by
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
 from uuid import uuid4
 
 import pytest

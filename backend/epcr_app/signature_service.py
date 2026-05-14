@@ -1,6 +1,7 @@
 """ePCR Signature Service. Manages signatures in ePCR charts. ePCR owns signature workflow."""
 from __future__ import annotations
-import logging, uuid
+import logging
+import uuid
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 logger = logging.getLogger(__name__)

@@ -17,7 +17,7 @@ from epcr_app.chart_finalization_service import (
 )
 from epcr_app.db import get_session, check_health
 from epcr_app.incident_numbering_service import IncidentNumberingService
-from epcr_app.models import AgencyProfile, Chart
+from epcr_app.models import AgencyProfile
 from epcr_app.services import ChartService
 from epcr_app.dependencies import get_current_user, CurrentUser
 from pydantic import BaseModel, ConfigDict, Field, field_validator

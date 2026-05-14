@@ -277,7 +277,6 @@ async def test_projection_is_idempotent(session: AsyncSession) -> None:
 
 @pytest.mark.asyncio
 async def test_scalar_binding_columns_exist_on_model() -> None:
-    from epcr_app.models_chart_response import ChartResponse
     cols = {c.name for c in ChartResponse.__table__.columns}
     for col, _, _ in _SCALAR_ELEMENT_BINDING:
         assert col in cols, f"scalar binding refers to missing column: {col}"
