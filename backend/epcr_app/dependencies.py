@@ -1,22 +1,34 @@
 """Dependency injection for ePCR service authentication.
 
-Two authentication paths are supported, in priority order:
+This service implements an explicit two-path auth contract driven by the
+``X-Adaptix-Auth-Path`` header. The gateway owns the auth decision; this
+service consumes the result. There is NO silent fallback between paths.
 
-1) **Gateway-validated identity (preferred for public clients).** When
-   ``X-Adaptix-Internal-Auth: cognito-gateway-validated`` is present, the
-   adaptix-gateway has already validated a Cognito JWT and stripped any
-   client-supplied identity headers, then injected verified ``X-User-ID``,
-   ``X-Tenant-ID``, ``X-User-Email``, ``X-Adaptix-Roles``. These headers are
-   trusted only when the canary is present, because the gateway's
-   ``FORBIDDEN_PUBLIC_HEADERS`` strip guarantees a client cannot forge them.
+Path "canary":
+    The adaptix-gateway has validated a Cognito JWT, stripped any
+    client-supplied identity headers, and stamped the request with:
+        X-Adaptix-Auth-Path: canary
+        X-Adaptix-Canary:    cognito-gateway-validated
+        X-Adaptix-User-Id:   <verified user uuid>
+        X-Adaptix-Tenant-Id: <verified tenant uuid>
+        X-Adaptix-Email:     <verified email>
+        X-Adaptix-Roles:     <JSON-array roles>
+    This service trusts those values. Both the auth-path AND the canary
+    are checked because the gateway's ``FORBIDDEN_PUBLIC_HEADERS`` strip
+    guarantees a public client cannot smuggle them.
 
-2) **Direct Adaptix JWT verification (legacy / internal callers).** RS256
-   signature verification using ``ADAPTIX_JWT_PUBLIC_KEY``. Required for
-   service-to-service traffic, scheduled workers, and any direct call that
-   bypasses the gateway.
+    Canary path declared but identity headers missing/malformed is a
+    CONTRACT BREACH and returns 502 (not 401) — the request reached this
+    service in a state the gateway should never produce.
 
-A canary-present-but-headers-missing request is 401 — never silently fall
-back to the unsigned bearer.
+Path "legacy":
+    Direct call from an internal worker / service-to-service / test
+    harness that has its own Adaptix RS256 JWT in ``Authorization:
+    Bearer``. Allowed ONLY when ``ADAPTIX_ALLOW_LEGACY_JWT_AUTH=true`` in
+    the environment. Disabled by default — never accept legacy as a
+    fallback from a failed canary.
+
+Anything else → 401.
 """
 
 from __future__ import annotations
@@ -30,14 +42,28 @@ from uuid import UUID
 from fastapi import Header, HTTPException, status
 from jose import JWTError, jwt
 
+from epcr_app.auth.auth_context import (
+    AUTH_PATH_GATEWAY_V1,
+    AuthContextError,
+    EXPECTED_AUDIENCE,
+    HEADER_AUTH_CONTEXT,
+    HEADER_AUTH_PATH,
+    HEADER_AUTH_SIGNATURE,
+    verify_context,
+)
+
 logger = logging.getLogger(__name__)
 
 _ALGORITHM = "RS256"
 
-# Canary stamped by adaptix-gateway after Cognito validation; stripped from
-# inbound public requests by the gateway, so present only when the gateway
-# itself produced it.
-_GATEWAY_AUTH_CANARY = "cognito-gateway-validated"
+# Header names match the gateway-side spec — case-insensitive at the
+# FastAPI Header() decorator level.
+AUTH_PATH_LEGACY = "legacy"
+
+
+def _legacy_auth_enabled() -> bool:
+    """Return True iff ``ADAPTIX_ALLOW_LEGACY_JWT_AUTH=true`` in the env."""
+    return os.environ.get("ADAPTIX_ALLOW_LEGACY_JWT_AUTH", "").strip().lower() == "true"
 
 
 def _parse_roles_str(raw_roles: str | None) -> list[str]:
@@ -80,65 +106,118 @@ class CurrentUser:
 
 
 async def get_current_user(
-    authorization: Annotated[str | None, Header(alias="Authorization")] = None,
-    x_tenant_id: Annotated[str | None, Header(alias="X-Tenant-ID")] = None,
-    x_user_id: Annotated[str | None, Header(alias="X-User-ID")] = None,
-    x_user_email: Annotated[str | None, Header(alias="X-User-Email")] = None,
-    x_adaptix_roles: Annotated[str | None, Header(alias="X-Adaptix-Roles")] = None,
-    x_adaptix_internal_auth: Annotated[
-        str | None, Header(alias="X-Adaptix-Internal-Auth")
-    ] = None,
+    authorization:        Annotated[str | None, Header(alias="Authorization")] = None,
+    x_adaptix_auth_path:  Annotated[str | None, Header(alias=HEADER_AUTH_PATH)]      = None,
+    x_adaptix_context:    Annotated[str | None, Header(alias=HEADER_AUTH_CONTEXT)]   = None,
+    x_adaptix_signature:  Annotated[str | None, Header(alias=HEADER_AUTH_SIGNATURE)] = None,
 ) -> CurrentUser:
-    """Extract the authenticated user. Prefers gateway-validated identity
-    headers when the ``X-Adaptix-Internal-Auth: cognito-gateway-validated``
-    canary is present; otherwise verifies the Bearer JWT directly.
+    """Extract the authenticated user by branching on
+    ``X-Adaptix-Auth-Path``. See module docstring for the contract.
 
-    See module docstring for the two-path design and security reasoning.
-
-    Args:
-        authorization: ``Authorization`` header (used for path 2).
-        x_tenant_id: Gateway-injected tenant UUID (used for path 1).
-        x_user_id: Gateway-injected user UUID (used for path 1).
-        x_user_email: Gateway-injected email (used for path 1).
-        x_adaptix_roles: Gateway-injected roles (used for path 1).
-        x_adaptix_internal_auth: Canary header. When equal to
-            ``cognito-gateway-validated``, the gateway-trust path is taken.
+    For path ``gateway-v1`` (the canonical production path), this verifies
+    the HMAC-SHA256 signature over the base64url-encoded JSON payload and
+    pulls identity from the verified claims. The audience claim must
+    equal ``adaptix-epcr``; the iat/exp window must contain "now" within
+    a small clock-skew tolerance.
 
     Returns:
-        CurrentUser instance with validated identity and tenant context.
+        CurrentUser populated from the verified signed context (gateway
+        path) or the verified Bearer JWT claims (legacy path).
 
     Raises:
-        HTTPException: 401 if neither path produces a valid identity.
-        HTTPException: 503 if the legacy path is taken but
+        HTTPException 401 if no recognised auth path is presented and
+            legacy is disabled.
+        HTTPException 502 if ``X-Adaptix-Auth-Path`` declares the gateway
+            path but the signature does not verify, the audience does not
+            match, the context is expired, or the shared secret is not
+            configured.
+        HTTPException 503 if the legacy path is taken but
             ``ADAPTIX_JWT_PUBLIC_KEY`` is not configured.
     """
-    # Path 1: gateway-validated identity.
-    if x_adaptix_internal_auth == _GATEWAY_AUTH_CANARY:
-        if not x_user_id or not x_tenant_id:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=(
-                    "Gateway canary present but X-User-ID or X-Tenant-ID "
-                    f"is missing. The gateway must inject both when stamping "
-                    f"'{_GATEWAY_AUTH_CANARY}'."
-                ),
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+    # ── Path: gateway-v1 (signed auth context) ──────────────────────────
+    if x_adaptix_auth_path == AUTH_PATH_GATEWAY_V1:
         try:
-            return CurrentUser(
-                user_id=UUID(str(x_user_id)),
-                tenant_id=UUID(str(x_tenant_id)),
-                email=x_user_email or "unknown@example.com",
-                roles=_parse_roles_str(x_adaptix_roles),
+            payload = verify_context(
+                context_b64=x_adaptix_context or "",
+                signature_hex=x_adaptix_signature or "",
+                expected_audience=EXPECTED_AUDIENCE,
             )
-        except ValueError as exc:
+        except AuthContextError as exc:
+            logger.error(
+                "epcr.auth: gateway-v1 context verification failed: %s", exc
+            )
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Gateway-injected user_id or tenant_id is not a valid UUID",
-                headers={"WWW-Authenticate": "Bearer"},
+                status_code=status.HTTP_502_BAD_GATEWAY,
+                detail={
+                    "error_code": "gateway_contract_breach",
+                    "message": (
+                        "Gateway-v1 auth context verification failed. "
+                        "The gateway must produce a signed, in-window, "
+                        f"audience='{EXPECTED_AUDIENCE}' context."
+                    ),
+                },
+            ) from exc
+        except RuntimeError as exc:
+            logger.critical(
+                "epcr.auth: shared secret not configured — cannot verify "
+                "gateway-v1 auth context: %s",
+                exc,
+            )
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail={
+                    "error_code": "auth_unavailable",
+                    "message": (
+                        "ADAPTIX_GATEWAY_SHARED_SECRET is not configured "
+                        "in this EPCR deployment. Inject it via Secrets "
+                        "Manager — the same value the gateway uses."
+                    ),
+                },
             ) from exc
 
-    # Path 2: direct Adaptix JWT verification.
+        try:
+            return CurrentUser(
+                user_id=UUID(str(payload["user_id"])),
+                tenant_id=UUID(str(payload["tenant_id"])),
+                email=str(payload.get("email") or "unknown@example.com"),
+                roles=[str(r) for r in payload.get("roles") or []],
+            )
+        except (KeyError, ValueError) as exc:
+            raise HTTPException(
+                status_code=status.HTTP_502_BAD_GATEWAY,
+                detail={
+                    "error_code": "gateway_contract_breach",
+                    "message": "Gateway-v1 payload missing or malformed user_id/tenant_id",
+                },
+            ) from exc
+
+    # ── Path: legacy (direct Adaptix JWT) — opt-in only ──────────────────
+    if x_adaptix_auth_path not in (None, "", AUTH_PATH_LEGACY):
+        # Unknown auth-path value — refuse rather than silently fall through.
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={
+                "error_code": "unknown_auth_path",
+                "message": f"Unknown X-Adaptix-Auth-Path: {x_adaptix_auth_path!r}",
+            },
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    if not _legacy_auth_enabled():
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={
+                "error_code": "auth_required",
+                "message": (
+                    "Authentication required. This endpoint accepts requests "
+                    f"stamped by the adaptix-gateway (X-Adaptix-Auth-Path={AUTH_PATH_GATEWAY_V1}) "
+                    "or — when explicitly enabled by ADAPTIX_ALLOW_LEGACY_JWT_AUTH=true — "
+                    "a direct Adaptix Bearer JWT."
+                ),
+            },
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
     if not authorization:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
